@@ -121,5 +121,3 @@ bindkey "^[[1~" beginning-of-line
 bindkey "^[[4~" end-of-line
 bindkey '5D' emacs-backward-word
 bindkey '5C' emacs-forward-word
-
-
