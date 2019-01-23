@@ -19,4 +19,5 @@
     "breadcrumbs.enabled": true,
     "workbench.settings.editor": "json",
     "editor.acceptSuggestionOnEnter": "smart",
+    "files.autoSave": "off",
 }
