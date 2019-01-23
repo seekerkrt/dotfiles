@@ -10,8 +10,9 @@ export EDITOR=nano
 export LANG=ja_JP.UTF-8
 export TRIZEN_CONF=~/.config/trizen/trizen.conf
 export AWESOME_CONF=~/.config/awesome/rc.lua
+export VSCODE_CONF=~/config/Code/User/settings.json
 #export CFLAGS="-O2 -pipe -Wall -Wextra -Wno-unused-parameter -Wfloat-equal"
-#export CXXFLAGS="${CFLAGS} -std=c++17"
+#export CXXFLAGS="-std=c++17 ${CFLAGS} -xc++"
 export MAKEFLAGS=-j9
 export CROSSTOOLCHAIN=/opt/crosstoolchain
 #export CHOST=$(uname -m)-pc-linux-gnu
@@ -21,8 +22,13 @@ export PATH="$CROSSTOOLCHAIN/bin:/usr/lib/ccache/bin:$PATH"
 
 
 ### User specific aliases and functions
+### Aliases
+alias ls="ls -F --color=auto"
+alias grep="grep --color=auto"
+alias egrep="egrep --color=auto"
 alias emacs="emacs -nw"
 alias vscode="code"
+
 
 ### others
 
@@ -43,12 +49,6 @@ export LESS_TERMCAP_mb=$(printf '\e[1;32m')
 export LESS_TERMCAP_md=$(printf '\e[1;34m')
 export LESS_TERMCAP_us=$(printf '\e[1;32m')
 export LESS_TERMCAP_so=$(printf '\e[1;44;1m')
-
-### Aliases
-alias ls="ls -F --color=auto"
-alias grep="grep --color=auto"
-alias egrep="egrep --color=auto"
-
 
 
 ########################################################
