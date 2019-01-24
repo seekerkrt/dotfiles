@@ -1,10 +1,3 @@
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-(package-initialize)
-
 (when load-file-name
   (setq user-emacs-directory (file-name-directory load-file-name)))
 
@@ -27,7 +20,7 @@
 (set-face-attribute 'default nil
                     :family "Ricty"
                     :height 12)
-(set-frame-font "Ricty-12")
+(set-frame-font "Ricty-10.5")
 
 ;; オープニングメッセージを表示しない
 (setq inhibit-startup-message t)
@@ -79,3 +72,14 @@
 ;;Python-mode
 (autoload 'python-mode "python-mode.el" "Python mode." t)
 (setq auto-mode-alist (append '(("/.*\.py\'" . python-mode)) auto-mode-alist))
+
+;; auto-complete
+;(require 'auto-complete)
+;(require 'auto-complete-config)
+;(global-auto-complete-mode t)
+
+;; flycheck
+;(require 'flycheck)
+;;(add-hook 'after-init-hook 'global-flycheck-mode)
+;;;
+
