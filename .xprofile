@@ -9,3 +9,6 @@ export __GL_SYNC_TO_VBLANK=1
 export QT_XFT=true
 export GDK_USE_XFT=true
 export GTK_USE_XFT=true
+
+ibus-daemon -drx
+
