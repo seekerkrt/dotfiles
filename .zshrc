@@ -113,19 +113,21 @@ autoload -Uz colors; colors
 local p_user="%(!,%F{red}%n%f,%F{cyan}%n%f)"
 local p_host="%F{green}%m%f"
 local p_mark="%B%(!,%F{red}#%f,%F{cyan}$%f)%b"
-local p_pwd="%F{yellow}(%~)%f"
-PROMPT="$p_user@$p_host $p_pwd$p_mark "
-
+local p_pwd="%F{yellow}%(!,%d,%~)%f"
 # Git対応
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git:*' check-for-changes true
-zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"
-zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
-zstyle ':vcs_info:*' formats "%F{green}%c%u[%b]%f"
-zstyle ':vcs_info:*' actionformats '[%b|%a]'
+zstyle ':vcs_info:git:*' check-for-changes true #formats 設定項目で %c,%u が使用可
+zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!" #commit されていないファイルがある
+zstyle ':vcs_info:git:*' unstagedstr "%F{magenta}+" #add されていないファイルがある
+zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f" #通常
+zstyle ':vcs_info:*' actionformats '[%b|%a]' #rebase 途中,merge コンフリクト等 formats 外の表示
+# %b ブランチ情報
+# %a アクション名(mergeなど)
+# %c changes
+# %u uncommit
 precmd() { vcs_info }
-RPROMPT='${vcs_info_msg_0_}'
+PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_} ${p_mark} '
 
 ### キーバインド設定
 bindkey -e 	#キーバインドをemacsモードにする
