@@ -15,4 +15,5 @@ for dotfile in .??*; do
 done
 
 # VSCodeの設定ファイル類をリンク置く
+mkdir -pv ~/.config/Code/User/
 ln -fnsv $THIS_DIR/vscode/settings.json ~/.config/Code/User/settings.json
