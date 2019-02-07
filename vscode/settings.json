@@ -20,4 +20,5 @@
     "workbench.settings.editor": "json",
     "editor.acceptSuggestionOnEnter": "smart",
     "files.autoSave": "off",
+    "cmake.configureOnOpen": true,
 }

@@ -4,7 +4,7 @@
 #デフォルトファイルパーミッション
 umask 022
 #変数未定義の使用時エラーにする
-set -u 
+set -u
 
 export EDITOR=nano
 export LANG=ja_JP.UTF-8
@@ -35,7 +35,7 @@ alias vscode="code"
 
 
 
-### for PAGER(less) source-highlight 
+### for PAGER(less) source-highlight
 export PAGER=less
 export OUTPUT_CHARSET=utf-8
 export LESS='-R '
@@ -55,7 +55,7 @@ export LESS_TERMCAP_so=$(printf '\e[1;44;1m')
 #  zsh - Settings
 ########################################################
 setopt no_beep           # ビープ音を鳴らさないようにする
-setopt auto_cd           # ディレクトリ名の入力のみで移動する 
+setopt auto_cd           # ディレクトリ名の入力のみで移動する
 setopt auto_pushd        # cd時にディレクトリスタックにpushdする
 setopt correct           # コマンドのスペルを訂正する
 setopt magic_equal_subst # =以降も補完する(--prefix=/usrなど)
@@ -108,9 +108,24 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 ### Prompt ###
 # プロンプトに色を付ける
-autoload -U colors; colors
-PROMPT="%F{cyan}[%f%F{magenta}%n%f%F{cyan}@%f%F{cyan}%m%f %F{yellow}%~%f%F{cyan}]%#%f "
+autoload -Uz colors; colors
+#PROMPT="%F{cyan}[%f%F{magenta}%n%f%F{cyan}@%f%F{cyan}%m%f %F{yellow}%~%f%F{cyan}]%#%f "
+local p_user="%(!,%F{red}%n%f,%F{cyan}%n%f)"
+local p_host="%F{green}%m%f"
+local p_mark="%B%(!,%F{red}#%f,%F{cyan}$%f)%b"
+local p_pwd="%F{yellow}(%~)%f"
+PROMPT="$p_user@$p_host $p_pwd$p_mark "
 
+# Git対応
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"
+zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
+zstyle ':vcs_info:*' formats "%F{green}%c%u[%b]%f"
+zstyle ':vcs_info:*' actionformats '[%b|%a]'
+precmd() { vcs_info }
+RPROMPT='${vcs_info_msg_0_}'
 
 ### キーバインド設定
 bindkey -e 	#キーバインドをemacsモードにする
