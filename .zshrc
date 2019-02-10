@@ -58,7 +58,6 @@ setopt no_beep           # ビープ音を鳴らさないようにする
 setopt auto_cd           # ディレクトリ名の入力のみで移動する
 setopt auto_pushd        # cd時にディレクトリスタックにpushdする
 setopt correct           # コマンドのスペルを訂正する
-setopt magic_equal_subst # =以降も補完する(--prefix=/usrなど)
 setopt prompt_subst      # プロンプト定義内で変数置換やコマンド置換を扱う
 
 ### Complement ###
@@ -67,6 +66,8 @@ setopt auto_list               # 補完候補を一覧で表示する(d)
 setopt auto_menu               # 補完キー連打で補完候補を順に表示する(d)
 setopt list_packed             # 補完候補をできるだけ詰めて表示する
 setopt list_types              # 補完候補にファイルの種類も表示する
+setopt magic_equal_subst # =以降も補完する(--prefix=/usrなど)
+zstyle ':completion:*' menu select
 
 ### Glob ###
 setopt extended_glob # グロブ機能を拡張する
@@ -80,7 +81,15 @@ setopt extended_history   # ヒストリに実行時間も保存する
 setopt hist_ignore_dups   # 直前と同じコマンドはヒストリに追加しない
 setopt share_history      # 他のシェルのヒストリをリアルタイムで共有する
 setopt hist_reduce_blanks # 余分なスペースを削除してヒストリに保存する
-
+### キーバインド設定
+bindkey -e 	#キーバインドをemacsモードにする
+bindkey "^?"    backward-delete-char
+bindkey "^H"    backward-delete-char
+bindkey "^[[3~" delete-char
+bindkey "^[[1~" beginning-of-line
+bindkey "^[[4~" end-of-line
+bindkey '5D' emacs-backward-word
+bindkey '5C' emacs-forward-word
 # マッチしたコマンドのヒストリを表示できるようにする
 autoload history-search-end
 zle -N history-beginning-search-backward-end history-search-end
@@ -111,7 +120,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 autoload -Uz colors; colors
 #PROMPT="%F{cyan}[%f%F{magenta}%n%f%F{cyan}@%f%F{cyan}%m%f %F{yellow}%~%f%F{cyan}]%#%f "
 local p_user="%(!,%F{red}%n%f,%F{cyan}%n%f)"
-local p_host="%F{green}%m%f"
+local p_host="%F{green}%M%f"
 local p_mark="%B%(!,%F{red}#%f,%F{cyan}$%f)%b"
 local p_pwd="%F{yellow}%(!,%d,%~)%f"
 # Git対応
@@ -127,14 +136,5 @@ zstyle ':vcs_info:*' actionformats '[%b|%a]' #rebase 途中,merge コンフリ�
 # %c changes
 # %u uncommit
 precmd() { vcs_info }
+### PROMPT変数
 PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_} ${p_mark} '
-
-### キーバインド設定
-bindkey -e 	#キーバインドをemacsモードにする
-bindkey "^?"    backward-delete-char
-bindkey "^H"    backward-delete-char
-bindkey "^[[3~" delete-char
-bindkey "^[[1~" beginning-of-line
-bindkey "^[[4~" end-of-line
-bindkey '5D' emacs-backward-word
-bindkey '5C' emacs-forward-word
