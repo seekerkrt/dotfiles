@@ -1,5 +1,14 @@
 #! /bin/zsh
 
+# すべてのログインログアウトを監視する
+watch="all"
+# 上記を通知する
+log
+
+# ^Dでログアウトしない
+setopt ignore_eof
+
+
 ### Syntax-Highlight
 #source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
