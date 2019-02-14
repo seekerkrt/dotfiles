@@ -21,4 +21,7 @@
     "editor.acceptSuggestionOnEnter": "smart",
     "files.autoSave": "off",
     "cmake.configureOnOpen": true,
+    "editor.autoIndent": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 3,
 }
