@@ -1,3 +1,8 @@
+#! /bin/zsh
+
+### Syntax-Highlight
+#source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 ###
 # ZSH Setting File
 ###
