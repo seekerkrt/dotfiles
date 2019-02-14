@@ -45,9 +45,9 @@
 (add-hook 'c-mode-common-hook
           '(lambda ()
              (c-set-style "k&r")
-	               (setq c-basic-offset 4)
-		              (setq indent-tabs-mode t)
-			                  (setq tab-width 4)))
+	               (setq c-basic-offset 2)
+		              (setq indent-tabs-mode f)
+			                  (setq tab-width 2)))
 ;;
 
 ;;カラーテーマ設定
