@@ -1,3 +1,7 @@
+;; シンボリックリンクを強制的にたどる＝＞プロンプトを出さない
+(setq vc-follow-symlinks t)
+
+;;
 (when load-file-name
   (setq user-emacs-directory (file-name-directory load-file-name)))
 
