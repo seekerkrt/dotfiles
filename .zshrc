@@ -7,6 +7,9 @@ umask 022
 set -u
 
 export EDITOR=nano
+
+export TERMINAL=gnome-terminal
+
 export LANG=ja_JP.UTF-8
 export TRIZEN_CONF=~/.config/trizen/trizen.conf
 export AWESOME_CONF=~/.config/awesome/rc.lua
@@ -138,3 +141,4 @@ zstyle ':vcs_info:*' actionformats '[%b|%a]' #rebase 途中,merge コンフリ�
 precmd() { vcs_info }
 ### PROMPT変数
 PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_} ${p_mark} '
+
