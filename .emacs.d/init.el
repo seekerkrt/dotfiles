@@ -15,10 +15,7 @@
 ;;行番号表示指定
 (require 'linum)
 (global-linum-mode t)
-(setq linum-format "%3d ")
-;;Auto-Save
-(setq make-backup-files nil)
-(setq auto-save-default nil)
+(setq linum-format "%4d ")
 
 ;;フォント指定
 (set-face-attribute 'default nil
@@ -26,33 +23,55 @@
                     :height 12)
 (set-frame-font "Ricty-10.5")
 
-;; オープニングメッセージを表示しない
+;; メニューバーを消す
+(menu-bar-mode 0)
+;; スタートアップメッセージを表示しない
 (setq inhibit-startup-message t)
+; yes/no => y/n
+(defalias 'yes-or-no-p 'y-or-n-p)
+;;Auto-Save
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+
 ;; 対応する括弧をハイライトする
 (show-paren-mode 1)
+;;画面内に対応する括弧がある場合は括弧だけを、ない場合は括弧で囲まれた部分をハイライト
+(setq show-paren-style 'mixed)
 ;; カーソル位置の桁数をモードライン行に表示する
 (column-number-mode 1)
 ;; カーソル位置の行数をモードライン行に表示する
 (line-number-mode 1)
-;; メニューバーを消す
-(menu-bar-mode 0)
+;;ファイルサイズを表示
+(size-indication-mode t)
 
-;; モードラインの設定
+;; モードラインや見た目の設定
 (line-number-mode t)                ;; 行数
 (column-number-mode t)              ;; 桁数
-(which-function-mode 1)
-;;
-(show-paren-mode t)
-(transient-mark-mode t)
+(which-function-mode t)
+(setq default-frame-alist
+      (append (list
+       '(set-foreground-color . "AntiqueWhite")  ; 前景色
+       '(set-background-color . "black") ; 背景色
+;      '(cursor-color     . "DarkGreen")  ; カーソル色
+       '(set-cursor-color     . "Gray")  ; カーソル色
+       '(set-frame-parameter nil 'alpha 80);透過度
+       )
+       default-frame-alist))
+;;適用?
+(setq initial-frame-alist default-frame-alist)
 
-;; c-mode のインデントをスペース4個分のタブにする
-(add-hook 'c-mode-common-hook
-          '(lambda ()
-             (c-set-style "k&r")
-	               (setq c-basic-offset 2)
-		              (setq indent-tabs-mode f)
-			                  (setq tab-width 2)))
 ;;
+;; 選択範囲に色をつける
+(transient-mark-mode t)
+(set-face-background 'region "DeepSkyBlue") ;選択範囲の色
+
+
+;; Indent
+(setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 3)
+(setq-default tab-width 3)
+
+
 
 ;;カラーテーマ設定
 ;(require 'color-theme)
