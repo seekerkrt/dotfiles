@@ -9,8 +9,8 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 BinPackParameters: false
 IndentCaseLabels: true
-TabWidth: 2
-IndentWidth: 2
+TabWidth: 3
+IndentWidth: 3
 UseTab: Never
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 2

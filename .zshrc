@@ -1,24 +1,21 @@
-#! /bin/zsh
+#! zsh
+###
+#   zsh Setting File
+###
+
+# デフォルトファイルパーミッション
+umask 022
+# 変数未定義の使用時エラーにする
+set -u
 
 # すべてのログインログアウトを監視する
-watch="all"
+#watch="all"
 # 上記を通知する
-log
+#log
 
 # ^Dでログアウトしない
-setopt ignore_eof
+#setopt ignore_eof
 
-
-### Syntax-Highlight
-#source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-###
-# ZSH Setting File
-###
-#デフォルトファイルパーミッション
-umask 022
-#変数未定義の使用時エラーにする
-set -u
 
 export EDITOR=nano
 
@@ -51,14 +48,12 @@ alias vscode="code"
 
 
 
-
 ### for PAGER(less) source-highlight
 export PAGER=less
 export OUTPUT_CHARSET=utf-8
+#export LESSOPEN='| /usr/bin/src-hilite-lesspipe.sh %s'
+export LESSOPEN="| /usr/bin/source-highlight-esc.sh %s"
 export LESS='-R '
-#export LESSOPEN="| /usr/bin/source-highlight-esc.sh %s"
-#export LESSOPEN='| /usr/share/source-highlight/src-hilite-lesspipe.sh %s'
-export LESSOPEN='| /usr/bin/src-hilite-lesspipe.sh %s'
 export LESS_TERMCAP_me=$(printf '\e[0m')
 export LESS_TERMCAP_se=$(printf '\e[0m')
 export LESS_TERMCAP_ue=$(printf '\e[0m')
