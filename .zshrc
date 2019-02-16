@@ -17,7 +17,7 @@ set -u
 #setopt ignore_eof
 
 
-export EDITOR=nano
+export EDITOR=emacs
 
 export TERMINAL=gnome-terminal
 
@@ -74,6 +74,7 @@ setopt prompt_subst      # プロンプト定義内で変数置換やコマン�
 
 ### Complement ###
 autoload -U compinit; compinit -u # 補完機能を有効にする
+setopt completealiases #エイリアスでも補完するようにする
 setopt auto_list               # 補完候補を一覧で表示する(d)
 setopt auto_menu               # 補完キー連打で補完候補を順に表示する(d)
 setopt list_packed             # 補完候補をできるだけ詰めて表示する
@@ -90,7 +91,7 @@ HISTSIZE=10000            # メモリに保存されるヒストリの件数
 SAVEHIST=10000            # 保存されるヒストリの件数
 setopt bang_hist          # !を使ったヒストリ展開を行う(d)
 setopt extended_history   # ヒストリに実行時間も保存する
-setopt hist_ignore_dups   # 直前と同じコマンドはヒストリに追加しない
+setopt hist_ignore_dups   # 以前と同じコマンドはヒストリに追加しない
 setopt share_history      # 他のシェルのヒストリをリアルタイムで共有する
 setopt hist_reduce_blanks # 余分なスペースを削除してヒストリに保存する
 ### キーバインド設定
