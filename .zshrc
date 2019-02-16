@@ -1,9 +1,9 @@
 #! /bin/zsh
 
 # すべてのログインログアウトを監視する
-watch="all"
+#watch="all"
 # 上記を通知する
-log
+#log
 
 # ^Dでログアウトしない
 setopt ignore_eof
