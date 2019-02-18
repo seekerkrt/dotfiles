@@ -5,3 +5,9 @@
 	diff = auto
 	status = auto
 	branch = auto
+ 	ui = auto
+
+[core]
+	autocrlf = input
+	quotepath = false
+   
