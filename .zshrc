@@ -19,7 +19,7 @@ set -u
 
 export EDITOR=emacs
 
-export TERMINAL=gnome-terminal
+export TERMINAL=terminator
 
 export LANG=ja_JP.UTF-8
 export TRIZEN_CONF=~/.config/trizen/trizen.conf
@@ -41,7 +41,7 @@ alias ls="ls -F --color=auto"
 alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
 alias emacs="emacs -nw"
-alias vscode="code"
+#alias vscode="code"
 
 
 ### others
@@ -81,14 +81,16 @@ setopt list_packed             # 補完候補をできるだけ詰めて表示�
 setopt list_types              # 補完候補にファイルの種類も表示する
 setopt magic_equal_subst # =以降も補完する(--prefix=/usrなど)
 zstyle ':completion:*' menu select
+# sudo時に補完が有効になる
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
 
 ### Glob ###
 setopt extended_glob # グロブ機能を拡張する
 
 ### History ###
 HISTFILE=~/.zsh_history   # ヒストリを保存するファイル
-HISTSIZE=10000            # メモリに保存されるヒストリの件数
-SAVEHIST=10000            # 保存されるヒストリの件数
+HISTSIZE=100000            # メモリに保存されるヒストリの件数
+SAVEHIST=100000            # 保存されるヒストリの件数
 setopt bang_hist          # !を使ったヒストリ展開を行う(d)
 setopt extended_history   # ヒストリに実行時間も保存する
 setopt hist_ignore_dups   # 以前と同じコマンドはヒストリに追加しない
