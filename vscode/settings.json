@@ -24,4 +24,5 @@
     "breadcrumbs.enabled": true,
     "workbench.settings.editor": "json",
     "editor.acceptSuggestionOnEnter": "smart",
+    "C_Cpp.clang_format_path": "/usr/bin/clang-format"
 }
