@@ -86,6 +86,7 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 ### Glob ###
 setopt extended_glob # グロブ機能を拡張する
+setopt nonomatch
 
 ### History ###
 HISTFILE=~/.zsh_history   # ヒストリを保存するファイル
