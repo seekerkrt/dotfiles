@@ -4,6 +4,7 @@ export GTK_IM_MODULE=ibus
 export QT_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export XIM=ibus
+#export DefaultIMModule=fcitx
 
 export __GL_SYNC_TO_VBLANK=1
 export QT_XFT=true
