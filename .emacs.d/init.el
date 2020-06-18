@@ -96,6 +96,8 @@
 (autoload 'python-mode "python-mode.el" "Python mode." t)
 (setq auto-mode-alist (append '(("/.*\.py\'" . python-mode)) auto-mode-alist))
 
+;;Haskell-mode
+(require 'haskell-mode-autoloads)
 ;; auto-complete
 ;(require 'auto-complete)
 ;(require 'auto-complete-config)
