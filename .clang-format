@@ -1,4 +1,4 @@
-AccessModifierOffset: -2
+AccessModifierOffset: -4
 AlignAfterOpenBracket: true
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: true
@@ -10,8 +10,8 @@ AllowShortLoopsOnASingleLine: false
 BinPackArguments: true
 BinPackParameters: true
 IndentCaseLabels: true
-TabWidth: 2
-IndentWidth: 2
+TabWidth: 4
+IndentWidth: 4
 UseTab: Never
 ColumnLimit: 0
 KeepEmptyLinesAtTheStartOfBlocks: false
