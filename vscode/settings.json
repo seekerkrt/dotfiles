@@ -26,5 +26,6 @@
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
     "todo-tree.highlights.enabled": true,
     "todo-tree.tree.showScanModeButton": false,
-    "window.zoomLevel": 1
+    "window.zoomLevel": 1,
+    "workbench.iconTheme": "vscode-icons"
 }

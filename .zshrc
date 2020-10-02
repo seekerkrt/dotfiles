@@ -20,14 +20,14 @@ set -u
 export EDITOR=emacs
 
 export TERMINAL=terminator
-#export LANG=en_US.UTF-8
-export LANG=ja_JP.UTF-8
+export LANG=en_US.UTF-8
+#export LANG=ja_JP.UTF-8
 export TRIZEN_CONF=~/.config/trizen/trizen.conf
 export AWESOME_CONF=~/.config/awesome/rc.lua
 export VSCODE_CONF=~/config/Code/User/settings.json
 #export CFLAGS="-O2 -pipe -Wall -Wextra -Wno-unused-parameter -Wfloat-equal"
 #export CXXFLAGS="-std=c++17 ${CFLAGS} -xc++"
-#export MAKEFLAGS=-j9
+#export MAKEFLAGS=j13
 export CROSSDEV=/opt/crossdev
 #export CHOST=$(uname -m)-pc-linux-gnu
 #export GEM_HOME=$(ruby -e 'print Gem.user_dir')
