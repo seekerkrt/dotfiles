@@ -68,8 +68,8 @@
 
 ;; Indent
 (setq-default indent-tabs-mode nil)
-(setq-default c-basic-offset 3)
-(setq-default tab-width 3)
+(setq-default c-basic-offset 4)
+(setq-default tab-width 4)
 
 
 
