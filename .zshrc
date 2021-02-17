@@ -17,11 +17,11 @@ set -u
 #setopt ignore_eof
 
 
-export EDITOR=emacs
+export EDITOR=nano
 
 export TERMINAL=terminator
-export LANG=en_US.UTF-8
-#export LANG=ja_JP.UTF-8
+#export LANG=en_US.UTF-8
+export LANG=ja_JP.UTF-8
 export TRIZEN_CONF=~/.config/trizen/trizen.conf
 export AWESOME_CONF=~/.config/awesome/rc.lua
 export VSCODE_CONF=~/config/Code/User/settings.json
