@@ -103,6 +103,10 @@
 ;(require 'auto-complete-config)
 ;(global-auto-complete-mode t)
 
+(autoload 'python-mode "python-mode.el" "Python mode." t)
+(setq auto-mode-alist (append '(("/.*\.py\'" . python-mode)) auto-mode-alist))
+
+
 ;; flycheck
 ;(require 'flycheck)
 ;;(add-hook 'after-init-hook 'global-flycheck-mode)
