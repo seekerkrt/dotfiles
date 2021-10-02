@@ -21,7 +21,7 @@
 (set-face-attribute 'default nil
                     :family "Ricty"
                     :height 12)
-(set-frame-font "Ricty-10.5")
+(set-frame-font "Ricty-10")
 
 ;; メニューバーを消す
 (menu-bar-mode 0)
