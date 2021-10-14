@@ -24,5 +24,61 @@
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
     "todo-tree.highlights.enabled": true,
     "window.zoomLevel": 1,
-    "debug.onTaskErrors": "debugAnyway"
+    "debug.onTaskErrors": "debugAnyway",
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.defaultProfile.windows": "Zsh",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": [
+                "/k",
+                "chcp",
+                "65001"
+            ],
+            "icon": "terminal-cmd"
+        },
+        "Zsh": {
+            "path": "C:\\msys64\\usr\\bin\\zsh.exe",
+            "args": [
+                "--login"
+            ],
+            "env": {
+                "MSYSTEM": "MINGW64",
+                "CHERE_INVOKING": "1"
+            },
+            "icon": "terminal-linux"
+        }
+    },
+    "git.ignoreMissingGitWarning": true,
+    "terminal.integrated.fontFamily": "Ricty",
+    "terminal.integrated.fontSize": 12,
+    "workbench.editorAssociations": {
+        "*.lnk": "default"
+    },
+    "terminal.integrated.env.windows": {
+        "MSYSTEM": "MINGW64",
+        "CHERE_INVOKING": "1"
+    },
+    "terminal.integrated.cursorStyle": "underline",
+    "workbench.colorTheme": "Default Dark+",
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "cmake.configureOnOpen": true,
+    "gitlens.advanced.messages": {
+        "suppressGitMissingWarning": true
+    }
 }
