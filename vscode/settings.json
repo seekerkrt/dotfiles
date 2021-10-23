@@ -8,7 +8,6 @@
     "editor.formatOnPaste": true,
     "editor.formatOnType": true,
     "editor.formatOnSave": true,
-    "telemetry.enableTelemetry": false,
     "explorer.confirmDelete": false,
     "html.format.endWithNewline": true,
     "files.encoding": "utf8",
