@@ -1,11 +1,10 @@
 export LANG=ja_JP.UTF-8
 
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
-export XMODIFIERS="@im=fcitx"
+export GTK_IM_MODULE="fcitx"
+export QT_IM_MODULE="fcitx"
 export XMODIFIER="@im=fcitx"
-export XIM=fcitx
-export DefaultIMModule=fcitx
+#export XIM=fcitx
+#export DefaultIMModule=fcitx
 
 export __GL_SYNC_TO_VBLANK=1
 export QT_XFT=true
