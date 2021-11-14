@@ -79,5 +79,6 @@
     "cmake.configureOnOpen": true,
     "gitlens.advanced.messages": {
         "suppressGitMissingWarning": true
-    }
+    },
+    "workbench.iconTheme": "vscode-icons"
 }
