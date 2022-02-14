@@ -19,7 +19,7 @@
 
 ;;フォント指定
 (set-face-attribute 'default nil
-                    :family "Ricty"
+                    :family "Mgen+ 1mn"
                     :height 12)
 (set-frame-font "Ricty-10")
 
