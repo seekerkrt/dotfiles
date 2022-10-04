@@ -16,4 +16,4 @@ done
 
 # VSCodeの設定ファイル類をリンク置く
 mkdir -pv ~/.config/Code/User/
-ln -fnsv $THIS_DIR/vscode/settings.json ~/.config/Code/User/settings.json
+ln -sfnv $THIS_DIR/vscode/settings.json ~/.config/Code/User/settings.json
