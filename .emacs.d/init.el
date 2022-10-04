@@ -21,7 +21,7 @@
 (set-face-attribute 'default nil
                     :family "Mgen+ 1mn"
                     :height 12)
-(set-frame-font "Ricty-10")
+(set-frame-font "Mgen+ 1m-10")
 
 ;; メニューバーを消す
 (menu-bar-mode 0)
@@ -111,4 +111,3 @@
 ;(require 'flycheck)
 ;;(add-hook 'after-init-hook 'global-flycheck-mode)
 ;;;
-
