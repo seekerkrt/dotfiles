@@ -1,5 +1,5 @@
 {
-    "editor.fontFamily": "Ricty",
+    "editor.fontFamily": "Mgen+ 1mn",
     "editor.fontSize": 12,
     "editor.fontLigatures": true,
     "editor.autoIndent": "full",
@@ -57,7 +57,6 @@
         }
     },
     "git.ignoreMissingGitWarning": true,
-    "terminal.integrated.fontFamily": "Ricty",
     "terminal.integrated.fontSize": 12,
     "workbench.editorAssociations": {
         "*.lnk": "default"
@@ -80,5 +79,6 @@
     "gitlens.advanced.messages": {
         "suppressGitMissingWarning": true
     },
-    "workbench.iconTheme": "vscode-icons"
+    "workbench.iconTheme": "vscode-icons",
+    "terminal.integrated.fontFamily": "monospace"
 }
