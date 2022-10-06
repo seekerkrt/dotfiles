@@ -18,8 +18,13 @@ set -u
 
 
 export EDITOR=nano
+
+export CROSSDEV=/opt/crossdev
 export PATH="$CROSSDEV/bin:/usr/lib/ccache/bin:$PATH:$HOME/.cargo/bin:/usr/lib/ccache/bin"
+
 export ARCH_RUST_CROSS=x86_64-pc-windows-gnu
+export GEM_HOME=$(ruby -e 'print Gem.user_dir')
+
 export TERMINAL=terminator
 #export LANG=en_US.UTF-8
 export LANG=ja_JP.UTF-8
@@ -29,9 +34,8 @@ export VSCODE_CONF=~/config/Code/User/settings.json
 #export CFLAGS="-O2 -pipe -Wall -Wextra -Wno-unused-parameter -Wfloat-equal"
 #export CXXFLAGS="-std=c++17 ${CFLAGS} -xc++"
 #export MAKEFLAGS=j$(($(nproc)+1))
-export CROSSDEV=/opt/crossdev
 #export CHOST=$(uname -m)-pc-linux-gnu
-export GEM_HOME=$(ruby -e 'print Gem.user_dir')
+
 
 ### User specific aliases and functions
 ### Aliases
