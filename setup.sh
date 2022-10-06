@@ -14,6 +14,10 @@ for dotfile in .??*; do
     ln -sfnv $THIS_DIR/"$dotfile" ~/
 done
 
+# sshディレクトリのパーミッションを適切にする
+chmod -v 700 ~/.ssh
+chmod -v 644 ~/.ssh/*
+
 # VSCodeの設定ファイル類をリンク置く
 mkdir -pv ~/.config/Code/User/
 ln -sfnv $THIS_DIR/vscode/settings.json ~/.config/Code/User/settings.json
