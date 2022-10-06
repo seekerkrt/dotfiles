@@ -16,7 +16,7 @@ done
 
 # sshディレクトリのパーミッションを適切にする
 chmod -v 700 ~/.ssh
-chmod -v 644 ~/.ssh/*
+chmod -v 600 ~/.ssh/*
 
 # VSCodeの設定ファイル類をリンク置く
 mkdir -pv ~/.config/Code/User/
