@@ -19,8 +19,8 @@ set -u
 
 export EDITOR=nano
 
-export CROSSDEV=/opt/crossdev
-export PATH="$CROSSDEV/bin:/usr/lib/ccache/bin:$PATH:$HOME/.cargo/bin:/usr/lib/ccache/bin"
+#export CROSSDEV=/opt/crossdev
+export PATH="$PATH:$HOME/.cargo/bin"
 
 export ARCH_RUST_CROSS=x86_64-pc-windows-gnu
 export GEM_HOME=$(ruby -e 'print Gem.user_dir')
@@ -154,3 +154,5 @@ precmd() { vcs_info }
 ### PROMPT変数
 PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_} ${p_mark} '
 
+# エイリアスでコマンドラインの自動補完を切り替える
+setopt completealiases
