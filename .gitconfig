@@ -10,7 +10,7 @@
 [core]
 	autocrlf = input
 	quotepath = false
-	filemode = true
+	fileMode = false
    
 [init]
 	defautBranch = origin
