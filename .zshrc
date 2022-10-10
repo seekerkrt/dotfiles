@@ -42,7 +42,7 @@ export VSCODE_CONF=~/config/Code/User/settings.json
 alias ls="ls -F --color=auto"
 alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
-alias emacs="emacs -nw"
+#alias emacs="emacs -nw"
 #alias vscode="code"
 
 ### others
