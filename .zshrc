@@ -6,7 +6,7 @@
 # デフォルトファイルパーミッション
 umask 022
 # 変数未定義の使用時エラーにする
-set -u
+#set -u
 
 # すべてのログインログアウトを監視する
 #watch="all"
@@ -72,6 +72,7 @@ setopt correct           # コマンドのスペルを訂正する
 setopt prompt_subst      # プロンプト定義内で変数置換やコマンド置換を扱う
 
 ### Complement ###
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 autoload -U compinit; compinit -u # 補完機能を有効にする
 setopt completealiases #エイリアスでも補完するようにする
 setopt auto_list               # 補完候補を一覧で表示する(d)
