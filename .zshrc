@@ -26,9 +26,10 @@ export ARCH_RUST_CROSS=x86_64-pc-windows-gnu
 export GEM_HOME=$(ruby -e 'print Gem.user_dir')
 
 export TERMINAL=terminator
+
 #export LANG=en_US.UTF-8
 export LANG=ja_JP.UTF-8
-export TRIZEN_CONF=~/.config/trizen/trizen.conf
+
 export AWESOME_CONF=~/.config/awesome/rc.lua
 export VSCODE_CONF=~/config/Code/User/settings.json
 #export CFLAGS="-O2 -pipe -Wall -Wextra -Wno-unused-parameter -Wfloat-equal"
@@ -43,7 +44,7 @@ alias ls="ls -F --color=auto"
 alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
 #alias emacs="emacs -nw"
-#alias vscode="code"
+
 
 ### others
 
@@ -90,8 +91,8 @@ setopt nonomatch
 
 ### History ###
 HISTFILE=~/.zsh_history   # ヒストリを保存するファイル
-HISTSIZE=100000            # メモリに保存されるヒストリの件数
-SAVEHIST=100000            # 保存されるヒストリの件数
+HISTSIZE=100000           # メモリに保存されるヒストリの件数
+SAVEHIST=1000000          # 保存されるヒストリの件数
 setopt bang_hist          # !を使ったヒストリ展開を行う(d)
 setopt extended_history   # ヒストリに実行時間も保存する
 setopt hist_ignore_dups   # 以前と同じコマンドはヒストリに追加しない
