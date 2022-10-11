@@ -81,7 +81,7 @@ setopt list_types              # 補完候補にファイルの種類も表示�
 setopt magic_equal_subst # =以降も補完する(--prefix=/usrなど)
 zstyle ':completion:*' menu select
 # sudo時に補完が有効になる
-zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+zstyle ':completion:*:sudo:*' command-path $path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
 
 ### Glob ###
 setopt extended_glob # グロブ機能を拡張する
