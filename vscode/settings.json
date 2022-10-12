@@ -80,5 +80,6 @@
         "suppressGitMissingWarning": true
     },
     "workbench.iconTheme": "vscode-icons",
-    "terminal.integrated.fontFamily": "monospace"
+    "terminal.integrated.fontFamily": "monospace",
+    "gitlens.defaultDateLocale": null
 }
