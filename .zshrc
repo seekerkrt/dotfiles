@@ -154,7 +154,7 @@ zstyle ':vcs_info:*' actionformats '[%b|%a]' #rebase 途中,merge コンフリ�
 # %u uncommit
 precmd() { vcs_info }
 ### PROMPT変数
-PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_} ${p_mark} '
+PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_}${p_mark} '
 
 # エイリアスでコマンドラインの自動補完を切り替える
 setopt completealiases
