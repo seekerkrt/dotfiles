@@ -15,7 +15,8 @@ umask 022
 
 # ^Dでログアウトしない
 #setopt ignore_eof
-
+# Gentoo "eix"
+export EIX_LIMIT=0
 
 export EDITOR=nano
 
