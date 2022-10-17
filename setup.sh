@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env sh
 set -u
 
 THIS_DIR=$(cd $(dirname $0); pwd)
