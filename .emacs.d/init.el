@@ -21,7 +21,7 @@
 (set-face-attribute 'default nil
                     :family "Mgen+ 1mn"
                     :height 12)
-(set-frame-font "Mgen+ 1m-10")
+(set-frame-font "Mgen+ 1m-9")
 
 ;; メニューバーを消す
 (menu-bar-mode 0)
@@ -102,7 +102,4 @@
 ;(require 'auto-complete)
 ;(require 'auto-complete-config)
 ;(global-auto-complete-mode t)
-
-(autoload 'python-mode "python-mode.el" "Python mode." t)
-(setq auto-mode-alist (append '(("/.*\.py\'" . python-mode)) auto-mode-alist))
 
