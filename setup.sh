@@ -22,5 +22,3 @@ chmod -v 600 ~/.ssh/*
 # VSCodeの設定ファイル類をリンク置く
 mkdir -pv ~/.config/Code/User/
 ln -sfnv $THIS_DIR/vscode/settings.json ~/.config/Code/User/settings.json
-mkdir -pv ~/.config/conky/
-ln -sfnv $THIS_DIR/conky/conky.conf ~/.config/conky/conky.conf
