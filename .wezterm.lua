@@ -15,5 +15,5 @@ return {
    scrollback_lines = infinite,
    enable_scroll_bar = true,
    use_ime = true,
-   window_background_opacity = 0.80,
+   window_background_opacity = 0.75,
 }
