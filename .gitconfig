@@ -13,6 +13,6 @@
 	fileMode = false
    
 [init]
-	defautBranch = origin
+	defautBranch = main
 [pull]
 	rebase = true
