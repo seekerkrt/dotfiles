@@ -1,11 +1,11 @@
 # スクロール設定
 scrolling:
-  history: 10000
+  history: 50000
   multiplier: 3
   
 #フォント設定  
 font:
-  size: 11
+  size: 10
   normal:
     family: Mgen+ 1mn
     style: Regular
@@ -53,4 +53,7 @@ colors:
     white:   '0xfdf6e3'
 
 #透過設定
-window_opacity: 0.8  # value range is 0 ~ 1
+window:
+    opacity: 0.70
+
+
