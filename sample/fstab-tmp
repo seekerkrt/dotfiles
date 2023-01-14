@@ -1,0 +1,1 @@
+#tmpfs /ramdisk tmpfs nodev,nosuid,size=8GB 0 0
