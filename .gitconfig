@@ -11,8 +11,11 @@
 	autocrlf = input
 	quotepath = false
 	fileMode = false
+	quatopath = false
    
 [init]
 	defautBranch = main
 [pull]
 	rebase = true
+[sendpack]
+	sideband = false
