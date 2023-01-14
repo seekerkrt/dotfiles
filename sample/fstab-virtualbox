@@ -1,0 +1,1 @@
+L_DRIVE /win vboxsf defaults,gid=wheel,comment=systemd.automount 0 0
