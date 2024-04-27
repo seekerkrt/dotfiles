@@ -6,3 +6,4 @@ export XMODIFIERS="@im=fcitx"
 
 /usr/lib/plasma-dbus-run-session-if-needed startplasma-x11
 #dbus-launch --exit-with-session startplasma-x11
+
