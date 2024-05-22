@@ -13,9 +13,12 @@
 (setq coding-system-for-read 'utf-8)
 (setq coding-system-for-write 'utf-8)
 ;;行番号表示指定
-(require 'linum)
-(global-linum-mode t)
-(setq linum-format "%4d ")
+;(require 'linum)
+;(global-linum-mode t)
+;(setq linum-format "%4d ")
+(if (version<= "26.0.50" emacs-version)
+      (global-display-line-numbers-mode))
+
 
 ;;フォント指定
 (set-face-attribute 'default nil
