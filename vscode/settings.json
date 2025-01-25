@@ -81,5 +81,8 @@
     },
     "workbench.iconTheme": "vscode-icons",
     "terminal.integrated.fontFamily": "monospace",
-    "gitlens.defaultDateLocale": null
+    "gitlens.defaultDateLocale": null,
+    "C_Cpp.default.compilerPath": "/usr/bin/g++",
+    "redhat.telemetry.enabled": true,
+    "makefile.configureOnOpen": true
 }
