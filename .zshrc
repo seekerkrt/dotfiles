@@ -70,7 +70,8 @@ export LESS_TERMCAP_so=$(printf '\e[1;44;1m')
 setopt no_beep           # ビープ音を鳴らさないようにする
 setopt auto_cd           # ディレクトリ名の入力のみで移動する
 setopt auto_pushd        # cd時にディレクトリスタックにpushdする
-setopt correct           # コマンドのスペルを訂正する
+#setopt correct           # コマンドのスペルを訂正する
+setopt nocorrect         #コマンドのスペルを訂正しない 
 setopt prompt_subst      # プロンプト定義内で変数置換やコマンド置換を扱う
 
 ### Complement ###
