@@ -12,7 +12,6 @@
     "html.format.endWithNewline": true,
     "files.encoding": "utf8",
     "files.eol": "\n",
-    "files.autoSave": "off",
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
