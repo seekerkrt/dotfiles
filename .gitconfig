@@ -14,7 +14,7 @@
 	quatopath = false
    
 [init]
-	defautBranch = main
+	defaultBranch = main
 [pull]
 	rebase = true
 [sendpack]
