@@ -83,5 +83,6 @@
     "gitlens.defaultDateLocale": null,
     "C_Cpp.default.compilerPath": "/usr/bin/g++",
     "redhat.telemetry.enabled": true,
-    "makefile.configureOnOpen": true
+    "makefile.configureOnOpen": true,
+    "workbench.editor.empty.hint": "hidden"
 }
