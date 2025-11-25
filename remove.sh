@@ -1,0 +1,13 @@
+stow -D ssh
+stow -D zsh
+stow -D vim
+stow -D git
+stow -D scripts
+stow -D clang-format
+stow -D alacritty
+stow -D tmux
+stow -D xorg
+stow -D wezterm
+stow -D vscode
+stow -D conky
+rm -rf ~/.ssh
