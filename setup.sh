@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 set -u
-
+stow fonts
 stow ssh
 stow zsh
 stow vim
