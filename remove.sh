@@ -1,3 +1,4 @@
+stow -D fonts
 stow -D ssh
 stow -D zsh
 stow -D vim
