@@ -161,4 +161,4 @@ PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_}${p_mark} '
 # エイリアスでコマンドラインの自動補完を切り替える
 setopt completealiases
 
-eval "$(atuin init zsh)"
+#eval "$(atuin init zsh)"
