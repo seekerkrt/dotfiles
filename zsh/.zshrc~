@@ -21,7 +21,7 @@ export EIX_LIMIT=0
 export EDITOR=nano
 
 #export CROSSDEV=/opt/crossdev
-export PATH="$PATH:$HOME/.cargo/bin"
+export PATH="$PATH:$HOME/.bin/:$HOME/.cargo/bin"
 
 #export ARCH_RUST_CROSS=x86_64-pc-windows-gnu
 export GEM_HOME=$(ruby -e 'print Gem.user_dir')
