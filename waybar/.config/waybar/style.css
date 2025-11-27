@@ -1,0 +1,12 @@
+* {
+  border: none;
+  font-family: "Noto Sans";
+  font-size: 13px;
+  background: transparent;
+  color: #ffffff;
+}
+
+#clock {
+  padding: 0 10px;
+}
+
