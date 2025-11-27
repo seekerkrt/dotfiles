@@ -11,4 +11,9 @@ stow -D xorg
 stow -D wezterm
 stow -D vscode
 stow -D conky
+stow -D sway
+stow -D waybar
+stow -D mako
+stow -D foot
+stow -D fcitx5
 rm -rf ~/.ssh
