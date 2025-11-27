@@ -13,6 +13,12 @@ stow xorg
 stow wezterm
 stow vscode
 stow conky
+stow sway
+stow waybar
+stow mako
+stow foot
+stow fcitx5
+
 # sshディレクトリのパーミッションを適切にする
 chmod -v 700 ~/.ssh
 chmod -v 600 ~/.ssh/*

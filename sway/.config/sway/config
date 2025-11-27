@@ -1,0 +1,152 @@
+### ------------------------------------------------------
+### Arch Linux Minimal Sway Config (Vanilla + Practical)
+### 作者：あなた向け最適化版
+### ------------------------------------------------------
+
+### 基本設定
+set $mod Mod4
+font pango:Noto Sans 11
+
+### ターミナル
+bindsym $mod+Return exec foot
+
+### アプリランチャー (wofi)
+bindsym $mod+d exec wofi --show drun
+
+### kill
+bindsym $mod+Shift+q kill
+
+### リロード・終了
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'
+
+### ------------------------------------------------------
+### ウィンドウ移動 / フォーカス
+### ------------------------------------------------------
+
+# focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# move
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# split
+bindsym $mod+v split v
+bindsym $mod+b split h
+
+# fullscreen
+bindsym $mod+f fullscreen
+
+### ------------------------------------------------------
+### ワークスペース
+### ------------------------------------------------------
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+
+### ------------------------------------------------------
+### レイアウト / ギャップ
+### ------------------------------------------------------
+
+gaps inner 6
+gaps outer 4
+
+### ------------------------------------------------------
+### 出力（ディスプレイ）
+### ------------------------------------------------------
+
+# 自動で認識して軽量に管理（固定したいならコメント解除）
+# output * bg ~/.config/wallpaper/wall.jpg fill
+
+### ------------------------------------------------------
+### 壁紙
+### ------------------------------------------------------
+
+exec_always swaybg -i ~/Pictures/wallpaper.jpg -m fill
+
+### ------------------------------------------------------
+### 入力デバイス
+### ------------------------------------------------------
+
+# マウス加速オフ
+input "type:mouse" {
+    accel_profile flat
+}
+
+# キーボード（日本語）
+input * {
+    xkb_layout jp
+}
+
+### ------------------------------------------------------
+### スクリーンショット（grim + slurp）
+### ------------------------------------------------------
+
+# 全画面
+bindsym Print exec grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png
+
+# 範囲選択
+bindsym Shift+Print exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png
+
+### ------------------------------------------------------
+### クリップボード (wl-clipboard)
+### ------------------------------------------------------
+
+# コピー例: wl-copy < file
+
+### ------------------------------------------------------
+### ロック、サスペンド（swayidle + swaylock）
+### ------------------------------------------------------
+
+exec swayidle -w \
+  timeout 600 'swaylock -f -c 000000' \
+  timeout 900 'systemctl suspend' \
+  before-sleep 'swaylock -f -c 000000'
+
+### ------------------------------------------------------
+### 通知 (mako)
+### ------------------------------------------------------
+
+exec mako
+
+### ------------------------------------------------------
+### Waybar
+### ------------------------------------------------------
+
+exec waybar
+
+### ------------------------------------------------------
+### IME (fcitx5)
+### ------------------------------------------------------
+
+exec fcitx5
+
+### ------------------------------------------------------
+### カーソル
+### ------------------------------------------------------
+
+seat seat0 xcursor_theme Adwaita 24
+
+### ------------------------------------------------------
+### 環境変数
+### ------------------------------------------------------
+
+set $term foot
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
