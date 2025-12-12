@@ -9,3 +9,16 @@
 2025-12-13 00:05:54.587 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
 2025-12-13 00:05:54.687 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
 2025-12-13 00:05:54.687 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
+2025-12-13 00:09:24.962 [error] Uncaught Error: Assertion Failed
+
+Error: Assertion Failed
+    at vt (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:7:10306)
+    at hi (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:46:5400)
+    at To.computeDiff (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:49:1473)
+    at _t.h (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:52:31927)
+    at _t.$computeDiff (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:52:31796)
+    at ql.d (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:26:66891)
+    at Object.handleMessage (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:26:66452)
+    at Il.k (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:26:65445)
+    at Il.h (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:26:65065)
+    at Il.handleMessage (vscode-file://vscode-app/opt/visual-studio-code/resources/app/out/vs/editor/common/services/editorWebWorkerMain.js#editorWorkerService:26:64720)
