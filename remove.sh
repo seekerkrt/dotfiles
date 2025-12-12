@@ -1,19 +1,28 @@
-stow -D fonts
-stow -D ssh
-stow -D zsh
-stow -D vim
-stow -D git
-stow -D scripts
-stow -D clang-format
-stow -D alacritty
-stow -D tmux
-stow -D xorg
-stow -D wezterm
-stow -D vscode
-stow -D conky
-stow -D sway
-stow -D waybar
-stow -D mako
-stow -D foot
-stow -D fcitx5
-stow -D ssh
+#!/usr/bin/env sh
+set -eu
+
+DOTFILES="$(cd "$(dirname "$0")" && pwd)"
+STOWDIR="$DOTFILES/stow"
+TARGET="$HOME"
+
+stow -D -d "$STOWDIR" -t "$TARGET" fonts
+stow -D -d "$STOWDIR" -t "$TARGET" ssh
+stow -D -d "$STOWDIR" -t "$TARGET" zsh
+stow -D -d "$STOWDIR" -t "$TARGET" vim
+stow -D -d "$STOWDIR" -t "$TARGET" git
+stow -D -d "$STOWDIR" -t "$TARGET" scripts
+stow -D -d "$STOWDIR" -t "$TARGET" clang-format
+stow -D -d "$STOWDIR" -t "$TARGET" alacritty
+stow -D -d "$STOWDIR" -t "$TARGET" tmux
+stow -D -d "$STOWDIR" -t "$TARGET" xorg
+stow -D -d "$STOWDIR" -t "$TARGET" wezterm
+stow -D -d "$STOWDIR" -t "$TARGET" --no-folding vscode
+stow -D -d "$STOWDIR" -t "$TARGET" conky
+stow -D -d "$STOWDIR" -t "$TARGET" sway
+stow -D -d "$STOWDIR" -t "$TARGET" waybar
+stow -D -d "$STOWDIR" -t "$TARGET" mako
+stow -D -d "$STOWDIR" -t "$TARGET" foot
+stow -D -d "$STOWDIR" -t "$TARGET" fcitx5
+
+# ~/.ssh は消さない（消すなら空のときだけ）
+rmdir "$HOME/.ssh" 2>/dev/null || true
