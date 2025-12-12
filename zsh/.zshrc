@@ -45,7 +45,7 @@ alias ls="ls -F --color=auto"
 alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
 #alias emacs="emacs -nw"
-
+alias code="code --enable-features=UseOzonePlatform --ozone-platform=wayland"
 
 ### others
 
