@@ -1,0 +1,6 @@
+2025-12-13 00:01:35.219 [info] ChatSessionStore: Migrating 0 chat sessions from storage service to file system
+2025-12-13 00:01:35.310 [info] Started local extension host with pid 42708.
+2025-12-13 00:01:56.746 [info] MCP Registry configured: https://api.mcp.github.com
+2025-12-13 00:01:56.746 [info] Settings Sync: Account status changed from uninitialized to unavailable
+2025-12-13 00:01:57.020 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
+2025-12-13 00:01:57.281 [info] [perf] Render performance baseline is 14ms
