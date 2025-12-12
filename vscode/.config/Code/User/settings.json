@@ -23,6 +23,7 @@
     "todo-tree.highlights.enabled": true,
     "window.zoomLevel": 1,
     "debug.onTaskErrors": "debugAnyway",
+    "git.useIntegratedAskPass": false,
     "terminal.integrated.fontFamily": "JetBrains Mono, Noto Sans Mono CJK JP",
     "terminal.integrated.fontSize": 14,
     "terminal.integrated.lineHeight": 1.2
