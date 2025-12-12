@@ -25,8 +25,8 @@
     "debug.onTaskErrors": "debugAnyway",
     "git.useIntegratedAskPass": false,
     "terminal.integrated.fontFamily": "JetBrains Mono, Noto Sans Mono CJK JP",
-    "terminal.integrated.fontSize": 14,
-    "terminal.integrated.lineHeight": 1.2
+    "terminal.integrated.fontSize": 12,
+    "terminal.integrated.lineHeight": 1.0,
     "terminal.integrated.defaultProfile.linux": "zsh",
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.defaultProfile.windows": "Zsh",
