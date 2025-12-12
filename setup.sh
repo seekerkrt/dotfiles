@@ -20,5 +20,6 @@ stow foot
 stow fcitx5
 
 # sshディレクトリのパーミッションを適切にする
-chmod -v 700 ~/.ssh
-chmod -v 600 ~/.ssh/*
+chmod 700 ~/.ssh
+find ~/.ssh -type f -name "*.pub" -exec chmod 644 {} +
+find ~/.ssh -type f ! -name "*.pub" -exec chmod 600 {} +
