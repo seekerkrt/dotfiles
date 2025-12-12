@@ -53,3 +53,10 @@ vscode/.config/Code/Cache/
         vscode/.config/Code/logs/
         vscode/.config/Code/machineid
         vscode/.config/Code/User/globalStorage/state.vscdb
+# VSCode: track only these
+.config/Code/*
+.config/Code/User/*
+!.config/Code/User/settings.json
+!.config/Code/User/keybindings.json
+!.config/Code/User/snippets/
+!.config/Code/User/snippets/**

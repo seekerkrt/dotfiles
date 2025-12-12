@@ -11,7 +11,7 @@ stow alacritty
 stow tmux
 stow xorg
 stow wezterm
-stow vscode
+stow --no-folding vscode
 stow conky
 stow sway
 stow waybar
