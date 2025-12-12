@@ -162,3 +162,31 @@ PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_}${p_mark} '
 setopt completealiases
 
 #eval "$(atuin init zsh)"
+
+# cpc: Copy code files to clipboard for AI context
+# Usage: cpc Makefile src/*.cpp
+function cpc() {
+    # 区切り文字（AIが認識しやすい形式）
+    local separator="----------------------------------------"
+    
+    # 引数で渡されたファイルを順に処理
+    for f in "$@"; do
+        # ディレクトリならスキップ
+        if [ -d "$f" ]; then
+            continue
+        fi
+
+        # ファイルが存在するか確認
+        if [ -f "$f" ]; then
+            echo "File: $f"
+            echo "$separator"
+            cat "$f"
+            echo -e "\n$separator\n"
+        else
+            echo "Warning: '$f' not found" >&2
+        fi
+    done | wl-copy  # Wayland用 (X11なら xclip -selection clipboard)
+
+    # 完了メッセージ（ファイル数カウント付き）
+    echo "Copied $# files to clipboard!"
+}
