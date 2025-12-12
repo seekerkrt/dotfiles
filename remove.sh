@@ -16,4 +16,4 @@ stow -D waybar
 stow -D mako
 stow -D foot
 stow -D fcitx5
-rm -rf ~/.ssh
+stow -D ssh
