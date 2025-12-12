@@ -1,0 +1,22 @@
+2025-12-13 00:05:20.696 [info] l10n: Configured to file:///home/seeke/.vscode/extensions/ms-ceintl.vscode-language-pack-ja-1.107.2025121009/translations/extensions/vscode.json-language-features.i18n.json
+2025-12-13 00:05:23.478 [info] read schema from vscode: vscode://schemas/settings/user
+2025-12-13 00:05:23.598 [info] read schema from vscode: vscode://schemas/settings/resourceLanguage
+2025-12-13 00:05:23.598 [info] read schema from vscode: vscode://schemas/ignoredSettings
+2025-12-13 00:05:23.601 [info] read schema from vscode: vscode://schemas/launch
+2025-12-13 00:05:23.604 [info] read schema from vscode: vscode://schemas/token-styling
+2025-12-13 00:05:23.604 [info] read schema from vscode: vscode://schemas/textmate-colors
+2025-12-13 00:05:23.604 [info] read schema from vscode: vscode://schemas/workbench-colors
+2025-12-13 00:05:24.618 [info] schema change detected vscode://schemas/settings/user
+2025-12-13 00:05:24.618 [info] read schema from vscode: vscode://schemas/settings/user
+2025-12-13 00:05:25.576 [info] schema change detected vscode://schemas/launch
+2025-12-13 00:05:25.577 [info] read schema from vscode: vscode://schemas/settings/user
+2025-12-13 00:05:25.645 [info] read schema from vscode: vscode://schemas/launch
+2025-12-13 00:06:02.964 [info] schema change detected vscode://schemas/settings/user
+2025-12-13 00:06:07.639 [info] schema change detected vscode://schemas/settings/resourceLanguage
+2025-12-13 00:06:07.646 [info] schema change detected vscode://schemas/ignoredSettings
+2025-12-13 00:06:07.735 [info] schema change detected vscode://schemas/settings/user
+2025-12-13 00:06:08.046 [info] schema change detected vscode://schemas/settings/resourceLanguage
+2025-12-13 00:06:08.052 [info] schema change detected vscode://schemas/ignoredSettings
+2025-12-13 00:06:08.114 [info] schema change detected vscode://schemas/settings/user
+2025-12-13 00:06:08.445 [info] schema change detected vscode://schemas/settings/user
+2025-12-13 00:06:24.340 [info] schema change detected vscode://schemas/launch

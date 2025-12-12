@@ -1,0 +1,11 @@
+2025-12-13 00:04:56.743 [info] Started local extension host with pid 43736.
+2025-12-13 00:05:01.355 [info] MCP Registry configured: https://api.mcp.github.com
+2025-12-13 00:05:01.355 [info] Settings Sync: Account status changed from uninitialized to unavailable
+2025-12-13 00:05:01.713 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
+2025-12-13 00:05:01.725 [info] [perf] Render performance baseline is 15ms
+2025-12-13 00:05:45.371 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
+2025-12-13 00:05:45.472 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
+2025-12-13 00:05:45.472 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
+2025-12-13 00:05:54.587 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
+2025-12-13 00:05:54.687 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
+2025-12-13 00:05:54.687 [warning] MCP migration: Failed to parse MCP config from vscode-userdata:/home/seeke/.config/Code/User/settings.json: Expected ',' or '}' after property value in JSON at position 1023 (line 29 column 5)
