@@ -1,6 +1,6 @@
 #! zsh
 ###
-#   zsh Setting File
+#    zsh Setting File
 ###
 
 # デフォルトファイルパーミッション
@@ -35,7 +35,7 @@ export AWESOME_CONF=~/.config/awesome/rc.lua
 export VSCODE_CONF=~/config/Code/User/settings.json
 #export CFLAGS="-O2 -pipe -Wall -Wextra -Wno-unused-parameter -Wfloat-equal"
 #export CXXFLAGS="-std=c++17 ${CFLAGS} -xc++"
-#export MAKEFLAGS=-j$(($(nproc)+1))
+export MAKEFLAGS=-j$(($(nproc)+1))
 #export CHOST=$(uname -m)-pc-linux-gnu
 
 
@@ -65,13 +65,13 @@ export LESS_TERMCAP_so=$(printf '\e[1;44;1m')
 
 
 ########################################################
-#  zsh - Settings
+#   zsh - Settings
 ########################################################
 setopt no_beep           # ビープ音を鳴らさないようにする
 setopt auto_cd           # ディレクトリ名の入力のみで移動する
 setopt auto_pushd        # cd時にディレクトリスタックにpushdする
 #setopt correct           # コマンドのスペルを訂正する
-setopt nocorrect         #コマンドのスペルを訂正しない 
+setopt nocorrect         #コマンドのスペルを訂正しない
 setopt prompt_subst      # プロンプト定義内で変数置換やコマンド置換を扱う
 
 ### Complement ###
@@ -161,32 +161,112 @@ PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_}${p_mark} '
 # エイリアスでコマンドラインの自動補完を切り替える
 setopt completealiases
 
-#eval "$(atuin init zsh)"
+# Editor Ctrl-x Ctrl-e (コマンドラインをエディタで編集)
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^x^e' edit-command-line
 
-# cpc: Copy code files to clipboard for AI context
-# Usage: cpc Makefile src/*.cpp
+
 function cpc() {
-    # 区切り文字（AIが認識しやすい形式）
     local separator="----------------------------------------"
+    local count=0
+    local output=""
     
+    # Gitブランチ情報を取得
+    local branch=$(git branch --show-current 2>/dev/null)
+    
+    # 冒頭のヘッダーを作成
+    output+="Project Context: JadeKernel\n"
+    [ -n "$branch" ] && output+="Current Branch: $branch\n"
+    output+="$separator\n\n"
+
     # 引数で渡されたファイルを順に処理
     for f in "$@"; do
-        # ディレクトリならスキップ
-        if [ -d "$f" ]; then
+        # ディレクトリ、またはコマンド名 "cpc" をスキップ
+        if [ -d "$f" ] || [[ "$f" == "cpc" ]]; then
             continue
         fi
 
         # ファイルが存在するか確認
         if [ -f "$f" ]; then
-            echo "File: $f"
-            echo "$separator"
-            cat "$f"
-            echo -e "\n$separator\n"
+            output+="File: $f\n"
+            output+="$separator\n"
+            output+="$(cat "$f")\n"
+            output+="$separator\n\n"
+            ((count++)) # 今度はメインプロセスの変数がカウントアップされる
         else
             echo "Warning: '$f' not found" >&2
         fi
-    done | wl-copy  # Wayland用 (X11なら xclip -selection clipboard)
+    done
 
-    # 完了メッセージ（ファイル数カウント付き）
-    echo "Copied $# files to clipboard!"
+    # 実際にファイルが処理された場合のみクリップボードに送る
+    if [ $count -gt 0 ]; then
+        echo -e -n "$output" | wl-copy
+        echo "Successfully copied $count file(s) to clipboard!"
+    else
+        echo "No files were copied. (Check if the paths are correct)"
+    fi
+}
+
+# Copy a C/C++ function block (by name/pattern) with file path header.
+# Usage:
+#   cfun <file> <pattern>
+# Example:
+#   cfun src/gui/Shell.cpp gui_commit_input_line
+function cfun() {
+  local file="$1"
+  local pat="$2"
+
+  if [[ -z "$file" || -z "$pat" ]]; then
+    echo "usage: cfun <file> <pattern>"
+    return 2
+  fi
+  if [[ ! -f "$file" ]]; then
+    echo "cfun: file not found: $file"
+    return 2
+  fi
+
+  # find first matching line number
+  local start
+  start="$(rg -n --no-heading -m1 "$pat" "$file" | cut -d: -f1)"
+  if [[ -z "$start" ]]; then
+    echo "cfun: pattern not found: $pat"
+    return 1
+  fi
+
+  local out
+  out="$(
+    {
+      echo "File: $file"
+      echo "----------------------------------------"
+      # Extract from start line to end of function by brace depth.
+      awk -v start="$start" '
+        NR < start { next }
+        {
+          print
+          # count braces in this line
+          nopen = gsub(/\{/, "{")
+          nclose = gsub(/\}/, "}")
+          if (!seen_open && nopen > 0) { seen_open = 1 }
+          if (seen_open) {
+            depth += nopen
+            depth -= nclose
+            if (depth <= 0) { exit }  # function ended
+          }
+        }
+      ' "$file"
+    } | sed 's/[[:space:]]\+$//'
+  )"
+
+  # copy to clipboard if possible
+  if command -v wl-copy >/dev/null 2>&1; then
+    print -r -- "$out" | wl-copy
+    echo "cfun: copied to clipboard (wl-copy) from $file:$start"
+  elif command -v xclip >/dev/null 2>&1; then
+    print -r -- "$out" | xclip -selection clipboard
+    echo "cfun: copied to clipboard (xclip) from $file:$start"
+  else
+    print -r -- "$out"
+    echo "cfun: (no wl-copy/xclip) printed to stdout from $file:$start" >&2
+  fi
 }
