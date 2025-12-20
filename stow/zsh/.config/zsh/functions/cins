@@ -1,0 +1,114 @@
+#autoload
+# cins: copy disassembly around an address
+# Usage:
+#   cins <elf> <addr> [-b before_lines] [-a after_lines] [--intel] [--no-clip]
+# Examples:
+#   cins kernel.elf 0xffffffff80013dda
+#   cins kernel.elf 0xffffffff80013dda -b 40 -a 80 --intel
+cins() {
+  emulate -L zsh
+  setopt pipefail
+
+  local before=30 after=60 intel=0 no_clip=0
+  local elf="" addr=""
+
+  while (( $# )); do
+    case "$1" in
+      -b|--before) before="${2:-$before}"; shift 2;;
+      -a|--after)  after="${2:-$after}"; shift 2;;
+      --intel)     intel=1; shift;;
+      --no-clip)   no_clip=1; shift;;
+      -h|--help)
+        cat <<'EOF'
+cins: copy disassembly around an address
+Usage: cins <elf> <addr> [-b N] [-a N] [--intel] [--no-clip]
+EOF
+        return 0
+        ;;
+      *)
+        if [[ -z "$elf" ]]; then elf="$1"
+        elif [[ -z "$addr" ]]; then addr="$1"
+        else print -u2 "cins: extra arg ignored: $1"
+        fi
+        shift
+        ;;
+    esac
+  done
+
+  if [[ -z "$elf" || -z "$addr" ]]; then
+    print -u2 "cins: usage: cins <elf> <addr> [-b N] [-a N] [--intel]"
+    return 2
+  fi
+  if [[ ! -f "$elf" ]]; then
+    print -u2 "cins: file not found: $elf"
+    return 2
+  fi
+
+  local clip_cmd=""
+  if command -v wl-copy >/dev/null 2>&1; then
+    clip_cmd="wl-copy"
+  elif command -v pbcopy >/dev/null 2>&1; then
+    clip_cmd="pbcopy"
+  elif command -v xclip >/dev/null 2>&1; then
+    clip_cmd="xclip -selection clipboard"
+  fi
+
+  local objdump="objdump"
+  command -v gobjdump >/dev/null 2>&1 && objdump="gobjdump"
+  if ! command -v "$objdump" >/dev/null 2>&1; then
+    print -u2 "cins: objdump not found"
+    return 127
+  fi
+
+  # objdump dialect
+  local -a od_opts
+  od_opts=(-d -C --no-show-raw-insn)
+  (( intel )) && od_opts+=(-M intel)
+
+  # アドレス表記を正規化：先頭の 0x はあってもなくてもOK
+  local addr_hex="${addr#0x}"
+  addr_hex="${addr_hex:l}" # lower
+
+  # objdumpの出力から「そのアドレス行」を探す（完全一致優先、次に部分一致）
+  local tmp
+  tmp="$(mktemp)"
+  "$objdump" "${od_opts[@]}" -- "$elf" > "$tmp" || { rm -f "$tmp"; return 1; }
+
+  local hit_line
+  hit_line="$(rg -n --no-heading -m1 -- "^[[:space:]]*0*${addr_hex}:" "$tmp" | cut -d: -f1)"
+  if [[ -z "$hit_line" ]]; then
+    # 末尾だけ分かってるケース等の救済（危険：誤ヒットあり）
+    hit_line="$(rg -n --no-heading -m1 -- "${addr_hex}:" "$tmp" | cut -d: -f1)"
+  fi
+  if [[ -z "$hit_line" ]]; then
+    rm -f "$tmp"
+    print -u2 "cins: address not found in disassembly: $addr"
+    return 1
+  fi
+
+  local start=$(( hit_line - before ))
+  (( start < 1 )) && start=1
+  local end=$(( hit_line + after ))
+
+  local out
+  out="$(
+    {
+      echo "ELF: $elf"
+      echo "ADDR: $addr"
+      echo "----------------------------------------"
+      sed -n "${start},${end}p" "$tmp"
+      echo "----------------------------------------"
+    } | sed 's/[[:space:]]\+$//'
+  )"
+
+  rm -f "$tmp"
+
+  if (( no_clip )) || [[ -z "$clip_cmd" ]]; then
+    print -r -- "$out"
+    [[ -z "$clip_cmd" ]] && print -u2 "cins: (no clipboard tool) printed to stdout"
+    return 0
+  fi
+
+  print -r -- "$out" | eval "$clip_cmd"
+  print -r -- "cins: copied to clipboard (${clip_cmd%% *}) around $addr"
+}

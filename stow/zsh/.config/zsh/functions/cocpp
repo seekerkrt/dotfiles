@@ -1,0 +1,1 @@
+cpcpp() { cpc -r --ext cpp,hpp "$@"; }

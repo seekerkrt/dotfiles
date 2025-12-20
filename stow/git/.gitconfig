@@ -21,3 +21,5 @@
 	sideband = false
 [push]
 	followTags = true
+[pager]
+	log = false
