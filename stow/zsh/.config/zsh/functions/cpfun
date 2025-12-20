@@ -1,0 +1,143 @@
+#autoload
+# Usage:
+#   cfun <file> <pattern>
+#   cfun <pattern>                # file省略: 最後に触った(推定)ファイル
+# Options:
+#   -n            行番号を付ける
+#   -r            マッチ行から上に遡って「定義っぽい行」を探して開始する
+#   -m N          N番目のヒットを使う（デフォ1）
+#   --no-clip     クリップボードに入れず標準出力へ
+function cfun() {
+  emulate -L zsh
+  setopt pipefail no_nomatch
+
+  local add_lineno=0 reverse_seek=0 hit_index=1 no_clip=0
+  local file="" pat=""
+
+  while (( $# )); do
+    case "$1" in
+      -n) add_lineno=1; shift ;;
+      -r) reverse_seek=1; shift ;;
+      -m) hit_index="${2:-1}"; shift 2 ;;
+      --no-clip) no_clip=1; shift ;;
+      -h|--help)
+        cat <<'EOF'
+cfun: copy a C/C++/ASM block starting near a match
+Usage:
+  cfun <file> <pattern>
+  cfun <pattern>        # file auto
+Options:
+  -n        add line numbers
+  -r        seek upward to a likely definition line before extracting
+  -m N      use Nth match (default 1)
+  --no-clip print only
+EOF
+        return 0
+        ;;
+      *)
+        if [[ -z "$file" && -f "$1" ]]; then
+          file="$1"; shift
+        elif [[ -z "$pat" ]]; then
+          pat="$1"; shift
+        else
+          # patternにスペースを含めたい場合の救済
+          pat+=" $1"; shift
+        fi
+        ;;
+    esac
+  done
+
+  # file省略時: git配下なら最近変更したファイルっぽいのを拾う（軽量）
+  if [[ -z "$file" ]]; then
+    file="$(git diff --name-only --diff-filter=AM 2>/dev/null | head -n1)"
+  fi
+
+  if [[ -z "$file" || -z "$pat" ]]; then
+    print -u2 "usage: cfun <file> <pattern>  (or: cfun <pattern>)"
+    return 2
+  fi
+  if [[ ! -f "$file" ]]; then
+    print -u2 "cfun: file not found: $file"
+    return 2
+  fi
+
+  # clipboard command
+  local clip_cmd=""
+  if command -v wl-copy >/dev/null 2>&1; then
+    clip_cmd="wl-copy"
+  elif command -v pbcopy >/dev/null 2>&1; then
+    clip_cmd="pbcopy"
+  elif command -v xclip >/dev/null 2>&1; then
+    clip_cmd="xclip -selection clipboard"
+  fi
+
+  # ヒット行番号（N番目）
+  local start
+  start="$(rg -n --no-heading -- "$pat" "$file" | sed -n "${hit_index}p" | cut -d: -f1)"
+  if [[ -z "$start" ]]; then
+    print -u2 "cfun: pattern not found: $pat"
+    return 1
+  fi
+
+  # -r: 定義っぽい行まで遡る（超軽量 heuristic）
+  # 典型: "ret name(...){", "name(...)\n{", "void Foo::bar(" など
+  if (( reverse_seek )); then
+    local back
+    back="$(awk -v s="$start" '
+      NR>=s { exit }
+      { lines[NR]=$0 }
+      END{
+        for(i=s-1;i>=1;i--){
+          l=lines[i]
+          # 雑に: 行末が")" or "{" を含む & ";"で終わらない
+          if (l ~ /\)\s*$/ || l ~ /\)\s*\{/ || l ~ /::/ ) {
+            if (l !~ /;\s*$/) { print i; exit }
+          }
+        }
+      }' "$file")"
+    [[ -n "$back" ]] && start="$back"
+  fi
+
+  local out
+  out="$(
+    {
+      echo "File: $file"
+      echo "----------------------------------------"
+      awk -v start="$start" '
+        # NOTE: 文字列/コメント中の{ }は完璧には除外しない（軽量版）
+        NR < start { next }
+        {
+          print
+          line = $0
+
+          # ざっくりコメントを除外（//以降）
+          sub(/\/\/.*$/, "", line)
+
+          nopen  = gsub(/{/, "", line)
+          nclose = gsub(/}/, "", line)
+
+          if (!seen_open && nopen > 0) { seen_open = 1 }
+          if (seen_open) {
+            depth += nopen
+            depth -= nclose
+            if (depth <= 0) { exit }
+          }
+        }
+      ' "$file" \
+      | sed 's/[[:space:]]\+$//'
+    }
+  )"
+
+  if (( add_lineno )); then
+    out="$(print -r -- "$out" | nl -ba -w3 -s': ')"
+  fi
+
+  if (( no_clip )) || [[ -z "$clip_cmd" ]]; then
+    print -r -- "$out"
+    [[ -z "$clip_cmd" ]] && print -u2 "cfun: (no clipboard tool) printed to stdout from $file:$start"
+    return 0
+  fi
+
+  print -r -- "$out" | eval "$clip_cmd"
+  print -r -- "cfun: copied to clipboard (${clip_cmd%% *}) from $file:$start"
+}
