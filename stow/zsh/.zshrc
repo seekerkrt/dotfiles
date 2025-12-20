@@ -19,7 +19,7 @@ umask 022
 export EIX_LIMIT=0
 
 export EDITOR=nano
-export GIT_EDITOR=nano
+
 #export CROSSDEV=/opt/crossdev
 export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin"
 
@@ -166,23 +166,46 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^x^e' edit-command-line
 
+autoload -Uz cpcpp cpfunc cins csrc
 
-# cpc: Clipboard Project Context (JadeKernel向け)
-#  - ファイル内容をまとめてクリップボードへ
-#  - 使い方例:
-#      cpc src/gui/terminal_window.cpp include/gui/terminal_window.hpp
-#      cpc -r src/gui include/gui                 # ディレクトリ再帰
-#      cpc -r --ext cpp,hpp src/ include/         # 拡張子フィルタ
-#      cpc --exclude obj,limine,.git build src    # 除外
-#      cpc file.cpp:120-200 other.hpp:1-80        # 範囲指定
-#      cpc -n file.cpp                            # 行番号を付ける
-#      cpc --max-bytes 200000 -r src              # 出力サイズ上限
-#
-# 出力は "Project Context: ... / Current Branch: ... / separator" を維持
-# functions 置き場
-fpath=("$HOME/.config/zsh/functions" $fpath)
+function cpc() {
+    local separator="----------------------------------------"
+    local count=0
+    local output=""
+    
+    # Gitブランチ情報を取得
+    local branch=$(git branch --show-current 2>/dev/null)
+    
+    # 冒頭のヘッダーを作成
+    output+="Project Context: JadeKernel\n"
+    [ -n "$branch" ] && output+="Current Branch: $branch\n"
+    output+="$separator\n\n"
 
-# autoload（必要な分だけ）
-autoload -Uz cpc cpcpp cpfunc
-autoload -Uz cins csrc
+    # 引数で渡されたファイルを順に処理
+    for f in "$@"; do
+        # ディレクトリ、またはコマンド名 "cpc" をスキップ
+        if [ -d "$f" ] || [[ "$f" == "cpc" ]]; then
+            continue
+        fi
+
+        # ファイルが存在するか確認
+        if [ -f "$f" ]; then
+            output+="File: $f\n"
+            output+="$separator\n"
+            output+="$(cat "$f")\n"
+            output+="$separator\n\n"
+            ((count++)) # 今度はメインプロセスの変数がカウントアップされる
+        else
+            echo "Warning: '$f' not found" >&2
+        fi
+    done
+
+    # 実際にファイルが処理された場合のみクリップボードに送る
+    if [ $count -gt 0 ]; then
+        echo -e -n "$output"
+#        echo "Successfully copied $count file(s) to clipboard!"
+    else
+        echo "No files were copied. (Check if the paths are correct)"
+    fi
+}
 
