@@ -1,0 +1,197 @@
+#autoload
+# cpc: Clipboard Project Context
+
+cpc() {
+  emulate -L zsh
+  setopt pipefail extended_glob no_nomatch
+
+  local separator="----------------------------------------"
+  local count=0
+  local output=""
+  local -a inputs files
+  local -a exclude_dirs ext_allow
+  local recursive=0
+  local add_lineno=0
+  local max_bytes=400000
+  local no_clip=0
+  local sort_files=1
+  local include_git=1
+
+  local clip_cmd=""
+  if command -v wl-copy >/dev/null 2>&1; then
+    clip_cmd="wl-copy"
+  elif command -v pbcopy >/dev/null 2>&1; then
+    clip_cmd="pbcopy"
+  elif command -v xclip >/dev/null 2>&1; then
+    clip_cmd="xclip -selection clipboard"
+  fi
+
+exclude_dirs=(.git obj build dist isodir limine .cache)
+ext_allow=(cpp hpp nasm asm)   # ← デフォでソースコードだけ拾う
+  inputs=()
+  while (( $# )); do
+    case "$1" in
+      -r|--recursive) recursive=1; shift ;;
+      -n|--lineno) add_lineno=1; shift ;;
+      --no-git) include_git=0; shift ;;
+      --no-clip) no_clip=1; shift ;;
+      --no-sort) sort_files=0; shift ;;
+      --max-bytes) max_bytes="${2:-$max_bytes}"; shift 2 ;;
+      --ext) ext_allow=("${(@s:,:)2}"); shift 2 ;;
+      --exclude) exclude_dirs+=("${(@s:,:)2}"); shift 2 ;;
+      -h|--help)
+        cat <<'EOF'
+cpc: Clipboard Project Context
+Usage: cpc [options] <path|glob|file:START-END>...
+  -r, --recursive
+  -n, --lineno
+  --no-git
+  --no-clip
+  --max-bytes N
+  --ext a,b,c
+  --exclude a,b,c
+EOF
+        return 0
+        ;;
+      *) inputs+=("$1"); shift ;;
+    esac
+  done
+
+  local branch="" head="" dirty=""
+  if (( include_git )); then
+    branch=$(git branch --show-current 2>/dev/null)
+    head=$(git rev-parse --short HEAD 2>/dev/null)
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      git diff --quiet --ignore-submodules -- 2>/dev/null || dirty="dirty"
+      git diff --cached --quiet --ignore-submodules -- 2>/dev/null || dirty="${dirty:+$dirty,}staged"
+    fi
+  fi
+
+  output+="Project Context: JadeKernel\n"
+  [[ -n "$branch" ]] && output+="Current Branch: $branch\n"
+  [[ -n "$head" ]] && output+="HEAD: $head${dirty:+ ($dirty)}\n"
+  output+="$separator\n\n"
+
+  local item path spec start end
+  for item in "${inputs[@]}"; do
+    if [[ "$item" == *:*([0-9])-*([0-9]) ]]; then
+      files+=("$item")
+      continue
+    fi
+    local -a expanded
+    expanded=(${~item})
+    (( ${#expanded[@]} == 0 )) && expanded=("$item")
+
+    local p
+    for p in "${expanded[@]}"; do
+      if [[ -d "$p" ]]; then
+        (( recursive )) || continue
+        local glob_pat="$p"/**/*(.N)
+        local -a found; found=($glob_pat)
+
+        local f ex
+        for f in "${found[@]}"; do
+          local skip=0
+          for ex in "${exclude_dirs[@]}"; do
+            [[ "$f" == */$ex/* ]] && { skip=1; break; }
+          done
+          (( skip )) && continue
+
+          if (( ${#ext_allow[@]} )); then
+            local ok=0 e
+            for e in "${ext_allow[@]}"; do
+              [[ "$f" == *."$e" ]] && { ok=1; break; }
+            done
+            (( ok )) || continue
+          fi
+          files+=("$f")
+        done
+      else
+        files+=("$p")
+      fi
+    done
+  done
+
+  typeset -A seen
+  local -a uniq
+  local f
+  for f in "${files[@]}"; do
+    [[ -n "${seen[$f]}" ]] && continue
+    seen[$f]=1
+    uniq+=("$f")
+  done
+  files=("${uniq[@]}")
+  (( sort_files )) && files=("${(on)files[@]}")
+
+  local total_bytes=0 warned_limit=0
+  for spec in "${files[@]}"; do
+    start=""; end=""
+    path="$spec"
+    if [[ "$spec" == *:*([0-9])-*([0-9]) ]]; then
+      path="${spec%%:*}"
+      local range="${spec#*:}"
+      start="${range%%-*}"
+      end="${range#*-}"
+    fi
+    [[ "$path" == "cpc" ]] && continue
+
+    if [[ -f "$path" ]]; then
+      local ex skip=0
+      for ex in "${exclude_dirs[@]}"; do
+        [[ "$path" == */$ex/* ]] && { skip=1; break; }
+      done
+      (( skip )) && continue
+
+      if (( ${#ext_allow[@]} )); then
+        local ok=0 e
+        for e in "${ext_allow[@]}"; do
+          [[ "$path" == *."$e" ]] && { ok=1; break; }
+        done
+        (( ok )) || continue
+      fi
+
+      output+="File: $path\n$separator\n"
+
+      local content=""
+      if [[ -n "$start" && -n "$end" ]]; then
+        content="$(sed -n "${start},${end}p" -- "$path")"
+        content="(lines ${start}-${end})\n${content}"
+      else
+        content="$(cat -- "$path")"
+      fi
+
+      if (( add_lineno )); then
+        content="$(print -r -- "$content" | nl -ba -w3 -s': ')"
+      fi
+
+      output+="$content\n$separator\n\n"
+      ((count++))
+
+      total_bytes=$(( total_bytes + ${#content} ))
+      if (( total_bytes > max_bytes )) && (( ! warned_limit )); then
+        output+="[cpc] Output limit reached (max_bytes=${max_bytes}). Truncated.\n"
+        warned_limit=1
+        break
+      fi
+    else
+      print -u2 "Warning: '$path' not found"
+    fi
+  done
+
+  if (( count > 0 )); then
+    if (( no_clip )); then
+      print -r -- "$output"
+      return 0
+    fi
+    if [[ -n "$clip_cmd" ]]; then
+      print -r -- "$output" | eval "$clip_cmd"
+      print -r -- "Successfully copied $count file(s) to clipboard!"
+    else
+      print -u2 "cpc: no clipboard tool found. Printing instead."
+      print -r -- "$output"
+    fi
+  else
+    print -r -- "No files were copied. (Check if the paths are correct)"
+    return 1
+  fi
+}
