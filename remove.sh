@@ -9,6 +9,7 @@ stow -D -d "$STOWDIR" -t "$TARGET" fonts
 stow -D -d "$STOWDIR" -t "$TARGET" ssh
 stow -D -d "$STOWDIR" -t "$TARGET" zsh
 stow -D -d "$STOWDIR" -t "$TARGET" vim
+stow -D -d "$STOWDIR" -t "$TARGET" zsh-functions
 stow -D -d "$STOWDIR" -t "$TARGET" git
 stow -D -d "$STOWDIR" -t "$TARGET" scripts
 stow -D -d "$STOWDIR" -t "$TARGET" clang-format

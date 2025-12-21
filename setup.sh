@@ -13,6 +13,7 @@ TARGET_DIR="$HOME"
 stow -d "$STOW_DIR" -t "$TARGET_DIR" fonts
 stow -d "$STOW_DIR" -t "$TARGET_DIR" ssh
 stow -d "$STOW_DIR" -t "$TARGET_DIR" zsh
+stow -d "$STOW_DIR" -t "$TARGET_DIR" zsh-functions
 stow -d "$STOW_DIR" -t "$TARGET_DIR" vim
 stow -d "$STOW_DIR" -t "$TARGET_DIR" git
 stow -d "$STOW_DIR" -t "$TARGET_DIR" scripts
