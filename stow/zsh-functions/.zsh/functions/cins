@@ -1,0 +1,164 @@
+#autoload
+# cins: ELF + address -> disassembly around the address (safe)
+# - Header format unified with cpc/csrc
+# - Function-only autoload file (NO top-level execution besides definition)
+
+cins() {
+  emulate -L zsh
+  setopt pipefail no_unset
+
+  local ctx=40
+  local print_only=0
+  local demangle=1
+
+  __die() { print -u2 -- "cins: $*"; }
+
+  __git_branch() {
+    local b
+    b="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 0
+    [[ -n "$b" ]] && print -r -- "$b" || return 0
+  }
+
+  __pick_clip_cmd() {
+    if command -v wl-copy >/dev/null 2>&1; then
+      echo "wl-copy"
+    elif command -v xclip >/dev/null 2>&1; then
+      echo "xclip -selection clipboard"
+    elif command -v pbcopy >/dev/null 2>&1; then
+      echo "pbcopy"
+    else
+      echo ""
+    fi
+  }
+
+  __pick_addr2line() {
+    if command -v x86_64-elf-addr2line >/dev/null 2>&1; then
+      echo "x86_64-elf-addr2line"
+    elif command -v addr2line >/dev/null 2>&1; then
+      echo "addr2line"
+    else
+      echo ""
+    fi
+  }
+
+  __pick_objdump() {
+    if command -v x86_64-elf-objdump >/dev/null 2>&1; then
+      echo "x86_64-elf-objdump"
+    elif command -v objdump >/dev/null 2>&1; then
+      echo "objdump"
+    else
+      echo ""
+    fi
+  }
+
+  __usage() {
+    cat <<'USAGE' >&2
+Usage:
+  cins [-C <lines>] [-p] [-n] <elf> <addr>
+
+Options:
+  -C <lines>  Context lines (default: 40)
+  -p          Print to stdout (do not copy)
+  -n          Do not demangle
+USAGE
+  }
+
+  while getopts ":C:pn" opt; do
+    case "$opt" in
+      C) ctx="${OPTARG}" ;;
+      p) print_only=1 ;;
+      n) demangle=0 ;;
+      *) __usage; return 2 ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+
+  (( $# == 2 )) || { __usage; return 2; }
+  local elf="$1"
+  local addr="$2"
+
+  [[ -f "$elf" ]] || { __die "ELF not found: $elf"; return 1; }
+  [[ "$ctx" == <-> ]] || { __die "invalid -C: $ctx"; return 1; }
+
+  local A2L="$(__pick_addr2line)"
+  local OBJDUMP="$(__pick_objdump)"
+  [[ -n "$A2L" ]] || { __die "addr2line not found"; return 1; }
+  [[ -n "$OBJDUMP" ]] || { __die "objdump not found"; return 1; }
+
+  local a2l_args=()
+  (( demangle )) && a2l_args+=("-C")
+  a2l_args+=("-f" "-e" "$elf" "$addr")
+
+  local a2l_out
+  a2l_out="$("$A2L" "${a2l_args[@]}" 2>/dev/null)" || { __die "addr2line failed"; return 1; }
+
+  local func fileline
+  func="${a2l_out[(f)1]}"
+  fileline="${a2l_out[(f)2]}"
+
+  [[ -n "$func" ]] || { __die "addr2line returned empty function"; return 1; }
+  [[ -n "$fileline" ]] || { __die "addr2line returned empty location"; return 1; }
+
+  local dis_args=()
+  (( demangle )) && dis_args+=("-C")
+  dis_args+=("-d" "--disassemble=$func" "$elf")
+
+  local dis
+  dis="$("$OBJDUMP" "${dis_args[@]}" 2>/dev/null)" || { __die "objdump failed"; return 1; }
+  [[ -n "$dis" ]] || { __die "empty disassembly"; return 1; }
+
+  local addr_norm="${addr#0x}"; addr_norm="${addr_norm#0X}"; addr_norm="${addr_norm:l}"
+
+  local idx
+  idx="$(print -r -- "$dis" | awk -v a="$addr_norm" '
+    BEGIN { IGNORECASE=1; i=0 }
+    { i++; if ($0 ~ "^[[:space:]]*"a":[[:space:]]") { print i; exit } }
+  ')" || true
+
+  if [[ -z "$idx" ]]; then
+    idx="$(print -r -- "$dis" | awk -v a="$addr_norm" '
+      BEGIN { IGNORECASE=1; i=0 }
+      {
+        i++;
+        if ($0 ~ "^[[:space:]]*[0-9a-f]+:[[:space:]]") {
+          split($1, p, ":"); x=p[1];
+          if (length(x) >= 8 && substr(x, length(x)-7) == substr(a, length(a)-7)) { print i; exit }
+        }
+      }
+    ')" || true
+  fi
+
+  local window
+  if [[ -n "$idx" ]]; then
+    local s=$(( idx - ctx )); (( s < 1 )) && s=1
+    local e=$(( idx + ctx ))
+    window="$(print -r -- "$dis" | awk -v s="$s" -v e="$e" 'NR>=s && NR<=e { print }')"
+  else
+    window="$(print -r -- "$dis" | head -n $(( ctx * 2 + 40 )) )"
+  fi
+  [[ -n "$window" ]] || { __die "failed to extract window"; return 1; }
+
+  local branch="$(__git_branch)"; [[ -z "$branch" ]] && branch="(no-git)"
+
+  local header footer body
+  header="Project Context: JadeKernel
+Current Branch: $branch
+----------------------------------------
+
+File: $elf
+----------------------------------------"
+  footer="----------------------------------------"
+  body="$header"$'\n'"$window"$'\n'"$footer"$'\n'
+
+  if (( print_only )); then
+    print -r -- "$body"
+    return 0
+  fi
+
+  local clip="$(__pick_clip_cmd)"
+  [[ -n "$clip" ]] || { __die "no clipboard tool found (wl-copy/xclip/pbcopy)"; return 1; }
+
+  print -r -- "$body" | eval "$clip" >/dev/null 2>&1 || { __die "clipboard copy failed"; return 1; }
+  print -- "cins: copied '$func' around $addr (ctx=$ctx)"
+  return 0
+}

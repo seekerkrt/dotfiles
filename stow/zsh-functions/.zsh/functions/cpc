@@ -1,0 +1,40 @@
+function cpc() {
+    local separator="----------------------------------------"
+    local count=0
+    local output=""
+    
+    # Gitブランチ情報を取得
+    local branch=$(git branch --show-current 2>/dev/null)
+    
+    # 冒頭のヘッダーを作成
+    output+="Project Context: JadeKernel\n"
+    [ -n "$branch" ] && output+="Current Branch: $branch\n"
+    output+="$separator\n\n"
+
+    # 引数で渡されたファイルを順に処理
+    for f in "$@"; do
+        # ディレクトリ、またはコマンド名 "cpc" をスキップ
+        if [ -d "$f" ] || [[ "$f" == "cpc" ]]; then
+            continue
+        fi
+
+        # ファイルが存在するか確認
+        if [ -f "$f" ]; then
+            output+="File: $f\n"
+            output+="$separator\n"
+            output+="$(cat "$f")\n"
+            output+="$separator\n\n"
+            ((count++)) # 今度はメインプロセスの変数がカウントアップされる
+        else
+            echo "Warning: '$f' not found" >&2
+        fi
+    done
+
+    # 実際にファイルが処理された場合のみクリップボードに送る
+    if [ $count -gt 0 ]; then
+        echo -e -n "$output"
+#        echo "Successfully copied $count file(s) to clipboard!"
+    else
+        echo "No files were copied. (Check if the paths are correct)"
+    fi
+}
