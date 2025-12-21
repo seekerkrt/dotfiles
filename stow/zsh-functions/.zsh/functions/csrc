@@ -1,0 +1,129 @@
+#autoload
+# csrc: ELF + address -> source context, copy to clipboard (safe)
+# - Header format unified with cpc/cins
+# - Function-only autoload file
+
+csrc() {
+  emulate -L zsh
+  setopt pipefail no_unset
+
+  local ctx=40
+  local print_only=0
+  local demangle=1
+
+  __die() { print -u2 -- "csrc: $*"; }
+
+  __git_branch() {
+    local b
+    b="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 0
+    [[ -n "$b" ]] && print -r -- "$b" || return 0
+  }
+
+  __pick_clip_cmd() {
+    if command -v wl-copy >/dev/null 2>&1; then
+      echo "wl-copy"
+    elif command -v xclip >/dev/null 2>&1; then
+      echo "xclip -selection clipboard"
+    elif command -v pbcopy >/dev/null 2>&1; then
+      echo "pbcopy"
+    else
+      echo ""
+    fi
+  }
+
+  __pick_addr2line() {
+    if command -v x86_64-elf-addr2line >/dev/null 2>&1; then
+      echo "x86_64-elf-addr2line"
+    elif command -v addr2line >/dev/null 2>&1; then
+      echo "addr2line"
+    else
+      echo ""
+    fi
+  }
+
+  __usage() {
+    cat <<'USAGE' >&2
+Usage:
+  csrc [-C <lines>] [-p] [-n] <elf> <addr>
+
+Options:
+  -C <lines>  Context lines (default: 40)
+  -p          Print to stdout (do not copy)
+  -n          Do not demangle
+USAGE
+  }
+
+  while getopts ":C:pn" opt; do
+    case "$opt" in
+      C) ctx="${OPTARG}" ;;
+      p) print_only=1 ;;
+      n) demangle=0 ;;
+      *) __usage; return 2 ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+
+  (( $# == 2 )) || { __usage; return 2; }
+  local elf="$1"
+  local addr="$2"
+
+  [[ -f "$elf" ]] || { __die "ELF not found: $elf"; return 1; }
+  [[ "$ctx" == <-> ]] || { __die "invalid -C: $ctx"; return 1; }
+
+  local A2L="$(__pick_addr2line)"
+  [[ -n "$A2L" ]] || { __die "addr2line not found"; return 1; }
+
+  local a2l_args=()
+  (( demangle )) && a2l_args+=("-C")
+  a2l_args+=("-f" "-e" "$elf" "$addr")
+
+  local out
+  out="$("$A2L" "${a2l_args[@]}" 2>/dev/null)" || { __die "addr2line failed"; return 1; }
+
+  local func fileline file line
+  func="${out[(f)1]}"
+  fileline="${out[(f)2]}"
+
+  [[ -n "$fileline" ]] || { __die "addr2line returned empty location"; return 1; }
+  [[ "$fileline" != "??:0" && "$fileline" != "??:?" ]] || { __die "no debug info for $addr"; return 1; }
+
+  file="${fileline%:*}"
+  line="${fileline##*:}"
+
+  [[ -f "$file" ]] || { __die "source file not found: $file"; return 1; }
+  [[ "$line" == <-> ]] || { __die "invalid line: $line"; return 1; }
+
+  local start end
+  start=$(( line - ctx )); (( start < 1 )) && start=1
+  end=$(( line + ctx ))
+
+  local snippet
+  snippet="$(awk -v s="$start" -v e="$end" 'NR>=s && NR<=e { printf("%6d | %s\n", NR, $0) }' "$file")" \
+    || { __die "failed to read source"; return 1; }
+
+  [[ -n "$snippet" ]] || { __die "empty snippet"; return 1; }
+
+  local branch="$(__git_branch)"; [[ -z "$branch" ]] && branch="(no-git)"
+
+  local header footer body
+  header="Project Context: JadeKernel
+Current Branch: $branch
+----------------------------------------
+
+File: $file
+----------------------------------------"
+  footer="----------------------------------------"
+  body="$header"$'\n'"$snippet"$'\n'"$footer"$'\n'
+
+  if (( print_only )); then
+    print -r -- "$body"
+    return 0
+  fi
+
+  local clip="$(__pick_clip_cmd)"
+  [[ -n "$clip" ]] || { __die "no clipboard tool found (wl-copy/xclip/pbcopy)"; return 1; }
+
+  print -r -- "$body" | eval "$clip" >/dev/null 2>&1 || { __die "clipboard copy failed"; return 1; }
+  print -- "csrc: copied '$func' at $fileline (ctx=$ctx)"
+  return 0
+}
