@@ -7,7 +7,7 @@ function cpc() {
     local branch=$(git branch --show-current 2>/dev/null)
     
     # 冒頭のヘッダーを作成
-    output+="Project Context: JadeKernel\n"
+#    output+="Project Context: JadeOS\n"
     [ -n "$branch" ] && output+="Current Branch: $branch\n"
     output+="$separator\n\n"
 

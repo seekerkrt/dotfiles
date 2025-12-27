@@ -169,7 +169,8 @@ bindkey '^x^e' edit-command-line
 
 # ---- user functions (autoload) ----
 fpath=("$HOME/.zsh/functions" $fpath)
-autoload -Uz cpfunc cpc cins csrc
+autoload -Uz cpfunc cpc cins csrc cfn csrcq
+
 
 
 
