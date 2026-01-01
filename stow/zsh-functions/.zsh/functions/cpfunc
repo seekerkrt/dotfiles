@@ -2,11 +2,41 @@ cpfunc() {
   emulate -L zsh
   setopt pipefail
 
+  local opt_stdout=0
+  local opt_path=0
+
+  # ---- options ----
+  while (( $# > 0 )); do
+    case "$1" in
+      -n|--stdout) opt_stdout=1; shift ;;
+      -p|--path)   opt_path=1; shift ;;
+      -h|--help)
+        cat >&2 <<'EOF'
+usage:
+  cpfunc [-n|--stdout] [-p|--path] <FuncNameOrQualified> [file]
+
+options:
+  -n, --stdout   抽出結果を stdout に出す（wl-copy しない）
+  -p, --path     抽出に成功したファイルパスだけを出す（中身は出さない）
+EOF
+        return 0
+        ;;
+      --) shift; break ;;
+      -*) echo "[cpfunc] unknown option: $1" >&2; return 2 ;;
+      *) break ;;
+    esac
+  done
+
+  if (( opt_stdout && opt_path )); then
+    echo "[cpfunc] -n and -p are mutually exclusive" >&2
+    return 2
+  fi
+
   local name="$1"
   local file="$2"
 
   if [[ -z "$name" ]]; then
-    echo "usage: cpfunc <FuncNameOrQualified> [file]" >&2
+    echo "usage: cpfunc [-n|--stdout] [-p|--path] <FuncNameOrQualified> [file]" >&2
     return 2
   fi
 
@@ -21,7 +51,6 @@ cpfunc() {
   if [[ -n "$file" ]]; then
     candidates=("$file")
   else
-    # まず “名前(” が出るファイルを広めに拾う（定義/呼び出し混在OK）
     candidates=("${(@f)$(rg -l --hidden --no-ignore-vcs \
       --glob '*.{c,cc,cxx,cpp,h,hh,hxx,hpp}' \
       -- "(^|[^[:alnum:]_])${name//:/::}[[:space:]]*\\(" \
@@ -33,7 +62,7 @@ cpfunc() {
     fi
   fi
 
-  # ここが肝：候補それぞれで実抽出を試して「成功したファイル」だけ残す
+  # 候補を実抽出でふるいにかける（成功したファイルだけ残す）
   local f
   for f in "${candidates[@]}"; do
     "$py" "$name" "$f" >/dev/null 2>&1 && okfiles+=("$f")
@@ -58,7 +87,18 @@ cpfunc() {
     fi
   fi
 
-  # 抽出 → wl-copy（なければ stdout）
+  # ---- output modes ----
+  if (( opt_path )); then
+    print -r -- "$target"
+    return 0
+  fi
+
+  if (( opt_stdout )); then
+    "$py" "$name" "$target"
+    return $?
+  fi
+
+  # default: copy to clipboard if available
   if command -v wl-copy >/dev/null; then
     "$py" "$name" "$target" | wl-copy
     echo "[cpfunc] copied: $name ($target)" >&2
@@ -66,4 +106,3 @@ cpfunc() {
     "$py" "$name" "$target"
   fi
 }
-
