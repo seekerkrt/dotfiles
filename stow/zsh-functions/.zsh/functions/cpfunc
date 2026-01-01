@@ -1,209 +1,69 @@
-# cpfunc: C/C++ の { ... } ブロックを「pattern から」抽出して clipboard / stdout へ
-#  - file を省略すると src/ と include/ から自動検索（.c/.cc/.cpp/.h/.hpp のみ）
-#  - 端末を落とさない（set -euo しない / 関数内 local 化）
-#
-# usage:
-#   cpfunc [-p] [-i] [--all] [--list] [--dir <dir>] <pattern> [file]
-#   cpfunc -p  KernelMain  src/KernelMain.cpp
-#   cpfunc     'extern "C" void KernelMain'            # 自動で探して抽出→clipboard
-#   cpfunc -p  DrawRect --all                           # 全候補から全部抽出してstdout
-#
 cpfunc() {
   emulate -L zsh
-  setopt localoptions noshwordsplit pipefail
+  setopt pipefail
 
-  local print_mode=0 ignore_case=0 do_all=0 do_list=0
-  local search_dir=""
-  local -a args
-  args=()
+  local name="$1"
+  local file="$2"
 
-  while (( $# )); do
-    case "$1" in
-      -p) print_mode=1; shift ;;
-      -i) ignore_case=1; shift ;;
-      --all)  do_all=1; shift ;;
-      --list) do_list=1; shift ;;
-      --dir)  shift; search_dir="${1:-}"; shift ;;
-      --) shift; break ;;
-      -*) print -u2 "cpfunc: unknown option: $1"; return 2 ;;
-      *)  args+=("$1"); shift ;;
-    esac
-  done
-  # 残りも args に積む
-  while (( $# )); do args+=("$1"); shift; done
-
-  local pat="${args[1]:-}"
-  local file="${args[2]:-}"
-
-  if [[ -z "$pat" ]]; then
-    print -u2 "usage: cpfunc [-p] [-i] [--all] [--list] [--dir <dir>] <pattern> [file]"
+  if [[ -z "$name" ]]; then
+    echo "usage: cpfunc <FuncNameOrQualified> [file]" >&2
     return 2
   fi
 
-  # --- clipboard helper ---
-  _cpfunc_copy() {
-    local data="$1"
-    if (( print_mode )); then
-      print -r -- "$data"
-      return 0
-    fi
-    if command -v wl-copy >/dev/null 2>&1; then
-      print -r -- "$data" | wl-copy
-      print -r -- "cpfunc: copied."
-      return 0
-    elif command -v xclip >/dev/null 2>&1; then
-      print -r -- "$data" | xclip -selection clipboard
-      print -r -- "cpfunc: copied."
-      return 0
-    else
-      # clipboard 無ければ stdout
-      print -r -- "$data"
-      return 0
-    fi
-  }
+  local -a candidates okfiles
+  local py="$HOME/.local/bin/cpfunc.py"
 
-  # --- extract helper (awk) ---
-  _cpfunc_extract_one() {
-    local _pat="$1" _file="$2" _ic="$3"
-    awk -v pat="$_pat" -v ic="$_ic" '
-      function contains(hay, needle) {
-        if (ic) return index(tolower(hay), tolower(needle)) > 0
-        return index(hay, needle) > 0
-      }
-      function scrub(s,   t) {
-        t = s
-        sub(/\/\/.*/, "", t)                       # // comment
-        gsub(/"([^"\\]|\\.)*"/, "\"\"", t)         # "string"
-        gsub(/\x27([^\x27\\]|\\.)*\x27/, "\x27\x27", t) # '\''char'\''
-        return t
-      }
-      BEGIN { hit=0; depth=0; started=0; inblock=0; }
-      {
-        line=$0
-        if (!hit) {
-          if (contains(line, pat)) hit=1
-          else next
-        }
-        print line
-
-        # brace count はコメント/文字列を雑に除いてから
-        t=line
-        # /* ... */ ブロックコメント（簡易）
-        while (1) {
-          if (inblock) {
-            if (match(t, /\*\//)) { t=substr(t, RSTART+2); inblock=0; continue }
-            t=""; break
-          } else {
-            if (match(t, /\/\*/)) {
-              pre=substr(t, 1, RSTART-1)
-              rest=substr(t, RSTART+2)
-              t = scrub(pre)
-              # pre 分の brace を数える
-              for (i=1; i<=length(t); i++) {
-                c=substr(t,i,1)
-                if (c=="{") { depth++; started=1 }
-                else if (c=="}") { depth-- }
-              }
-              t=rest
-              inblock=1
-              continue
-            }
-            break
-          }
-        }
-        t = scrub(t)
-
-        for (i=1; i<=length(t); i++) {
-          c=substr(t,i,1)
-          if (c=="{") { depth++; started=1 }
-          else if (c=="}") { depth-- }
-        }
-        if (started && depth<=0) exit
-      }
-    ' -- "$_file"
-  }
-
-  # --- resolve files ---
-  local -a files
-  files=()
+  if [[ ! -x "$py" ]]; then
+    echo "[cpfunc] missing executable: $py" >&2
+    return 1
+  fi
 
   if [[ -n "$file" ]]; then
-    if [[ ! -f "$file" ]]; then
-      print -u2 "cpfunc: not a file: $file"
-      return 2
-    fi
-    files+=("$file")
+    candidates=("$file")
   else
-    local root="${search_dir:-.}"
-    # 生ソースだけ
-    local rg_glob=(--glob '*.c' --glob '*.cc' --glob '*.cpp' --glob '*.h' --glob '*.hpp')
-    # よくある除外
-    local rg_excl=(--glob '!.git/*' --glob '!obj/*' --glob '!build/*' --glob '!out/*' --glob '!dist/*')
+    # まず “名前(” が出るファイルを広めに拾う（定義/呼び出し混在OK）
+    candidates=("${(@f)$(rg -l --hidden --no-ignore-vcs \
+      --glob '*.{c,cc,cxx,cpp,h,hh,hxx,hpp}' \
+      -- "(^|[^[:alnum:]_])${name//:/::}[[:space:]]*\\(" \
+      src include 2>/dev/null)}")
 
-    # src/include 優先。無ければ root 全体。
-    local -a search_roots
-    search_roots=()
-    [[ -d "$root/src" ]]     && search_roots+=("$root/src")
-    [[ -d "$root/include" ]] && search_roots+=("$root/include")
-    (( ${#search_roots[@]} == 0 )) && search_roots+=("$root")
-
-    if ! command -v rg >/dev/null 2>&1; then
-      print -u2 "cpfunc: ripgrep (rg) not found; give an explicit file path."
-      return 2
-    fi
-
-    # pattern は「含む」で探す（-F）。-i は rg も合わせる。
-    local -a rg_cmd
-    rg_cmd=(rg -l --hidden --no-ignore-vcs -F)
-    (( ignore_case )) && rg_cmd+=(-i)
-    rg_cmd+=("${rg_glob[@]}" "${rg_excl[@]}" -- "$pat" "${search_roots[@]}")
-
-    files=("${(@f)$("${rg_cmd[@]}")}")
-
-    if (( do_list )); then
-      if (( ${#files[@]} == 0 )); then
-        print -u2 "cpfunc: no files matched: $pat"
-        return 1
-      fi
-      print -r -- "${files[@]}"
-      return 0
-    fi
-
-    if (( ${#files[@]} == 0 )); then
-      print -u2 "cpfunc: no files matched: $pat"
+    if (( ${#candidates[@]} == 0 )); then
+      echo "[cpfunc] no candidates for: $name" >&2
       return 1
     fi
   fi
 
-  # --- extract ---
-  local out="" one="" f=""
-  if (( do_all )); then
-    for f in "${files[@]}"; do
-      one="$(_cpfunc_extract_one "$pat" "$f" "$ignore_case")"
-      if [[ -n "$one" ]]; then
-        out+=$'\n'"// ===== cpfunc: $f ====="$'\n'
-        out+="$one"
-        out+=$'\n'
-      fi
-    done
-  else
-    # 1個目だけ（複数候補ならメッセだけ出す）
-    if (( ${#files[@]} > 1 )); then
-      print -u2 "cpfunc: multiple candidates (${#files[@]}). using first: ${files[1]}"
-      print -u2 "cpfunc: use --list to show, or --all to extract all."
-    fi
-    f="${files[1]}"
-    out="$(_cpfunc_extract_one "$pat" "$f" "$ignore_case")"
-  fi
+  # ここが肝：候補それぞれで実抽出を試して「成功したファイル」だけ残す
+  local f
+  for f in "${candidates[@]}"; do
+    "$py" "$name" "$f" >/dev/null 2>&1 && okfiles+=("$f")
+  done
 
-  if [[ -z "$out" ]]; then
-    if [[ -n "$file" ]]; then
-      print -u2 "cpfunc: pattern not found or extracted empty: $pat ($file)"
-    else
-      print -u2 "cpfunc: extracted empty: $pat"
-    fi
+  if (( ${#okfiles[@]} == 0 )); then
+    echo "[cpfunc] extract failed in all candidates: $name" >&2
+    echo "  tip: try qualified name (e.g. Window::Resize) or specify file" >&2
     return 1
   fi
 
-  _cpfunc_copy "$out"
+  local target
+  if (( ${#okfiles[@]} == 1 )); then
+    target="$okfiles[1]"
+  else
+    if command -v fzf >/dev/null; then
+      target="$(printf '%s\n' "${okfiles[@]}" | fzf --prompt="cpfunc> " --height=40%)" || return 1
+    else
+      echo "[cpfunc] multiple matches; specify file:" >&2
+      printf '  %s\n' "${okfiles[@]}" >&2
+      return 1
+    fi
+  fi
+
+  # 抽出 → wl-copy（なければ stdout）
+  if command -v wl-copy >/dev/null; then
+    "$py" "$name" "$target" | wl-copy
+    echo "[cpfunc] copied: $name ($target)" >&2
+  else
+    "$py" "$name" "$target"
+  fi
 }
+
