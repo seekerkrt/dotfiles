@@ -1,0 +1,117 @@
+function cplines() {
+  emulate -L zsh
+  setopt localoptions pipefail no_aliases
+
+  local clip=0
+  local print=1
+  local number=0
+  local separator="----------------------------------------"
+
+  # options
+  while [[ "$1" == -* ]]; do
+    case "$1" in
+      -c|--clip) clip=1; print=0;;
+      -p|--print) print=1;;
+      -n|--number) number=1;;
+      -h|--help)
+        cat <<'USAGE'
+cplines [options] <file> <start> <end|+count>
+  -c, --clip    wl-copy に送る（標準出力は抑制）
+  -p, --print   標準出力にも出す（-cと併用可）
+  -n, --number  行番号を付ける（元ファイルの行番号）
+例:
+  cplines src/gui/tasks/gui_task.cpp 680 780
+  cplines -c src/gui/tasks/gui_task.cpp 680 +120
+  cplines -n -c src/gui/tasks/gui_task.cpp 697 760
+USAGE
+        return 0
+        ;;
+      *) break;;
+    esac
+    shift
+  done
+
+  local file="$1"
+  local start="$2"
+  local end="$3"
+
+  if [[ -z "$file" || -z "$start" || -z "$end" ]]; then
+    echo "Usage: cplines [-c] [-n] <file> <start> <end|+count>" >&2
+    return 1
+  fi
+  if [[ ! -f "$file" ]]; then
+    echo "Warning: '$file' not found" >&2
+    return 1
+  fi
+  if [[ "$start" != <-> ]]; then
+    echo "start must be a number: $start" >&2
+    return 1
+  fi
+
+  # end can be "NNN" or "+COUNT"
+  if [[ "$end" == +(<->) ]]; then
+    local cnt="${end#+}"
+    if [[ "$cnt" -eq 0 ]]; then
+      echo "count must be >= 1" >&2
+      return 1
+    fi
+    end=$(( start + cnt - 1 ))
+  else
+    if [[ "$end" != <-> ]]; then
+      echo "end must be a number or +count: $end" >&2
+      return 1
+    fi
+  fi
+
+  if (( end < start )); then
+    echo "end must be >= start (start=$start end=$end)" >&2
+    return 1
+  fi
+
+  # Gitブランチ情報
+  local branch="$(git branch --show-current 2>/dev/null)"
+
+  local output=""
+  [[ -n "$branch" ]] && output+="Current Branch: $branch\n"
+  output+="$separator\n\n"
+  output+="File: $file (lines $start-$end)\n"
+  output+="$separator\n"
+
+  if (( number )); then
+    # 元の行番号を維持したいので nl の開始番号を start にする
+    output+="$(sed -n "${start},${end}p" -- "$file" | nl -ba -w6 -s': ' -v "$start")\n"
+  else
+    output+="$(sed -n "${start},${end}p" -- "$file")\n"
+  fi
+
+  output+="$separator\n\n"
+
+  # 出力先
+  if (( clip )); then
+    if (( print )); then
+      # 画面にも出してコピーもする（2回流さない）
+      print -rn -- "$output" | tee >(wl-copy) >/dev/null
+    else
+      print -rn -- "$output" | wl-copy
+    fi
+  else
+    print -rn -- "$output"
+  fi
+}
+
+# 「start + 行数」で呼びたい派用の薄いラッパ（cplines file start +count と同じ）
+function cplinesn() {
+  emulate -L zsh
+  if [[ $# -lt 3 ]]; then
+    echo "Usage: cplinesn <file> <start> <count>  (or add -c/-n etc before file)" >&2
+    return 1
+  fi
+  # オプションはそのまま cplines に流す
+  local args=("$@")
+  # 最後2つを start/count とみなして end を +count 形式に変換
+  local file="${args[-3]}"
+  local start="${args[-2]}"
+  local count="${args[-1]}"
+  args[-1]="+${count}"
+  cplines "${args[@]}"
+}
