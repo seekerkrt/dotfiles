@@ -1,108 +1,312 @@
-cpfunc() {
-  emulate -L zsh
-  setopt pipefail
+cpfunc () {
+	emulate -L zsh
+	setopt localoptions pipefail no_aliases
 
-  local opt_stdout=0
-  local opt_path=0
+	local nl=$'\n'
+	local separator="----------------------------------------"
 
-  # ---- options ----
-  while (( $# > 0 )); do
-    case "$1" in
-      -n|--stdout) opt_stdout=1; shift ;;
-      -p|--path)   opt_path=1; shift ;;
-      -h|--help)
-        cat >&2 <<'EOF'
-usage:
-  cpfunc [-n|--stdout] [-p|--path] <FuncNameOrQualified> [file]
+	local to_clip=1
+	local to_stdout=0
+	local match_index=1
+	local line_range=""  # "start:end"
 
-options:
-  -n, --stdout   抽出結果を stdout に出す（wl-copy しない）
-  -p, --path     抽出に成功したファイルパスだけを出す（中身は出さない）
-EOF
-        return 0
-        ;;
-      --) shift; break ;;
-      -*) echo "[cpfunc] unknown option: $1" >&2; return 2 ;;
-      *) break ;;
-    esac
-  done
+	while [[ "$1" == -* ]]; do
+		case "$1" in
+			(-p|--print)   to_stdout=1 ;;
+			(-b|--both)    to_stdout=1 ;;
+			(-n|--no-clip) to_clip=0 ;;
+			(-m|--match)
+				shift
+				match_index="${1:-1}"
+				;;
+			(-L|--lines)
+				shift
+				line_range="${1:-}"
+				;;
+			(-h|--help)
+				cat <<'USAGE'
+cpfunc [options] <name> [file]
+cpfunc [options] -L start:end <file>
 
-  if (( opt_stdout && opt_path )); then
-    echo "[cpfunc] -n and -p are mutually exclusive" >&2
-    return 2
-  fi
+(default) wl-copy に送る
 
-  local name="$1"
-  local file="$2"
+Options:
+  -p, --print       標準出力にも出す
+  -b, --both        クリップボード + 標準出力
+  -n, --no-clip     クリップボードに送らない（stdout用途）
+  -m, --match N     複数ヒットしたとき N番目(1-based)を使う
+  -L, --lines A:B   行範囲で抜く（関数抽出じゃなくて純粋にA〜B行）
+USAGE
+				return 0
+				;;
+			(*) break ;;
+		esac
+		shift
+	done
 
-  if [[ -z "$name" ]]; then
-    echo "usage: cpfunc [-n|--stdout] [-p|--path] <FuncNameOrQualified> [file]" >&2
-    return 2
-  fi
+	# wl-copy check
+	if (( to_clip )) && ! command -v wl-copy >/dev/null 2>&1; then
+		echo "cpfunc: wl-copy not found. Install wl-clipboard or use -p/-n." >&2
+		return 1
+	fi
 
-  local -a candidates okfiles
-  local py="$HOME/.local/bin/cpfunc.py"
+	local branch=""
+	branch="$(git branch --show-current 2>/dev/null)"
 
-  if [[ ! -x "$py" ]]; then
-    echo "[cpfunc] missing executable: $py" >&2
-    return 1
-  fi
+	local output=""
+	[[ -n "$branch" ]] && output+="Current Branch: $branch${nl}"
+	output+="${separator}${nl}${nl}"
 
-  if [[ -n "$file" ]]; then
-    candidates=("$file")
-  else
-    candidates=("${(@f)$(rg -l --hidden --no-ignore-vcs \
-      --glob '*.{c,cc,cxx,cpp,h,hh,hxx,hpp}' \
-      -- "(^|[^[:alnum:]_])${name//:/::}[[:space:]]*\\(" \
-      src include 2>/dev/null)}")
+	# ------------------------------------------------------------
+	# Mode: line range
+	# ------------------------------------------------------------
+	if [[ -n "$line_range" ]]; then
+		local file="$1"
+		if [[ -z "$file" || ! -f "$file" ]]; then
+			echo "cpfunc: -L requires an existing <file>." >&2
+			return 1
+		fi
 
-    if (( ${#candidates[@]} == 0 )); then
-      echo "[cpfunc] no candidates for: $name" >&2
-      return 1
-    fi
-  fi
+		local a="${line_range%%:*}"
+		local b="${line_range##*:}"
+		if [[ -z "$a" || -z "$b" || "$a" == "$line_range" ]]; then
+			echo "cpfunc: -L format is start:end (e.g. -L 120:200)" >&2
+			return 1
+		fi
 
-  # 候補を実抽出でふるいにかける（成功したファイルだけ残す）
-  local f
-  for f in "${candidates[@]}"; do
-    "$py" "$name" "$f" >/dev/null 2>&1 && okfiles+=("$f")
-  done
+		output+="File: $file${nl}"
+		output+="${separator}${nl}"
 
-  if (( ${#okfiles[@]} == 0 )); then
-    echo "[cpfunc] extract failed in all candidates: $name" >&2
-    echo "  tip: try qualified name (e.g. Window::Resize) or specify file" >&2
-    return 1
-  fi
+		local snippet
+		snippet="$(sed -n "${a},${b}p" "$file")" || return 1
+		output+="${snippet}${nl}"
+		output+="${separator}${nl}${nl}"
 
-  local target
-  if (( ${#okfiles[@]} == 1 )); then
-    target="$okfiles[1]"
-  else
-    if command -v fzf >/dev/null; then
-      target="$(printf '%s\n' "${okfiles[@]}" | fzf --prompt="cpfunc> " --height=40%)" || return 1
-    else
-      echo "[cpfunc] multiple matches; specify file:" >&2
-      printf '  %s\n' "${okfiles[@]}" >&2
-      return 1
-    fi
-  fi
+		if (( to_stdout && to_clip )); then
+			print -rn -- "$output" | tee >(wl-copy >/dev/null)
+		elif (( to_stdout )); then
+			print -rn -- "$output"
+		elif (( to_clip )); then
+			print -rn -- "$output" | wl-copy
+		fi
+		return 0
+	fi
 
-  # ---- output modes ----
-  if (( opt_path )); then
-    print -r -- "$target"
-    return 0
-  fi
+	# ------------------------------------------------------------
+	# Mode: function/block extract by name
+	# ------------------------------------------------------------
+	local name="$1"
+	local file="$2"
 
-  if (( opt_stdout )); then
-    "$py" "$name" "$target"
-    return $?
-  fi
+	if [[ -z "$name" ]]; then
+		echo "cpfunc: missing <name>. Use -h for help." >&2
+		return 1
+	fi
 
-  # default: copy to clipboard if available
-  if command -v wl-copy >/dev/null; then
-    "$py" "$name" "$target" | wl-copy
-    echo "[cpfunc] copied: $name ($target)" >&2
-  else
-    "$py" "$name" "$target"
-  fi
+	# escape name for regex safely
+	local esc
+	esc="$(python3 - <<'PY' "$name"
+import re,sys
+print(re.escape(sys.argv[1]))
+PY
+)" || return 1
+
+	local re="${esc}[[:space:]]*\\("
+
+	local -a matches
+	if [[ -n "$file" ]]; then
+		if [[ ! -f "$file" ]]; then
+			echo "cpfunc: file not found: $file" >&2
+			return 1
+		fi
+
+		# ★重要: 単一ファイルでも常に file:line:... 形式にする
+		matches=("${(@f)$(rg -n --with-filename --no-heading -S "$re" "$file" 2>/dev/null \
+			| rg -v ':\d+:\s*(//|/\*)' \
+			| rg -v ':\d+:\s*(if|for|while|switch|catch)\b' || true)}")
+		(( ${#matches} == 0 )) && matches=("${(@f)$(rg -n --with-filename --no-heading -S "$re" "$file" 2>/dev/null || true)}")
+	else
+		matches=("${(@f)$(rg -n --with-filename --no-heading -S --hidden --no-ignore-vcs --glob '*.{c,cc,cpp,cxx,h,hh,hpp,hxx}' "$re" src include 2>/dev/null \
+			| rg -v ':\d+:\s*(//|/\*)' \
+			| rg -v ':\d+:\s*(if|for|while|switch|catch)\b' || true)}")
+		(( ${#matches} == 0 )) && matches=("${(@f)$(rg -n --with-filename --no-heading -S --hidden --no-ignore-vcs --glob '*.{c,cc,cpp,cxx,h,hh,hpp,hxx}' "$re" src include 2>/dev/null || true)}")
+	fi
+
+	if (( ${#matches} == 0 )); then
+		echo "cpfunc: no matches for '$name'." >&2
+		return 1
+	fi
+
+	if (( match_index < 1 || match_index > ${#matches} )); then
+		echo "cpfunc: -m out of range. matches=${#matches}, got=$match_index" >&2
+		return 1
+	fi
+
+	if (( ${#matches} > 1 && match_index == 1 )); then
+		echo "cpfunc: multiple matches (${#matches}). use -m N to choose:" >&2
+		local i=1
+		for m in "${matches[@]}"; do
+			echo "  [$i] $m" >&2
+			(( i++ ))
+			(( i > 8 )) && { echo "  ..."; break; }
+		done
+	fi
+
+	local pick="${matches[$match_index]}"
+	local pick_file="${pick%%:*}"
+	local rest="${pick#*:}"
+	local pick_line="${rest%%:*}"
+
+	# python extractor (brace matching)
+	local snippet=""
+	snippet="$(python3 - "$pick_file" "$pick_line" "$name" <<'PY'
+import sys
+
+path = sys.argv[1]
+line0 = int(sys.argv[2])
+name = sys.argv[3]
+
+with open(path, "r", encoding="utf-8", errors="replace") as f:
+    lines = f.readlines()
+
+start = max(0, line0 - 1)
+begin = max(0, start - 2)
+
+def iter_chars(lines, i0):
+    in_block = False
+    in_str = False
+    in_chr = False
+    esc = False
+    for i in range(i0, len(lines)):
+        s = lines[i]
+        j = 0
+        while j < len(s):
+            c = s[j]
+            n = s[j+1] if j+1 < len(s) else ""
+            if in_block:
+                if c == "*" and n == "/":
+                    in_block = False
+                    j += 2
+                    continue
+                j += 1
+                continue
+            if in_str:
+                if esc:
+                    esc = False
+                elif c == "\\":
+                    esc = True
+                elif c == '"':
+                    in_str = False
+                j += 1
+                continue
+            if in_chr:
+                if esc:
+                    esc = False
+                elif c == "\\":
+                    esc = True
+                elif c == "'":
+                    in_chr = False
+                j += 1
+                continue
+
+            if c == "/" and n == "*":
+                in_block = True
+                j += 2
+                continue
+            if c == "/" and n == "/":
+                break
+            if c == '"':
+                in_str = True
+                j += 1
+                continue
+            if c == "'":
+                in_chr = True
+                j += 1
+                continue
+
+            yield i, j, c
+            j += 1
+
+state = 0
+paren = 0
+open_i = None
+open_j = None
+
+def is_ident_char(ch):
+    return ch.isalnum() or ch == "_"
+
+for i, j, c in iter_chars(lines, begin):
+    if i > start + 120 and state < 3:
+        break
+
+    if state == 0:
+        s = lines[i]
+        idx = s.find(name, 0)
+        if idx != -1:
+            left = s[idx-1] if idx > 0 else ""
+            right = s[idx+len(name)] if idx+len(name) < len(s) else ""
+            if (not left or not is_ident_char(left)) and (not right or not is_ident_char(right)):
+                state = 1
+    elif state == 1:
+        if c == "(":
+            state = 2
+            paren = 1
+    elif state == 2:
+        if c == "(":
+            paren += 1
+        elif c == ")":
+            paren -= 1
+            if paren == 0:
+                state = 3
+    elif state == 3:
+        if c.isspace():
+            continue
+        if c == ";":
+            open_i = None
+            break
+        if c == "{":
+            open_i, open_j = i, j
+            break
+        continue
+
+if open_i is None:
+    raise SystemExit(2)
+
+depth = 0
+end_i = None
+for i, j, c in iter_chars(lines, open_i):
+    if i == open_i and j < open_j:
+        continue
+    if c == "{":
+        depth += 1
+    elif c == "}":
+        depth -= 1
+        if depth == 0:
+            end_i = i
+            break
+
+if end_i is None:
+    raise SystemExit(3)
+
+sys.stdout.write("".join(lines[begin:end_i+1]).rstrip("\n") + "\n")
+PY
+)" || {
+		echo "cpfunc: parse failed; fallback to context around ${pick_file}:${pick_line}" >&2
+		local lo=$(( pick_line > 20 ? pick_line-20 : 1 ))
+		local hi=$(( pick_line+60 ))
+		snippet="$(sed -n "${lo},${hi}p" "$pick_file")"
+	}
+
+	output+="File: $pick_file${nl}"
+	output+="${separator}${nl}"
+	output+="${snippet}${nl}"
+	output+="${separator}${nl}${nl}"
+
+	if (( to_stdout && to_clip )); then
+		print -rn -- "$output" | tee >(wl-copy >/dev/null)
+	elif (( to_stdout )); then
+		print -rn -- "$output"
+	elif (( to_clip )); then
+		print -rn -- "$output" | wl-copy
+	fi
 }
