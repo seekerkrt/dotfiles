@@ -5,6 +5,7 @@
     "editor.autoIndent": "full",
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
+    "editor.detectIndentation: false"
     "editor.formatOnPaste": true,
     "editor.formatOnType": true,
     "editor.formatOnSave": true,
@@ -20,6 +21,8 @@
     "workbench.settings.editor": "json",
     "editor.acceptSuggestionOnEnter": "smart",
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
+    "C_Cpp.clang_format_style": "file",
+    "editor.formatOnSave": true,
     "todo-tree.highlights.enabled": true,
     "window.zoomLevel": 1,
     "debug.onTaskErrors": "debugAnyway",
