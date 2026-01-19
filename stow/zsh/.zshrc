@@ -35,7 +35,7 @@ export AWESOME_CONF=~/.config/awesome/rc.lua
 export VSCODE_CONF=~/config/Code/User/settings.json
 #export CFLAGS="-O2 -pipe -Wall -Wextra -Wno-unused-parameter -Wfloat-equal"
 #export CXXFLAGS="-std=c++17 ${CFLAGS} -xc++"
-export MAKEFLAGS=-j$(($(nproc)+1))
+#export MAKEFLAGS=-j$(($(nproc)+1))
 #export CHOST=$(uname -m)-pc-linux-gnu
 
 
