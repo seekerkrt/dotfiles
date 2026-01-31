@@ -10,7 +10,7 @@ TARGET_DIR="$HOME"
 # -d: stow directory (where packages live)
 # -t: target directory (where symlinks are created)
 
-stow -d "$STOW_DIR" -t "$TARGET_DIR" fonts
+stow -d "$STOW_DIR" -t "$TARGET_DIR" nvim
 stow -d "$STOW_DIR" -t "$TARGET_DIR" ssh
 stow -d "$STOW_DIR" -t "$TARGET_DIR" zsh
 stow -d "$STOW_DIR" -t "$TARGET_DIR" zsh-functions
