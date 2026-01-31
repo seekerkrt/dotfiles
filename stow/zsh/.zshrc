@@ -18,7 +18,7 @@ umask 022
 # Gentoo "eix"
 export EIX_LIMIT=0
 
-export EDITOR=nano
+export EDITOR=nvim
 
 #export CROSSDEV=/opt/crossdev
 export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin"
