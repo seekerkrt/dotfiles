@@ -24,6 +24,8 @@ if type(vim.treesitter.ft_to_lang) ~= "function" then
         end
         end
 
+        -- 誤爆しやすい <C-x> を無効化（挿入モード）
+        vim.keymap.set('i', '<C-x>', '<Nop>', { noremap = true, silent = true })
         -- === basics ===
         vim.opt.number = true
         vim.opt.cursorline = true
