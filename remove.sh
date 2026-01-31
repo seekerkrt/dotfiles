@@ -5,7 +5,7 @@ DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 STOWDIR="$DOTFILES/stow"
 TARGET="$HOME"
 
-stow -D -d "$STOWDIR" -t "$TARGET" fonts
+stow -D -d "$STOWDIR" -t "$TARGET" nvim
 stow -D -d "$STOWDIR" -t "$TARGET" ssh
 stow -D -d "$STOWDIR" -t "$TARGET" zsh
 stow -D -d "$STOWDIR" -t "$TARGET" vim
