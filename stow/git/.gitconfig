@@ -17,9 +17,12 @@
 	defaultBranch = main
 [pull]
 	rebase = true
+	ff = only
 [sendpack]
 	sideband = false
 [push]
 	followTags = true
 [pager]
 	log = false
+[alias]
+	mff = merge --ff-only
