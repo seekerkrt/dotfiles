@@ -19,6 +19,8 @@ umask 022
 export EIX_LIMIT=0
 
 export EDITOR=nvim
+export VISUAL=nvim
+export DIFFPROG="nvim -d"
 
 #export CROSSDEV=/opt/crossdev
 export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin"
