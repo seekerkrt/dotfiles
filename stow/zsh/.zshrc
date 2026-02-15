@@ -56,8 +56,8 @@ alias nvim='LC_MESSAGES=C nvim'
 ### for PAGER(less) source-highlight
 export PAGER=less
 export OUTPUT_CHARSET=utf-8
-#export LESSOPEN='| /usr/bin/src-hilite-lesspipe.sh %s'
-export LESSOPEN="| /usr/bin/source-highlight-esc.sh %s"
+export LESSOPEN='| /usr/bin/src-hilite-lesspipe.sh %s'
+#export LESSOPEN="| /usr/bin/source-highlight-esc.sh %s"
 export LESS='-R '
 export LESS_TERMCAP_me=$(printf '\e[0m')
 export LESS_TERMCAP_se=$(printf '\e[0m')
