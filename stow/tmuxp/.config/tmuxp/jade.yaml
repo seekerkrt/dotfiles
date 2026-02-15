@@ -1,0 +1,20 @@
+session_name: jade
+start_directory: ~/
+
+windows:
+  - window_name: default
+    start_directory: ~/
+    panes:
+      - zsh
+
+  - window_name: edit
+    start_directory: ~/jadeos
+    panes:
+      - zsh
+
+  - window_name: build-and-run
+    start_directory: ~/jadeos
+    panes:
+      - zsh
+
+
