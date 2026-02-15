@@ -27,22 +27,22 @@ background = "0x000000"
 foreground = "0xffffff"
 
 [font]
-size = 10.5
+size = 12
 
 [font.bold]
-family = "Mgen+ 1mn"
+family = "Myrica M"
 style = "Bold"
 
 [font.bold_italic]
-family = "Mgen+ 1mn"
+family = "Myrica M"
 style = "Bold Italic"
 
 [font.italic]
-family = "Mgen+ 1mn"
+family = "Myrica M"
 style = "Italic"
 
 [font.normal]
-family = "Mgen+ 1mn"
+family = "Myrica M"
 style = "Regular"
 
 [scrolling]
@@ -50,4 +50,4 @@ history = 50000
 multiplier = 3
 
 [window]
-opacity = 0.7
+opacity = 0.6

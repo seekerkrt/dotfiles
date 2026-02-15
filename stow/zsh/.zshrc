@@ -46,7 +46,9 @@ export VSCODE_CONF=~/config/Code/User/settings.json
 alias ls="ls -F --color=auto"
 alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
+alias nvim='LC_MESSAGES=C nvim'
 #alias emacs="emacs -nw"
+#alias google-chrome-stable="google-chrome-stable --force-dark-mode"
 #alias code="code --enable-features=UseOzonePlatform --ozone-platform=wayland"
 
 ### others
