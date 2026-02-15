@@ -20,6 +20,7 @@ stow -d "$STOW_DIR" -t "$TARGET_DIR" scripts
 stow -d "$STOW_DIR" -t "$TARGET_DIR" clang-format
 stow -d "$STOW_DIR" -t "$TARGET_DIR" alacritty
 stow -d "$STOW_DIR" -t "$TARGET_DIR" tmux
+stow -d "$STOW_DIR" -t "$TARGET_DIR" tmuxp
 stow -d "$STOW_DIR" -t "$TARGET_DIR" xorg
 stow -d "$STOW_DIR" -t "$TARGET_DIR" wezterm
 stow -d "$STOW_DIR" -t "$TARGET_DIR" --no-folding vscode

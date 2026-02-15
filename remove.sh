@@ -15,6 +15,7 @@ stow -D -d "$STOWDIR" -t "$TARGET" scripts
 stow -D -d "$STOWDIR" -t "$TARGET" clang-format
 stow -D -d "$STOWDIR" -t "$TARGET" alacritty
 stow -D -d "$STOWDIR" -t "$TARGET" tmux
+stow -D -d "$STOWDIR" -t "$TARGET" tmuxp
 stow -D -d "$STOWDIR" -t "$TARGET" xorg
 stow -D -d "$STOWDIR" -t "$TARGET" wezterm
 stow -D -d "$STOWDIR" -t "$TARGET" --no-folding vscode
