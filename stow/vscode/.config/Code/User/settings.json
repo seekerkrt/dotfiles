@@ -112,5 +112,6 @@
   },
   "[c]": {
     "editor.formatOnSave": false
-  }
+},
+"git.openRepositoryInParentFolders": "never"
 }
