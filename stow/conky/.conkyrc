@@ -29,10 +29,8 @@ conky.config ={
   border_inner_margin = 6,
   border_width = 5, 
 
-  minimum_height = 1020,
-
-  minimum_width = 280,
-  maximum_width = 280,
+  minimum_height = 1080,
+  minimum_width = 300,
 
   alignment = 'top_right',
   gap_x = 10,
@@ -47,7 +45,7 @@ conky.config ={
 
   -- TEXT SETTINGS
   use_xft = true,
-  font = 'Mgen+ 1mn:size=10',
+  font = 'MyricaM M:size=14',
   xftalpha = 0.2,
 
   uppercase = false,
@@ -71,57 +69,56 @@ conky.config ={
 
 
 conky.text = [[
-${alignc}${color1}${font Mgen+ 1mn:size=20}${time %H:%M:%S}${font}${color}${alignc}
+${alignc}${color1}${font MyricaM M:size=22}${time %H:%M:%S}${font}${color}${alignc}
 ${voffset -9}
-${alignc}${font Mgen+ 1mn:size=10}${time %A %d %B %Y}${font}${alignc}
+${alignc}${font MyricaM M:size=14}${time %A %d %B %Y}${font}${alignc}
 ${color6}${hr 2}${color} 
 ${voffset -6}
-${font Mgen+ 1mn:size=8}${color1}SYSTEM:${color}${font} ${alignr}$sysname $nodename 
-${font Mgen+ 1mn:size=8}${color1}UPTIME:${color}${font} ${alignr}$uptime_short
-${font Mgen+ 1mn:size=8}${color1}KERNEL:${color}${font} ${alignr}$kernel ${voffset 5}
-${font :size=11}${color}CPUs ${color}${hr 2}${color}
+${font MyricaM M:size=12}${color1}SYSTEM:${color}${font} ${alignr}$sysname $nodename 
+${font MyricaM M:size=12}${color1}UPTIME:${color}${font} ${alignr}$uptime_short
+${font MyricaM M:size=12}${color1}KERNEL:${color}${font} ${alignr}$kernel ${voffset 5}
+${font :size=15}${color}CPUs ${color}${hr 2}${color}
 ${voffset -15}
-${font Mgen+ 1mn:size=10}${color1}CPU:${color}${font} ${alignr}${color}AMD Ryzen 5 @ 3.60GHz${color}${font}
+${font MyricaM M:size=14}${color1}CPU:${color}${font} ${alignr}${color}AMD Ryzen 5 @ 3.60GHz${color}${font}
 ${voffset -15}
-${font Mgen+ 1mn:size=9}${color1}01 - 04:${color}${font} ${goto 100}${cpu cpu1}% ${goto 150}${cpu cpu2 }% ${goto 200}${cpu cpu3 }% ${goto 250}${cpu cpu4 }%
-${font Mgen+ 1mn:size=9}${color1}05 - 08:${color}${font} ${goto 100}${cpu cpu5}% ${goto 150}${cpu cpu6 }% ${goto 200}${cpu cpu7 }% ${goto 250}${cpu cpu8 }%
-${font Mgen+ 1mn:size=9}${color1}09 - 12:${color}${font} ${goto 100}${cpu cpu9}% ${goto 150}${cpu cpu10}% ${goto 200}${cpu cpu11}% ${goto 250}${cpu cpu12}%
+${font MyricaM M:size=13}${color1}01 - 04:${color}${font} ${goto 100}${cpu cpu1}% ${goto 150}${cpu cpu2 }% ${goto 200}${cpu cpu3 }% ${goto 250}${cpu cpu4 }%
+${font MyricaM M:size=13}${color1}05 - 08:${color}${font} ${goto 100}${cpu cpu5}% ${goto 150}${cpu cpu6 }% ${goto 200}${cpu cpu7 }% ${goto 250}${cpu cpu8 }%
+${font MyricaM M:size=13}${color1}09 - 12:${color}${font} ${goto 100}${cpu cpu9}% ${goto 150}${cpu cpu10}% ${goto 200}${cpu cpu11}% ${goto 250}${cpu cpu12}%
 ${voffset -8}
-#${font Mgen+ 1mn:size=9}${color1}CPU TEMP:${color}${font} ${font :size=10}${alignr}${hwmon 1 temp 1}°${color4}C${color}${voffset 5}
-${font :size=11}${color}Network ${color}${hr 2}${color}
+#${font MyricaM M:size=13}${color1}CPU TEMP:${color}${font} ${font :size=14}${alignr}${hwmon 1 temp 1}°${color4}C${color}${voffset 5}
+${font :size=15}${color}Network ${color}${hr 2}${color}
 ${voffset -15}
-${font Mgen+ 1mn:size=10}${color1}IP ADDRESS:${color}${font} ${alignr}${addr ens33}
-${if_match "${addr ens33}"!="No Address"}${voffset 5}${font Mgen+ 1mn:size=10}${font}Download ${alignr}${downspeedf ens33}k/s (${totaldown ens33})
-${color3}${downspeedgraph ens33 50,280 ADFF2F 32CD32 -t}
-${font Mgen+ 1mn:size=10}${font}Upload ${alignr}${upspeedf ens33}k/s (${totalup ens33})
-${color3}${upspeedgraph ens33 50,280 FF0000 8B0000 -t}
-${endif}${voffset 5}${font :size=11}${color}HDD ${color}${hr 2}${color}
+${font MyricaM M:size=14}${color1}IP ADDRESS:${color}${font} ${alignr}${addr eno1}
+${if_match "${addr eno1}"!="No Address"}${voffset 5}${font MyricaM M:size=14}${font}Download ${alignr}${downspeedf eno1}k/s (${totaldown eno1})
+${color3}${downspeedgraph eno1 50,280 ADFF2F 32CD32 -t}
+${font MyricaM M:size=14}${font}Upload ${alignr}${upspeedf eno1}k/s (${totalup eno1})
+${color3}${upspeedgraph eno1 50,280 FF0000 8B0000 -t}
+${endif}${voffset 5}${font :size=15}${color}HDD ${color}${hr 2}${color}
 ${color1}Used: ${color3}${fs_used /}${color1}${goto 200}Free:${goto 250}${color3}${fs_free /}
 ${color2}${fs_bar /}
-${font Mgen+ 1mn:size=8}${color1}DISK I/O:${color}${font} ${alignr}$diskio
-${voffset 2}${font Mgen+ 1mn:size=8}${color1}READ: ${color}${font} ${goto 80}${color4}${diskiograph_read  15,210 ADFF2F 32CD32 750}${color}
-${voffset 2}${font Mgen+ 1mn:size=8}${color1}WRITE:${color}${font} ${goto 80}${color4}${diskiograph_write 15,210 FF0000 8B0000 750}${color}
-${font :size=11}${color}Memory ${color}${hr 2}${color}${voffset 2}
+${font MyricaM M:size=12}${color1}DISK I/O:${color}${font} ${alignr}$diskio
+${voffset 2}${font MyricaM M:size=12}${color1}READ: ${color}${font} ${goto 80}${color4}${diskiograph_read  15,210 ADFF2F 32CD32 750}${color}
+${voffset 2}${font MyricaM M:size=12}${color1}WRITE:${color}${font} ${goto 80}${color4}${diskiograph_write 15,210 FF0000 8B0000 750}${color}
+${font :size=15}${color}Memory ${color}${hr 2}${color}${voffset 2}
 $font${color DimGray}RAM $alignc $mem / $memmax $alignr ${color 188f18}$memperc%
 ${color 188f18}$membar${voffset 1}
-${voffset 3}${font :size=11}${color}Processes ${color}${hr 2}${color}
+${voffset 3}${font :size=15}${color}Processes ${color}${hr 2}${color}
 ${voffset -15}
-${font :size=10}${font Mgen+ 1mn:size=8}${color1}TOTAL:${color}${font} ${alignr}${processes}
+${font :size=14}${font MyricaM M:size=12}${color1}TOTAL:${color}${font} ${alignr}${processes}
 ${voffset -10} 
-${font Mgen+ 1mn:size=9}${color1}APP NAME: ${goto 160}MEMORY: ${goto 245}CPU: ${color}${font}
+${font MyricaM M:size=13}${color1}APP NAME: ${goto 160}MEMORY: ${goto 245}CPU: ${color}${font}
 ${voffset -16}
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 1} ${color}${font} ${goto 160}${top mem 1} % ${goto 235}${top cpu 1} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 2} ${color}${font} ${goto 160}${top mem 2} % ${goto 235}${top cpu 2} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 3} ${color}${font} ${goto 160}${top mem 3} % ${goto 235}${top cpu 3} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 4} ${color}${font} ${goto 160}${top mem 4} % ${goto 235}${top cpu 4} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 5} ${color}${font} ${goto 160}${top mem 5} % ${goto 235}${top cpu 5} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 6} ${color}${font} ${goto 160}${top mem 6} % ${goto 235}${top cpu 6} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 7} ${color}${font} ${goto 160}${top mem 7} % ${goto 235}${top cpu 7} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 8} ${color}${font} ${goto 160}${top mem 8} % ${goto 235}${top cpu 8} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 9} ${color}${font} ${goto 160}${top mem 9} % ${goto 235}${top cpu 9} %
-${font Mgen+ 1mn:size=9}${color1}${top_mem name 10} ${color}${font} ${goto 160}${top mem 10} % ${goto 235}${top cpu 10} %
+${font MyricaM M:size=13}${color1}${top_mem name 1} ${color}${font} ${goto 160}${top mem 1} % ${goto 235}${top cpu 1} %
+${font MyricaM M:size=13}${color1}${top_mem name 2} ${color}${font} ${goto 160}${top mem 2} % ${goto 235}${top cpu 2} %
+${font MyricaM M:size=13}${color1}${top_mem name 3} ${color}${font} ${goto 160}${top mem 3} % ${goto 235}${top cpu 3} %
+${font MyricaM M:size=13}${color1}${top_mem name 4} ${color}${font} ${goto 160}${top mem 4} % ${goto 235}${top cpu 4} %
+${font MyricaM M:size=13}${color1}${top_mem name 5} ${color}${font} ${goto 160}${top mem 5} % ${goto 235}${top cpu 5} %
+${font MyricaM M:size=13}${color1}${top_mem name 6} ${color}${font} ${goto 160}${top mem 6} % ${goto 235}${top cpu 6} %
+${font MyricaM M:size=13}${color1}${top_mem name 7} ${color}${font} ${goto 160}${top mem 7} % ${goto 235}${top cpu 7} %
+${font MyricaM M:size=13}${color1}${top_mem name 8} ${color}${font} ${goto 160}${top mem 8} % ${goto 235}${top cpu 8} %
+${font MyricaM M:size=13}${color1}${top_mem name 9} ${color}${font} ${goto 160}${top mem 9} % ${goto 235}${top cpu 9} %
+${font MyricaM M:size=13}${color1}${top_mem name 10} ${color}${font} ${goto 160}${top mem 10} % ${goto 235}${top cpu 10} %
 
-${font Mgen+ 1mn:size=10}${color1}${alignr}by: Mo Abdrabou${color}${font}
-
-
+${font MyricaM M:size=8}${color1}${alignr}by: Mo Abdrabou${color}${font}
 ]];
+
