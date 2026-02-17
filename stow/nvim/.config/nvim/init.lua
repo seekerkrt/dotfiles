@@ -54,6 +54,11 @@ vim.opt.undodir = undo_dir
 vim.opt.scrolloff = 3
 vim.opt.sidescrolloff = 5
 
+-- for grep(rg)
+-- ripgrep を :grep に使う（-R は使わない）
+vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
+vim.opt.grepformat = "%f:%l:%c:%m"
+
 -- Wayland clipboard
 vim.opt.clipboard = "unnamedplus"
 
@@ -64,7 +69,6 @@ vim.g.mapleader = " "
 -- filetype tweaks (zsh / Arch configs)
 -- =============================================================================
 vim.filetype.add({
-    -- zsh settings
     extension = {
         zsh = "zsh",
     },
@@ -74,67 +78,59 @@ vim.filetype.add({
         [".zprofile"] = "zsh",
         [".zlogin"] = "zsh",
 
-        -- Arch Linux
         ["pacman.conf"] = "dosini",
         ["/etc/pacman.conf"] = "dosini",
         ["makepkg.conf"] = "bash",
         ["/etc/makepkg.conf"] = "bash",
     },
     pattern = {
-        -- Arch Linux
         [".*/etc/pacman%.d/.*%.conf"] = "dosini",
         [".*/etc/makepkg%.conf%.d/.*"] = "bash",
         [".*/makepkg%.conf%.d/.*"] = "bash",
 
-        -- optional: zsh configs under ~/.config/zsh/...
         [".*/%.config/zsh/.*"] = "zsh",
     },
 })
 
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-  pattern = { "pacman.conf", "/etc/pacman.conf", "/etc/pacman.d/*.conf" },
-  callback = function()
-    vim.cmd("setfiletype dosini")
-  end,
+    pattern = { "pacman.conf", "/etc/pacman.conf", "/etc/pacman.d/*.conf" },
+    callback = function()
+        vim.cmd("setfiletype dosini")
+    end,
 })
 
+-- =============================================================================
 -- === colors / transparency ===================================================
+-- =============================================================================
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
 
--- 透過（bg NONE）を強制する
 local function Transparent()
     local groups = {
-        -- main
         "Normal",
         "NormalNC",
         "EndOfBuffer",
 
-        -- gutter
         "SignColumn",
         "FoldColumn",
         "LineNr",
         "CursorLineNr",
 
-        -- splits / borders
         "VertSplit",
         "WinSeparator",
 
-        -- status/tabline
         "StatusLine",
         "StatusLineNC",
         "TabLine",
         "TabLineFill",
         "TabLineSel",
 
-        -- popup / float
         "Pmenu",
         "PmenuSbar",
         "PmenuThumb",
         "FloatBorder",
         "NormalFloat",
 
-        -- misc (プラグインでbg入れがちな所)
         "TelescopeNormal",
         "TelescopeBorder",
         "TelescopePromptNormal",
@@ -155,14 +151,11 @@ local function Transparent()
     end
 end
 
--- colorscheme適用後に必ず上書き
 vim.api.nvim_create_autocmd("ColorScheme", {
     callback = function()
         Transparent()
     end,
 })
-
--- 起動直後にも一回（fallback用）
 Transparent()
 
 -- =============================================================================
@@ -186,11 +179,8 @@ vim.opt.rtp:prepend(lazypath)
 -- plugins
 -- =============================================================================
 require("lazy").setup({
-    -- IMPORTANT:
-    -- cmp_nvim_lsp は LSP capabilities に必要なので先にロードしておく
     { "hrsh7th/cmp-nvim-lsp", lazy = false },
 
-    -- Theme: VSCode-like + transparent + darker feel
     {
         "Mofiqul/vscode.nvim",
         priority = 1000,
@@ -198,8 +188,6 @@ require("lazy").setup({
             vim.opt.termguicolors = true
             vim.opt.background = "dark"
 
-            -- NOTE:
-            -- 透過はここ + Transparent() の二段で貫通させる
             require("vscode").setup({
                 style = "dark",
                 transparent = true,
@@ -207,10 +195,8 @@ require("lazy").setup({
                 italic_comments = true,
                 disable_nvimtree_bg = true,
 
-                -- 「黒っぽさ」を強めたい場合の微調整（好みで）
-                -- group_overrides は vscode.nvim 側の拡張
                 group_overrides = {
-                    CursorLine = { bg = "#101010" }, -- うっすら濃いめ
+                    CursorLine = { bg = "#101010" },
                     Visual = { bg = "#1a1a1a" },
                     Search = { fg = "#000000", bg = "#c8c8c8" },
                     IncSearch = { fg = "#000000", bg = "#e0e0e0" },
@@ -218,14 +204,13 @@ require("lazy").setup({
             })
 
             vim.cmd.colorscheme("vscode")
-            -- colorscheme後に透明化を再適用
             pcall(function()
                 Transparent()
             end)
         end,
     },
 
-    -- Treesitter (main)
+    -- Treesitter (main branch API)
     {
         "nvim-treesitter/nvim-treesitter",
         branch = "main",
@@ -233,6 +218,8 @@ require("lazy").setup({
         event = { "BufReadPost", "BufNewFile" },
         config = function()
             require("nvim-treesitter.install").compilers = { "gcc" }
+
+            -- mainブランチでは configs モジュールが無いので、このAPIを使う
             require("nvim-treesitter").setup({})
 
             -- ensure parse→start (stability)
@@ -251,6 +238,38 @@ require("lazy").setup({
         end,
     },
 
+    -- Treesitter textobjects
+    {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        event = { "BufReadPost", "BufNewFile" },
+        config = function()
+            -- READMEのselect APIを使って vaf/vif を作る（configs 経由じゃない） :contentReference[oaicite:2]{index=2}
+            local ok, select = pcall(require, "nvim-treesitter-textobjects.select")
+            if not ok then
+                return
+            end
+
+            for _, mode in ipairs({ "x", "o" }) do
+                vim.keymap.set(mode, "af", function()
+                    select.select_textobject("@function.outer", "textobjects", mode)
+                end, { silent = true })
+
+                vim.keymap.set(mode, "if", function()
+                    select.select_textobject("@function.inner", "textobjects", mode)
+                end, { silent = true })
+
+                vim.keymap.set(mode, "ac", function()
+                    select.select_textobject("@class.outer", "textobjects", mode)
+                end, { silent = true })
+
+                vim.keymap.set(mode, "ic", function()
+                    select.select_textobject("@class.inner", "textobjects", mode)
+                end, { silent = true })
+            end
+        end,
+    },
+
     -- Completion Engine
     {
         "hrsh7th/nvim-cmp",
@@ -261,21 +280,33 @@ require("lazy").setup({
         },
         config = function()
             local cmp = require("cmp")
+
             cmp.setup({
+                completion = {
+                    autocomplete = false, -- 検索直後に戻る問題の回避
+                },
+
                 snippet = {
                     expand = function(args)
                         require("luasnip").lsp_expand(args.body)
                     end,
                 },
+
                 mapping = cmp.mapping.preset.insert({
+                    ["<C-Space>"] = cmp.mapping.complete(),
+                    ["<C-n>"] = cmp.mapping.select_next_item(),
+                    ["<C-p>"] = cmp.mapping.select_prev_item(),
+                    ["<Esc>"] = cmp.mapping.abort(),
                     ["<CR>"] = cmp.mapping.confirm({ select = true }),
                     ["<Tab>"] = cmp.mapping.select_next_item(),
                     ["<S-Tab>"] = cmp.mapping.select_prev_item(),
                 }),
+
                 sources = cmp.config.sources({
                     { name = "nvim_lsp" },
                     { name = "luasnip" },
                 }),
+
                 window = {
                     completion = cmp.config.window.bordered(),
                     documentation = cmp.config.window.bordered(),
@@ -295,7 +326,6 @@ require("lazy").setup({
 
             telescope.setup({
                 defaults = {
-                    -- TS絡みの事故を避ける（あなたのメモ通り）
                     preview = { treesitter = false },
                 },
             })
@@ -325,9 +355,13 @@ end)
 
 -- clang-format: always use ~/.clang-format
 local function clang_format_buffer()
+    local view = vim.fn.winsaveview()
+
     local cf = vim.fn.expand("~/.clang-format")
     local cmd = "clang-format --style=file:" .. vim.fn.shellescape(cf)
-    vim.cmd("silent %!" .. cmd)
+    vim.cmd("silent keepjumps keeppatterns %!" .. cmd)
+
+    vim.fn.winrestview(view)
 end
 
 vim.api.nvim_create_autocmd("LspAttach", {
