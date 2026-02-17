@@ -56,7 +56,7 @@ vim.opt.sidescrolloff = 5
 
 -- for grep(rg)
 -- ripgrep を :grep に使う（-R は使わない）
-vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
+vim.opt.grepprg = "rg --vimgrep --smart-case --hidden --glob '!.git/*' --glob '!**/node_modules/*'"
 vim.opt.grepformat = "%f:%l:%c:%m"
 
 -- Wayland clipboard
@@ -64,6 +64,21 @@ vim.opt.clipboard = "unnamedplus"
 
 vim.keymap.set("n", "<Esc><Esc>", "<cmd>nohlsearch<CR>", { silent = true })
 vim.g.mapleader = " "
+
+--  LSPの診断表示を“目に優しく”
+vim.diagnostic.config({
+    virtual_text = false,
+    signs = true,
+    underline = true,
+    update_in_insert = false,
+    severity_sort = true,
+})
+
+-- 診断をフロートで見る（virtual_text=false の相棒）
+vim.keymap.set("n", "gl", function()
+    vim.diagnostic.open_float(nil, { focus = false })
+end, { silent = true })
+
 
 -- =============================================================================
 -- filetype tweaks (zsh / Arch configs)
@@ -412,7 +427,7 @@ vim.api.nvim_create_user_command("Format", function()
 end, {})
 
 vim.lsp.config["clangd"] = {
-    cmd = { "clangd", "--background-index" },
+    cmd = { "clangd", "--background-index", "--clang-tidy", "--header-insertion=never" },
     capabilities = capabilities,
     filetypes = { "c", "cpp", "objc", "objcpp" },
     root_markers = { "compile_commands.json", ".git" },
@@ -458,13 +473,3 @@ vim.lsp.config["bashls"] = {
 }
 
 vim.lsp.enable({ "clangd", "lua_ls", "pyright", "bashls" })
-
--- =============================================================================
--- Terminator 側のメモ（init.lua外だけど重要）
--- =============================================================================
--- 透過は Terminator のプロファイルで設定する：
---   Preferences -> Profiles -> (使ってるProfile)
---     - Background: "Transparent background" を有効
---     - 透明度(Opacity)を 0.85 前後（好みで）
--- 背景を「もっと黒」寄りにしたい場合：
---   Terminator の背景色を #0b0b0b とかに寄せると “黒 + 透過” が締まる
