@@ -28,7 +28,7 @@ export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin"
 #export ARCH_RUST_CROSS=x86_64-pc-windows-gnu
 export GEM_HOME=$(ruby -e 'print Gem.user_dir')
 
-export TERMINAL=terminator
+export TERMINAL=wezterm
 
 #export LANG=en_US.UTF-8
 export LANG=ja_JP.UTF-8
