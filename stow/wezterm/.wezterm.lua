@@ -15,6 +15,7 @@ end
 local EXPERIMENT_WEBGPU = true          -- falseでOpenGL
 local EXPERIMENT_LIGHT_FREETYPE = true  -- falseで無効
 local EXPERIMENT_DARK_BG = true         -- falseでMonokai背景そのまま
+local EXPERIMENT_BG_GRADIENT = false
 
 
 --  カラースキーム
@@ -34,27 +35,48 @@ if EXPERIMENT_DARK_BG then
 end
 
 -- フォント設定
-config.font = wezterm.font "Myrica M"
+config.font = wezterm.font_with_fallback({
+  { family = "MyricaM M", weight = "Book" },
+
+  -- 鍵アイコン等（\uf023）は Solid 側に入ってることが多い
+  "Font Awesome 7 Free Solid",
+  "Font Awesome 7 Free",
+  "Font Awesome 7 Brands",
+
+  "Noto Sans Mono CJK JP",
+  "Noto Sans CJK JP",
+  "Noto Color Emoji",
+  "JetBrains Mono",
+})
+
 config.font_size = 12.0
 
 --  Myrica系は行間を少し増やすと気持ちいいことある。
-config.line_height = 1.08
+config.line_height = 1.00
 config.cell_width = 1.00  -- 字間。必要なら 0.95〜1.05で微調整
 
 --  “太字を使わない”で見た目を均一にする（テーマによっては激変）
 config.bold_brightens_ansi_colors = false
 
 --  タイトルバー＋リサイズ可
-config.window_decorations = "RESIZE"
+--config.window_decorations = "RESIZE"
 
 --  タブにアイコンつける（演出＋実用）
 config.use_fancy_tab_bar = true
 
+config.enable_tab_bar = true
+config.hide_tab_bar_if_only_one_tab = false
+
+config.show_tab_index_in_tab_bar = true
+config.tab_max_width = 32
+
 --  背景にグラデーション
+if EXPERIMENT_BG_GRADIENT == true then
 config.window_background_gradient = {
   orientation = "Vertical",
   colors = { "#050605", "#0B0F0B" },
 }
+end
 
 --  起動時のフェード
 config.animation_fps = 60
@@ -69,7 +91,7 @@ config.initial_rows = 45
 
 -- スクロール
 config.enable_scroll_bar = true
-config.scrollback_lines = 10000
+config.scrollback_lines = 20000
 
 -- 変換中表示をOS/IME側に任せる
 config.ime_preedit_rendering = "System"
