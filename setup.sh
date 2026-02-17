@@ -30,6 +30,8 @@ stow -d "$STOW_DIR" -t "$TARGET_DIR" waybar
 stow -d "$STOW_DIR" -t "$TARGET_DIR" mako
 stow -d "$STOW_DIR" -t "$TARGET_DIR" foot
 stow -d "$STOW_DIR" -t "$TARGET_DIR" fcitx5
+stow -d "$STOW_DIR" -t "$TARGET_DIR" emacs
+
 
 # sshディレクトリのパーミッションを適切にする（鍵を含む場合に安全寄り）
 if [ -d "$HOME/.ssh" ]; then

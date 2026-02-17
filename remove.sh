@@ -25,6 +25,8 @@ stow -D -d "$STOWDIR" -t "$TARGET" waybar
 stow -D -d "$STOWDIR" -t "$TARGET" mako
 stow -D -d "$STOWDIR" -t "$TARGET" foot
 stow -D -d "$STOWDIR" -t "$TARGET" fcitx5
+stow -D -d "$STOWDIR" -t "$TARGET" emacs
+
 
 # ~/.ssh は消さない（消すなら空のときだけ）
 rmdir "$HOME/.ssh" 2>/dev/null || true

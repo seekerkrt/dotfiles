@@ -22,9 +22,9 @@
 
 ;;フォント指定
 (set-face-attribute 'default nil
-                    :family "Mgen+ 1mn"
+                    :family "MyricaM M"
                     :height 12)
-(set-frame-font "Mgen+ 1m-9")
+(set-frame-font "MyricaM M-9")
 
 ;; メニューバーを消す
 (menu-bar-mode 0)
