@@ -14,7 +14,7 @@ local EXPERIMENT_WEBGPU = true         -- falseでOpenGL
 local EXPERIMENT_LIGHT_FREETYPE = true -- falseで無効
 local EXPERIMENT_DARK_BG = true        -- falseでMonokai背景そのまま
 local EXPERIMENT_BG_GRADIENT = false
-local TRANSPARENT = true    --  true=0.60 / false=0.90 
+local TRANSPARENT = true    --  true=0.65 / false=0.80
 
 
 -- =============================================================================
@@ -82,7 +82,7 @@ config.initial_rows = 45
 config.enable_scroll_bar = true
 config.scrollback_lines = 20000
 
-config.window_background_opacity = TRANSPARENT and 0.60 or 0.90
+config.window_background_opacity = TRANSPARENT and 0.65 or 0.80
 config.window_padding = { left = 8, right = 8, top = 6, bottom = 6 }
 
 -- 起動/カーソル演出（好み）
@@ -108,8 +108,6 @@ config.visual_bell = {
 }
 
 -- =============================================================================
--- Cursor
--- =============================================================================
 config.cursor_blink_rate = 400
 config.default_cursor_style = "BlinkingBar"
 
@@ -123,6 +121,12 @@ config.keys = {
     { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo "Clipboard" },
     { key = "V", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom "Clipboard" },
     { key = "R", mods = "CTRL|SHIFT", action = wezterm.action.ReloadConfiguration },
+    { key = "e", mods = "ALT", action = wezterm.action.SplitVertical { domain = "CurrentPaneDomain" } },
+    { key = "o", mods = "ALT", action = wezterm.action.SplitHorizontal { domain = "CurrentPaneDomain" } },
+    { key = "h", mods = "ALT", action = wezterm.action.ActivatePaneDirection "Left" },
+    { key = "l", mods = "ALT", action = wezterm.action.ActivatePaneDirection "Right" },
+    { key = "k", mods = "ALT", action = wezterm.action.ActivatePaneDirection "Up" },
+    { key = "j", mods = "ALT", action = wezterm.action.ActivatePaneDirection "Down" },
 }
 
 for i = 1, 8 do
@@ -144,4 +148,5 @@ if EXPERIMENT_LIGHT_FREETYPE then
     config.freetype_render_target = "Light"
 end
 
+--  設定反映（忘れずにリターン）
 return config
