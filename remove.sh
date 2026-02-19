@@ -24,7 +24,7 @@ stow -D -d "$STOWDIR" -t "$TARGET" sway
 stow -D -d "$STOWDIR" -t "$TARGET" waybar
 stow -D -d "$STOWDIR" -t "$TARGET" mako
 stow -D -d "$STOWDIR" -t "$TARGET" foot
-stow -D -d "$STOWDIR" -t "$TARGET" fcitx5
+stow -D -d "$STOWDIR" -t "$TARGET" env
 stow -D -d "$STOWDIR" -t "$TARGET" emacs
 stow -D -d "$STOWDIR" -t "$TARGET" hypr
 
