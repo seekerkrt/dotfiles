@@ -1,12 +1,26 @@
 * {
-  border: none;
-  font-family: "Noto Sans";
-  font-size: 13px;
-  background: transparent;
-  color: #ffffff;
+  font-family: monospace;
+  font-size: 12px;
 }
 
-#clock {
-  padding: 0 10px;
+window#waybar {
+  background: rgba(0, 0, 0, 0.65);
+  color: #e6e6e6;
+}
+
+#workspaces button {
+  padding: 0 7px;
+  margin: 3px 2px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.10);
+  color: #e6e6e6;
+}
+
+#workspaces button.active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+#clock, #network, #pulseaudio, #tray {
+  padding: 0 8px;
 }
 

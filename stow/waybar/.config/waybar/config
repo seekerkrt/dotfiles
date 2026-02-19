@@ -1,9 +1,26 @@
 {
   "layer": "top",
-  "modules-left": ["sway/workspaces"],
-  "modules-center": ["sway/window"],
-  "modules-right": ["clock", "tray"],
-  "clock": {
-    "format": "{:%Y-%m-%d %H:%M}"
+  "output": ["DP-1"],
+  "position": "bottom",
+  "height": 28,
+
+  "modules-left": ["hyprland/workspaces", "wlr/taskbar"],
+  "modules-center": ["hyprland/window"],
+  "modules-right": ["pulseaudio", "network", "tray", "clock"],
+
+  "clock": { "format": "{:%m/%d %H:%M}" },
+
+  "hyprland/workspaces": {
+    "disable-scroll": true,
+    "all-outputs": true
+  },
+
+  "hyprland/window": { "max-length": 60 },
+
+  "wlr/taskbar": {
+    "all-outputs": false,
+    "on-click": "activate",
+    "on-click-middle": "close",
+    "tooltip-format": "{title}"
   }
 }
