@@ -1,6 +1,20 @@
-[main]
+default-timeout=5000
+ignore-timeout=1
+
 font=Noto Sans Mono:size=11
 
-[colors]
-foreground=ffffff
-background=000000
+#foreground=ffffff
+#background=000000
+
+border-size=2
+border-radius=8
+padding=10
+margin=10
+max-visible=5
+
+anchor=bottom-right
+
+
+# うるさくなりがちな音は切る（必要なら後で戻す）
+#sound=0
+
