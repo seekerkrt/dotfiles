@@ -1,14 +1,31 @@
 -- =============================================================================
 -- Neovim init.lua (Pure v0.11 Native Config + Lazy.nvim)
+--
+-- [MAP]
+--   1) compat / shims
+--   2) basics (vim.opt / vim.g)
+--   3) keymaps (global)
+--   4) diagnostics
+--   5) filetype tweaks
+--   6) colors / transparency
+--   7) lazy.nvim bootstrap
+--   8) plugins
+--   9) native LSP + format
+--
+-- [POLICY]
 --   - no nvim-lspconfig
 --   - Treesitter + Native LSP + nvim-cmp
 --   - Theme: vscode.nvim (darker + transparent)
---   - Terminal: Terminator (透過は端末側で opacity 設定)
---   - Format: clang-format (global ~/.clang-format forced)
+--   - Terminal transparency is managed by terminal app (Terminator opacity)
+--   - clang-format: always force ~/.clang-format
 --   - Telescope: builtin direct call (avoid extension confusion)
 -- =============================================================================
 
--- --- compat: telescope vs nvim 0.11 treesitter API ---------------------------
+-- =============================================================================
+-- 1) compat / shims
+-- =============================================================================
+
+-- --- compat: telescope vs nvim 0.11 treesitter API ----------------------------
 vim.treesitter = vim.treesitter or {}
 if type(vim.treesitter.ft_to_lang) ~= "function" then
     vim.treesitter.ft_to_lang = function(ft)
@@ -25,10 +42,10 @@ if type(vim.treesitter.ft_to_lang) ~= "function" then
     end
 end
 
--- 誤爆しやすい <C-x> を無効化（挿入モード）
-vim.keymap.set("i", "<C-x>", "<Nop>", { noremap = true, silent = true })
+-- =============================================================================
+-- 2) basics (vim.opt / vim.g)
+-- =============================================================================
 
--- === basics ===
 vim.opt.number = true
 vim.opt.cursorline = true
 
@@ -62,10 +79,24 @@ vim.opt.grepformat = "%f:%l:%c:%m"
 -- Wayland clipboard
 vim.opt.clipboard = "unnamedplus"
 
-vim.keymap.set("n", "<Esc><Esc>", "<cmd>nohlsearch<CR>", { silent = true })
+-- leader（好みで）
 vim.g.mapleader = " "
 
---  LSPの診断表示を“目に優しく”
+-- =============================================================================
+-- 3) keymaps (global)
+-- =============================================================================
+
+-- 誤爆しやすい <C-x> を無効化（挿入モード）
+vim.keymap.set("i", "<C-x>", "<Nop>", { noremap = true, silent = true })
+
+-- 検索ハイライト消し
+vim.keymap.set("n", "<Esc><Esc>", "<cmd>nohlsearch<CR>", { silent = true })
+
+-- =============================================================================
+-- 4) diagnostics
+-- =============================================================================
+
+-- LSPの診断表示を“目に優しく”
 vim.diagnostic.config({
     virtual_text = false,
     signs = true,
@@ -79,10 +110,10 @@ vim.keymap.set("n", "gl", function()
     vim.diagnostic.open_float(nil, { focus = false })
 end, { silent = true })
 
+-- =============================================================================
+-- 5) filetype tweaks (zsh / Arch configs)
+-- =============================================================================
 
--- =============================================================================
--- filetype tweaks (zsh / Arch configs)
--- =============================================================================
 vim.filetype.add({
     extension = {
         zsh = "zsh",
@@ -115,67 +146,69 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 })
 
 -- =============================================================================
--- === colors / transparency ===================================================
+-- 6) colors / transparency
 -- =============================================================================
+
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
 
-local function Transparent()
-    local groups = {
-        "Normal",
-        "NormalNC",
-        "EndOfBuffer",
+local kTransparentGroups = {
+    "Normal",
+    "NormalNC",
+    "EndOfBuffer",
 
-        "SignColumn",
-        "FoldColumn",
-        "LineNr",
-        "CursorLineNr",
+    "SignColumn",
+    "FoldColumn",
+    "LineNr",
+    "CursorLineNr",
 
-        "VertSplit",
-        "WinSeparator",
+    "VertSplit",
+    "WinSeparator",
 
-        "StatusLine",
-        "StatusLineNC",
-        "TabLine",
-        "TabLineFill",
-        "TabLineSel",
+    "StatusLine",
+    "StatusLineNC",
+    "TabLine",
+    "TabLineFill",
+    "TabLineSel",
 
-        "Pmenu",
-        "PmenuSbar",
-        "PmenuThumb",
-        "FloatBorder",
-        "NormalFloat",
+    "Pmenu",
+    "PmenuSbar",
+    "PmenuThumb",
+    "FloatBorder",
+    "NormalFloat",
 
-        "TelescopeNormal",
-        "TelescopeBorder",
-        "TelescopePromptNormal",
-        "TelescopePromptBorder",
-        "TelescopeResultsNormal",
-        "TelescopeResultsBorder",
-        "TelescopePreviewNormal",
-        "TelescopePreviewBorder",
+    "TelescopeNormal",
+    "TelescopeBorder",
+    "TelescopePromptNormal",
+    "TelescopePromptBorder",
+    "TelescopeResultsNormal",
+    "TelescopeResultsBorder",
+    "TelescopePreviewNormal",
+    "TelescopePreviewBorder",
 
-        "CmpPmenu",
-        "CmpPmenuBorder",
-        "CmpDoc",
-        "CmpDocBorder",
-    }
+    "CmpPmenu",
+    "CmpPmenuBorder",
+    "CmpDoc",
+    "CmpDocBorder",
+}
 
-    for _, g in ipairs(groups) do
+local function ApplyTransparentHighlights()
+    for _, g in ipairs(kTransparentGroups) do
         vim.api.nvim_set_hl(0, g, { bg = "none" })
     end
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", {
     callback = function()
-        Transparent()
+        ApplyTransparentHighlights()
     end,
 })
-Transparent()
+ApplyTransparentHighlights()
 
 -- =============================================================================
--- === lazy.nvim bootstrap ======================================================
+-- 7) lazy.nvim bootstrap
 -- =============================================================================
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 local uv = vim.uv or vim.loop
 if not uv.fs_stat(lazypath) then
@@ -191,8 +224,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- =============================================================================
--- plugins
+-- 8) plugins
 -- =============================================================================
+
 require("lazy").setup({
     { "hrsh7th/cmp-nvim-lsp", lazy = false },
 
@@ -200,9 +234,6 @@ require("lazy").setup({
         "Mofiqul/vscode.nvim",
         priority = 1000,
         config = function()
-            vim.opt.termguicolors = true
-            vim.opt.background = "dark"
-
             require("vscode").setup({
                 style = "dark",
                 transparent = true,
@@ -220,7 +251,7 @@ require("lazy").setup({
 
             vim.cmd.colorscheme("vscode")
             pcall(function()
-                Transparent()
+                ApplyTransparentHighlights()
             end)
         end,
     },
@@ -253,13 +284,12 @@ require("lazy").setup({
         end,
     },
 
-    -- Treesitter textobjects
+    -- Treesitter textobjects (select API direct call)
     {
         "nvim-treesitter/nvim-treesitter-textobjects",
         dependencies = { "nvim-treesitter/nvim-treesitter" },
         event = { "BufReadPost", "BufNewFile" },
         config = function()
-            -- READMEのselect APIを使って vaf/vif を作る（configs 経由じゃない） :contentReference[oaicite:2]{index=2}
             local ok, select = pcall(require, "nvim-treesitter-textobjects.select")
             if not ok then
                 return
@@ -361,8 +391,9 @@ require("lazy").setup({
 })
 
 -- =============================================================================
--- Native LSP Setup (Neovim 0.11+)
+-- 9) Native LSP Setup (Neovim 0.11+)
 -- =============================================================================
+
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 pcall(function()
     capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
