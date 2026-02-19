@@ -29,7 +29,7 @@ stow -d "$STOW_DIR" -t "$TARGET_DIR" sway
 stow -d "$STOW_DIR" -t "$TARGET_DIR" waybar
 stow -d "$STOW_DIR" -t "$TARGET_DIR" mako
 stow -d "$STOW_DIR" -t "$TARGET_DIR" foot
-stow -d "$STOW_DIR" -t "$TARGET_DIR" fcitx5
+stow -d "$STOW_DIR" -t "$TARGET_DIR" env
 stow -d "$STOW_DIR" -t "$TARGET_DIR" emacs
 stow -d "$STOW_DIR" -t "$TARGET_DIR" hypr
 
