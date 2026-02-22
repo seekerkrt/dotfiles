@@ -190,5 +190,14 @@ typeset -U path fpath
 autoload -Uz cpfunc cpc cins csrc cfn csrcq cplines cplinesn
 
 
+ff() {
+  fd -t f . | fzf --preview "bat --style=plain --color=always {}" --preview-window=right:60%
+}
 
+ffv() {
+  local f
+  f="$(fd -t f . | fzf --preview "bat --style=plain --color=always {}" --preview-window=right:60%)" || return
+  nvim "$f"
+}
 
+fcd() { cd "$(fd -t d . | fzf)" }
