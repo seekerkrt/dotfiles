@@ -115,6 +115,26 @@ config.default_cursor_style = "BlinkingBar"
 config.selection_word_boundary = " \t\n{}[]()\"'`,;:="
 
 -- =============================================================================
+-- Clipboard / Mouse
+-- =============================================================================
+config.mouse_bindings = {
+  -- 左ボタンで選択→指を離した瞬間に Clipboard へコピー（= copy-on-select 相当）
+  {
+    event = { Up = { streak = 1, button = "Left" } },
+    mods = "NONE",
+    action = wezterm.action.CompleteSelectionOrOpenLinkAtMouseCursor "Clipboard",
+    -- デフォルトは PrimarySelection なので、それを Clipboard に変えるのが肝
+  },
+
+  -- 右クリックで貼り付け（Clipboard）
+  {
+    event = { Down = { streak = 1, button = "Right" } },
+    mods = "NONE",
+    action = wezterm.action.PasteFrom "Clipboard",
+  },
+}
+
+-- =============================================================================
 -- Keys
 -- =============================================================================
 config.keys = {

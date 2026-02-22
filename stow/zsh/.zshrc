@@ -46,6 +46,8 @@ export VSCODE_CONF=~/config/Code/User/settings.json
 alias ls="ls -F --color=auto"
 alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
+alias cat='bat --paging=never --style=plain'
+alias ccat='command cat'
 #alias nvim='LC_MESSAGES=C nvim'
 #alias emacs="emacs -nw"
 #alias google-chrome-stable="google-chrome-stable --force-dark-mode"
@@ -122,6 +124,14 @@ zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
+
+# --- fzf key bindings / completion ---
+if [[ -r /usr/share/fzf/key-bindings.zsh ]]; then
+  source /usr/share/fzf/key-bindings.zsh
+fi
+if [[ -r /usr/share/fzf/completion.zsh ]]; then
+  source /usr/share/fzf/completion.zsh
+fi
 
 # すべてのヒストリを表示する
 function history-all { history -E 1 }
