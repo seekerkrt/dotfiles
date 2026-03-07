@@ -195,8 +195,9 @@ ff() {
 }
 
 ffv() {
+  local base="${1:-.}"
   local f
-  f="$(fd -t f . | fzf --preview "bat --style=plain --color=always {}" --preview-window=right:60%)" || return
+  f="$(fd -t f . "$base" | fzf --preview "bat --style=plain --color=always {}" --preview-window=right:60%)" || return
   nvim "$f"
 }
 
