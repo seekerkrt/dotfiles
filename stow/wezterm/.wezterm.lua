@@ -14,7 +14,7 @@ local EXPERIMENT_WEBGPU = false         -- falseでOpenGL
 local EXPERIMENT_LIGHT_FREETYPE = true -- falseで無効
 local EXPERIMENT_DARK_BG = true        -- falseでMonokai背景そのまま
 local EXPERIMENT_BG_GRADIENT = false
-local TRANSPARENT = true    --  true=0.65 / false=0.80
+local TRANSPARENT = false    --  true=0.70 / false=0.88
 
 
 -- =============================================================================
@@ -82,7 +82,7 @@ config.initial_rows = 45
 config.enable_scroll_bar = true
 config.scrollback_lines = 20000
 
-config.window_background_opacity = TRANSPARENT and 0.65 or 0.80
+config.window_background_opacity = TRANSPARENT and 0.70 or 0.88
 config.window_padding = { left = 8, right = 8, top = 6, bottom = 6 }
 
 -- 起動/カーソル演出（好み）

@@ -15,7 +15,7 @@
 -- [POLICY]
 --   - no nvim-lspconfig
 --   - Treesitter + Native LSP + nvim-cmp
---   - Theme: vscode.nvim (darker + transparent)
+--   - Theme: runtime switchable (monokai / onedark / tokyonight / vscode)
 --   - Terminal transparency is managed by terminal app (Terminator opacity)
 --   - clang-format: always force ~/.clang-format
 --   - Telescope: builtin direct call (avoid extension confusion)
@@ -206,6 +206,74 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 ApplyTransparentHighlights()
 
+-- --- Theme switcher -----------------------------------------------------------
+
+-- 起動時のテーマ（ここを変えるだけでデフォルト切替）
+vim.g.my_theme = "monokai" -- "monokai" / "onedark" / "tokyonight" / "vscode"
+
+local function ApplyTheme(theme)
+    theme = theme or vim.g.my_theme or "monokai"
+    vim.g.my_theme = theme
+
+    local ok = pcall(vim.cmd.colorscheme, theme)
+    if not ok then
+        vim.notify("colorscheme not found: " .. tostring(theme), vim.log.levels.WARN)
+        return
+    end
+
+    -- 透明化（今の運用を維持）
+    pcall(ApplyTransparentHighlights)
+
+    -- テーマ別の微調整（コメント色/視認性）
+    if theme == "monokai" then
+        vim.api.nvim_set_hl(0, "Comment", { fg = "#8b949e", italic = false })
+        vim.api.nvim_set_hl(0, "@comment", { fg = "#8b949e", italic = false })
+        vim.api.nvim_set_hl(0, "CursorLine", { bg = "#202020" })
+    elseif theme == "onedark" then
+        vim.api.nvim_set_hl(0, "Comment", { fg = "#7f848e", italic = false })
+        vim.api.nvim_set_hl(0, "@comment", { fg = "#7f848e", italic = false })
+        vim.api.nvim_set_hl(0, "CursorLine", { bg = "#242b38" })
+    elseif theme == "tokyonight" then
+        vim.api.nvim_set_hl(0, "Comment", { fg = "#6A9955", italic = false })
+        vim.api.nvim_set_hl(0, "@comment", { fg = "#6A9955", italic = false })
+        vim.api.nvim_set_hl(0, "CursorLine", { bg = "#1a1f2a" })
+    elseif theme == "vscode" then
+        vim.api.nvim_set_hl(0, "Comment", { fg = "#7f848e", italic = true })
+        vim.api.nvim_set_hl(0, "@comment", { fg = "#7f848e", italic = true })
+        vim.api.nvim_set_hl(0, "CursorLine", { bg = "#101010" })
+    end
+end
+
+-- コマンドで切替
+vim.api.nvim_create_user_command("Theme", function(opts)
+    ApplyTheme(opts.args)
+end, {
+    nargs = 1,
+    complete = function()
+        return { "monokai", "onedark", "tokyonight", "vscode" }
+    end,
+})
+
+-- よく使うテーマをキーで直指定
+vim.keymap.set("n", "<leader>tm", function() ApplyTheme("monokai") end, { silent = true, desc = "Theme: monokai" })
+vim.keymap.set("n", "<leader>to", function() ApplyTheme("onedark") end, { silent = true, desc = "Theme: onedark" })
+vim.keymap.set("n", "<leader>tt", function() ApplyTheme("tokyonight") end, { silent = true, desc = "Theme: tokyonight" })
+vim.keymap.set("n", "<leader>tv", function() ApplyTheme("vscode") end, { silent = true, desc = "Theme: vscode" })
+
+-- 巡回トグル
+vim.keymap.set("n", "<leader>tn", function()
+    local order = { "monokai", "onedark", "tokyonight", "vscode" }
+    local cur = vim.g.my_theme or order[1]
+    local idx = 1
+    for i, name in ipairs(order) do
+        if name == cur then
+            idx = i
+            break
+        end
+    end
+    ApplyTheme(order[(idx % #order) + 1])
+end, { silent = true, desc = "Theme: next" })
+
 -- =============================================================================
 -- 7) lazy.nvim bootstrap
 -- =============================================================================
@@ -229,8 +297,80 @@ vim.opt.rtp:prepend(lazypath)
 -- =============================================================================
 
 require("lazy").setup({
-    { "hrsh7th/cmp-nvim-lsp", lazy = false },
+    { "hrsh7th/cmp-nvim-lsp",   lazy = false },
 
+    {
+        "tanvirtin/monokai.nvim",
+        priority = 1000,
+        config = function()
+            require("monokai").setup({
+                palette = require("monokai").pro, -- pro / classic / soda / ristretto / machine
+                italics = false,
+                custom_hlgroups = {
+                    Comment = { fg = "#8b949e" },
+                    CursorLine = { bg = "#202020" },
+                },
+            })
+            -- NOTE:
+            -- 実際の適用は ApplyTheme() で一元管理する
+        end,
+    },
+
+    {
+        "navarasu/onedark.nvim",
+        priority = 1000,
+        config = function()
+            require("onedark").setup({
+                style = "darker", -- dark / darker / cool / deep / warm / warmer / light
+                transparent = false,
+                term_colors = true,
+                code_style = {
+                    comments = "none",
+                },
+                lualine = {
+                    transparent = false,
+                },
+                highlights = {
+                    Comment = { fg = "#7f848e", italic = false },
+                    ["@comment"] = { fg = "#7f848e", italic = false },
+                    CursorLine = { bg = "#242b38" },
+                },
+            })
+            -- NOTE:
+            -- 実際の適用は ApplyTheme() で一元管理する
+        end,
+    },
+
+    -- おまけ：青・緑が綺麗な Nightfox
+    { "EdenEast/nightfox.nvim", lazy = false, priority = 1000 },
+
+    -- Tokyo Night (VS風カスタム設定)
+    {
+        "folke/tokyonight.nvim",
+        lazy = false,
+        priority = 1000,
+        opts = {
+            style = "storm",
+            transparent = false, -- 背景黒重視なら一旦false
+            styles = {
+                comments = { italic = true },
+                keywords = { italic = false },
+            },
+            on_colors = function(colors)
+                -- 背景を漆黒にするならここを #000000 に
+                colors.bg = "#000000"
+            end,
+            on_highlights = function(hl, _)
+                -- コメントをVS風の緑 (#6A9955) に強制
+                hl.Comment = { fg = "#6A9955" }
+                -- 型指定や予約語を水色・青系に調整
+                hl["@type"] = { fg = "#4EC9B0" }
+                hl["@keyword"] = { fg = "#569CD6" }
+            end,
+        },
+    },
+
+    -- VSCode.nvim
     {
         "Mofiqul/vscode.nvim",
         priority = 1000,
@@ -238,10 +378,8 @@ require("lazy").setup({
             require("vscode").setup({
                 style = "dark",
                 transparent = true,
-
                 italic_comments = true,
                 disable_nvimtree_bg = true,
-
                 group_overrides = {
                     CursorLine = { bg = "#101010" },
                     Visual = { bg = "#1a1a1a" },
@@ -249,11 +387,8 @@ require("lazy").setup({
                     IncSearch = { fg = "#000000", bg = "#e0e0e0" },
                 },
             })
-
-            vim.cmd.colorscheme("vscode")
-            pcall(function()
-                ApplyTransparentHighlights()
-            end)
+            -- NOTE:
+            -- 実際の適用は ApplyTheme() で一元管理する
         end,
     },
 
@@ -390,6 +525,11 @@ require("lazy").setup({
         end,
     },
 })
+
+-- lazy読み込み後にテーマを適用（起動時）
+vim.schedule(function()
+    ApplyTheme(vim.g.my_theme)
+end)
 
 -- =============================================================================
 -- 9) Native LSP Setup (Neovim 0.11+)
