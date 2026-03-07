@@ -1,32 +1,52 @@
 #!/usr/bin/env sh
 set -eu
 
-DOTFILES="$(cd "$(dirname "$0")" && pwd)"
-STOWDIR="$DOTFILES/stow"
-TARGET="$HOME"
+DOTFILES_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+STOW_DIR="$DOTFILES_DIR/stow"
+TARGET_DIR="$HOME"
 
-stow -D -d "$STOWDIR" -t "$TARGET" nvim
-stow -D -d "$STOWDIR" -t "$TARGET" ssh
-stow -D -d "$STOWDIR" -t "$TARGET" zsh
-stow -D -d "$STOWDIR" -t "$TARGET" vim
-stow -D -d "$STOWDIR" -t "$TARGET" zsh-functions
-stow -D -d "$STOWDIR" -t "$TARGET" git
-stow -D -d "$STOWDIR" -t "$TARGET" scripts
-stow -D -d "$STOWDIR" -t "$TARGET" clang-format
-stow -D -d "$STOWDIR" -t "$TARGET" alacritty
-stow -D -d "$STOWDIR" -t "$TARGET" tmux
-stow -D -d "$STOWDIR" -t "$TARGET" tmuxp
-stow -D -d "$STOWDIR" -t "$TARGET" xorg
-stow -D -d "$STOWDIR" -t "$TARGET" wezterm
-stow -D -d "$STOWDIR" -t "$TARGET" --no-folding vscode
-stow -D -d "$STOWDIR" -t "$TARGET" conky
-stow -D -d "$STOWDIR" -t "$TARGET" sway
-stow -D -d "$STOWDIR" -t "$TARGET" waybar
-stow -D -d "$STOWDIR" -t "$TARGET" mako
-stow -D -d "$STOWDIR" -t "$TARGET" foot
-stow -D -d "$STOWDIR" -t "$TARGET" env
-stow -D -d "$STOWDIR" -t "$TARGET" emacs
-stow -D -d "$STOWDIR" -t "$TARGET" hypr
+# remove対象から外したいパッケージ名（必要なら増やす）
+SKIP_PACKAGES="
+"
+
+stow_remove_one() {
+  pkg="$1"
+  case "$pkg" in
+    vscode)
+      stow -D -d "$STOW_DIR" -t "$TARGET_DIR" --no-folding "$pkg"
+      ;;
+    *)
+      stow -D -d "$STOW_DIR" -t "$TARGET_DIR" "$pkg"
+      ;;
+  esac
+}
+
+is_skipped() {
+  pkg="$1"
+  for s in $SKIP_PACKAGES; do
+    [ "$pkg" = "$s" ] && return 0
+  done
+  return 1
+}
+
+found_any=0
+for path in "$STOW_DIR"/*; do
+  [ -d "$path" ] || continue
+  found_any=1
+
+  pkg="$(basename -- "$path")"
+  if is_skipped "$pkg"; then
+    echo "[stow] skip: $pkg"
+    continue
+  fi
+
+  echo "[stow] remove: $pkg"
+  stow_remove_one "$pkg"
+done
+
+if [ "$found_any" -eq 0 ]; then
+  echo "[stow] no packages found under: $STOW_DIR" >&2
+fi
 
 # ~/.ssh は消さない（消すなら空のときだけ）
 rmdir "$HOME/.ssh" 2>/dev/null || true
