@@ -1,0 +1,41 @@
+[mgr]
+show_hidden = false
+sort_by = "natural"
+sort_dir_first = true
+linemode = "size"
+show_symlink = true
+scrolloff = 5
+ratio = [1, 4, 3]
+
+[preview]
+tab_size = 4
+max_width = 1800
+max_height = 1800
+
+[opener]
+edit = [
+  { run = '${EDITOR:-nvim} "$@"', block = true, desc = "$EDITOR", for = "unix" },
+]
+
+open = [
+  { run = 'xdg-open "$@"', desc = "Open", for = "linux" },
+]
+
+[open]
+prepend_rules = [
+  { name = "*.txt", use = "edit" },
+  { name = "*.md", use = "edit" },
+  { name = "*.cpp", use = "edit" },
+  { name = "*.c", use = "edit" },
+  { name = "*.hpp", use = "edit" },
+  { name = "*.h", use = "edit" },
+  { name = "*.py", use = "edit" },
+  { name = "*.lua", use = "edit" },
+  { name = "*.json", use = "edit" },
+  { name = "*.toml", use = "edit" },
+  { name = "*.yaml", use = "edit" },
+  { name = "*.yml", use = "edit" },
+  { name = "*.sh", use = "edit" },
+  { name = "*.zsh", use = "edit" },
+  { name = "*.conf", use = "edit" },
+]

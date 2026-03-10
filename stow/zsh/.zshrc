@@ -202,3 +202,5 @@ ffv() {
 }
 
 fcd() { cd "$(fd -t d . | fzf)" }
+
+eval "$(zoxide init zsh)"
