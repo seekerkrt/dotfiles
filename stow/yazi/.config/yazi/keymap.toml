@@ -1,0 +1,15 @@
+[mgr]
+prepend_keymap = [
+  { on = "l",         run = "open",                        desc = "Open selected" },
+  { on = "h",         run = "leave",                       desc = "Go parent" },
+  { on = [ "g", "." ], run = "cd ~/.config",              desc = "Go ~/.config" },
+  { on = [ "g", "d" ], run = "cd ~/dotfiles",             desc = "Go ~/dotfiles" },
+  { on = [ "g", "j" ], run = "cd ~/jadeos",               desc = "Go ~/jadeos" },
+  { on = [ "g", "n" ], run = "cd ~/.config/nvim",         desc = "Go nvim config" },
+  { on = "T",         run = "tab_create --current",       desc = "New tab here" },
+  { on = "<C-h>",     run = "hidden toggle",              desc = "Toggle hidden" },
+  { on = "<C-s>",     run = "sort modified --reverse=no", desc = "Sort by modified" },
+  { on = "<C-n>",     run = "sort natural --reverse=no",  desc = "Sort naturally" },
+  { on = "=",         run = "linemode size",              desc = "Linemode size" },
+  { on = "-",         run = "linemode none",              desc = "Linemode none" },
+]
