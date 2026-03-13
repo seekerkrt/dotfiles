@@ -23,7 +23,7 @@ export VISUAL=nvim
 export DIFFPROG="nvim -d"
 
 #export CROSSDEV=/opt/crossdev
-export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin"
+export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin:$HOME/.local/npm-global/bin"
 
 #export ARCH_RUST_CROSS=x86_64-pc-windows-gnu
 export GEM_HOME=$(ruby -e 'print Gem.user_dir')
@@ -175,8 +175,6 @@ precmd() { vcs_info }
 ### PROMPT変数
 PROMPT='[${p_user}@${p_host} ${p_pwd}]:${vcs_info_msg_0_}${p_mark} '
 
-# エイリアスでコマンドラインの自動補完を切り替える
-setopt completealiases
 
 # Editor Ctrl-x Ctrl-e (コマンドラインをエディタで編集)
 autoload -Uz edit-command-line
