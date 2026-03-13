@@ -43,10 +43,14 @@ end
 -- =============================================================================
 -- Font
 -- =============================================================================
+
+
 config.font = wezterm.font_with_fallback({
     { family = "MyricaM M", weight = "Book" },
 
-    -- 鍵アイコン等（\uf023）対策
+    "JetBrainsMono Nerd Font Mono",
+    "Symbols Nerd Font",
+
     "Font Awesome 7 Free Solid",
     "Font Awesome 7 Free",
     "Font Awesome 7 Brands",
@@ -56,6 +60,7 @@ config.font = wezterm.font_with_fallback({
     "Noto Color Emoji",
     "JetBrains Mono",
 })
+
 
 config.font_size = 12.0
 config.line_height = 1.00
