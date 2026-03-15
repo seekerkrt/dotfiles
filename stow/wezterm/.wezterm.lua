@@ -10,7 +10,7 @@ local function Set(key, value)
 end
 
 -- === toggles（ここだけ触ればOK）===
-local EXPERIMENT_WEBGPU = false         -- falseでOpenGL
+local EXPERIMENT_WEBGPU = true         -- falseでOpenGL
 local EXPERIMENT_LIGHT_FREETYPE = true -- falseで無効
 local EXPERIMENT_DARK_BG = true        -- falseでMonokai背景そのまま
 local EXPERIMENT_BG_GRADIENT = false
