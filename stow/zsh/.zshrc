@@ -48,6 +48,7 @@ alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
 alias cat='bat --paging=never --style=plain'
 alias ccat='command cat'
+alias eza='eza -F'
 #alias nvim='LC_MESSAGES=C nvim'
 #alias emacs="emacs -nw"
 #alias google-chrome-stable="google-chrome-stable --force-dark-mode"
