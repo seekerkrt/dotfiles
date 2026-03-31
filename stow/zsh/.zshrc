@@ -29,6 +29,7 @@ export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin:$HOME/.local/npm-global/bi
 export GEM_HOME=$(ruby -e 'print Gem.user_dir')
 
 export TERMINAL=wezterm
+export BROWSER=google-chrome-stable
 
 #export LANG=en_US.UTF-8
 export LANG=ja_JP.UTF-8

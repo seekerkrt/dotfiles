@@ -1,0 +1,29 @@
+# ~/.codex/config.toml
+# Plusプラン向け・常用の最小構成
+
+model = "gpt-5.4"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+model_reasoning_effort = "medium"
+model_verbosity = "medium"
+
+[sandbox_workspace_write]
+network_access = false
+
+[profiles.safe]
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+web_search = "cached"
+model_reasoning_effort = "medium"
+model_verbosity = "medium"
+
+[profiles.deep]
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+model_reasoning_effort = "high"
+model_verbosity = "medium"
+
+[projects."/home/seeke/jadeos"]
+trust_level = "trusted"

@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make:*)",
+      "Bash(make -j:*)",
+      "Bash(qemu-system-x86_64:*)",
+      "Bash(git status)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(rg:*)",
+      "Bash(fd:*)",
+      "Bash(ls:*)",
+      "Bash(eza:*)",
+      "Bash(cat:*)",
+      "Bash(bat:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git add:*)"
+    ]
+  },
+  "env": {
+    "DISABLE_TELEMETRY": "1"
+  }
+}
