@@ -70,7 +70,6 @@
         "MSYSTEM": "MINGW64",
         "CHERE_INVOKING": "1"
     },
-    "workbench.colorTheme": "Default Dark+",
     "workbench.iconTheme": "vscode-icons",
     "workbench.editor.empty.hint": "hidden",
     "workbench.editorAssociations": {
@@ -123,4 +122,10 @@
     "[mdx]": {
         "editor.wordWrap": "on"
     }
+   
+    "files.associations": {
+        "*.jc": "cpp",
+        "*.jh": "cpp"
+    }
 }
+
