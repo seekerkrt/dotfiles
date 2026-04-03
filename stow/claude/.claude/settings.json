@@ -1,4 +1,7 @@
 {
+  "env": {
+    "DISABLE_TELEMETRY": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(make:*)",
@@ -26,7 +29,12 @@
       "Bash(git add:*)"
     ]
   },
-  "env": {
-    "DISABLE_TELEMETRY": "1"
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "npx -y ccstatusline@latest",
+    "padding": 0
   }
 }
