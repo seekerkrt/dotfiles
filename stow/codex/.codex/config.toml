@@ -31,3 +31,7 @@ trust_level = "trusted"
 
 [projects."/home/seeke/jadec"]
 trust_level = "trusted"
+
+
+[projects."/home/seeke/dotfiles"]
+trust_level = "trusted"
