@@ -1,1 +1,0 @@
-stow/zsh-functions/.zsh
