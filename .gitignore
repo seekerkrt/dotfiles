@@ -10,7 +10,7 @@ target/
 *.tar*
 *.zip
 *.zst
-
+.codex
 # Themes / icons (3rd-party, huge file count)
 .icons/
 .themes/
