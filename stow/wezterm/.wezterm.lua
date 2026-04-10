@@ -173,5 +173,10 @@ if EXPERIMENT_LIGHT_FREETYPE then
     config.freetype_render_target = "Light"
 end
 
+--- ==============================================================================
+--- UI/通知
+--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+config.notification_handling = "NeverShow"
+
 --  設定反映（忘れずにリターン）
 return config
