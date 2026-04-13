@@ -34,3 +34,6 @@ trust_level = "trusted"
 
 [projects."/home/seeke/dotfiles"]
 trust_level = "trusted"
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "five-hour-limit", "weekly-limit", "context-usage", "codex-version", "fast-mode"]
