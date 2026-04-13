@@ -7,8 +7,6 @@ i386-elf-binutils
 i386-elf-gcc
 jpacker
 keyleds-git
-lib32-gst-plugins-base-libs
-lib32-gstreamer
 mingw-w64-lua
 nkf
 proton-ge-custom-bin
@@ -24,6 +22,5 @@ visual-studio-code-bin
 vkd3d-proton-bin
 x86_64-elf-binutils
 x86_64-elf-gcc
-xorg-font-utils
 xpadneo-dkms-git
 yay
