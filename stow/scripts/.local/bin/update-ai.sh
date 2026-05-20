@@ -46,6 +46,7 @@ log ""
 log "Current versions (before update)"
 show_version "codex" "codex"
 show_version "claude" "claude"
+show_version "gemini" "gemini"
 
 run_step "Update OpenAI Codex CLI" \
     npm install -g @openai/codex@latest
@@ -53,10 +54,14 @@ run_step "Update OpenAI Codex CLI" \
 run_step "Update Claude Code CLI" \
     npm install -g @anthropic-ai/claude-code@latest
 
+run_step "Update Google Gemini CLI" \
+     npm install -g @google/gemini-cli@latest
+
 log ""
 log "Versions after update"
 show_version "codex" "codex"
 show_version "claude" "claude"
+show_version "gemini" "gemini"
 
 log ""
 log "All updates completed successfully."

@@ -1,7 +1,7 @@
 # ~/.codex/config.toml
 # Plusプラン向け・常用の最小構成
 
-model = "gpt-5.4"
+model = "gpt-5.5"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 web_search = "cached"
@@ -42,4 +42,4 @@ trust_level = "trusted"
 status_line = ["model-with-reasoning", "current-dir", "five-hour-limit", "weekly-limit", "context-usage", "codex-version", "fast-mode"]
 
 [tui.model_availability_nux]
-"gpt-5.5" = 3
+"gpt-5.5" = 4
