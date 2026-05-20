@@ -7,8 +7,10 @@ i386-elf-binutils
 i386-elf-gcc
 jpacker
 keyleds-git
+leaf-markdown-viewer-bin
 mingw-w64-lua
 nkf
+onlyoffice-bin
 proton-ge-custom-bin
 rtl8761b-firmware
 steamcmd
