@@ -26,6 +26,16 @@ web_search = "cached"
 model_reasoning_effort = "high"
 model_verbosity = "medium"
 
+[profiles.online]
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "enabled"
+model_reasoning_effort = "medium"
+model_verbosity = "medium"
+
+[profiles.online.sandbox_workspace_write]
+network_access = true
+
 [projects."/home/seeke/jadeos"]
 trust_level = "trusted"
 
