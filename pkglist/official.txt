@@ -53,6 +53,7 @@ git
 git-filter-repo
 gnome-keyring
 go
+gparted
 grim
 grub
 gwenview
@@ -100,7 +101,6 @@ libreoffice-fresh-ja
 libva-nvidia-driver
 lightdm
 lightdm-gtk-greeter
-limine
 linux
 linux-headers
 linux-lts
