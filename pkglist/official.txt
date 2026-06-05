@@ -36,6 +36,7 @@ dos2unix
 dosfstools
 drkonqi
 efibootmgr
+efitools
 elisa
 evtest
 eza
@@ -182,6 +183,7 @@ rclone
 reflector
 rsync
 ruby
+sbctl
 sd
 sddm-kcm
 sl
