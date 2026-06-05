@@ -1,4 +1,5 @@
 7zip
+age
 alacritty
 alsa-utils
 arch-install-scripts
@@ -39,6 +40,7 @@ efibootmgr
 efitools
 elisa
 evtest
+exfatprogs
 eza
 fastfetch
 fcitx5
@@ -48,6 +50,7 @@ fcitx5-mozc
 fcitx5-qt
 fd
 ffmpegthumbnailer
+fio
 firefox
 flatpak-kcm
 gimp
@@ -56,6 +59,7 @@ git-filter-repo
 gnome-keyring
 go
 gparted
+gptfdisk
 grim
 grub
 gwenview
