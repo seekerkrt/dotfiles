@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# -----------------------------------------------------------------------------
+# 責務:
+#   secureboot-backupで作成したアーカイブからsbctl状態を復元する。
+#
+# POLICY:
+#   - UEFI鍵の登録やSecure Boot設定変更は自動実行しない。
+#   - 復元前の現在状態を必ず退避する。
+#   - 復元後はSecure Boot用GRUBと、現在存在するカーネルを署名する。
+#
+# LANDMINE:
+#   復元する鍵とUEFIに登録済みの鍵が異なる場合、
+#   次回起動前にUEFIをSetup Modeへ切り替えて鍵登録が必要。
+# -----------------------------------------------------------------------------
+
+readonly SBCTL_DIR="/var/lib/sbctl"
+readonly BACKUP_DIR="/var/lib/secureboot-backups"
+readonly REFRESH_GRUB="/usr/local/sbin/secureboot-refresh-grub"
+readonly ESP_DIR="/boot/efi"
+
+die() {
+  echo "[secureboot-restore] ERROR: $*" >&2
+  exit 1
+}
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  sudo secureboot-restore <sbctl-state-YYYYMMDD-HHMMSS.tar.gz>
+
+Example:
+  sudo secureboot-restore /linuxshare/SecureBoot/sbctl-state-20260605-180000.tar.gz
+EOF
+  exit 2
+}
+
+restore_previous_state() {
+  local exit_code=$?
+
+  trap - EXIT
+
+  if ((exit_code == 0)); then
+    exit 0
+  fi
+
+  echo "[secureboot-restore] ERROR: restore failed" >&2
+
+  if [[ -n "${PREVIOUS_ARCHIVE:-}" && -f "$PREVIOUS_ARCHIVE" ]]; then
+    echo "[secureboot-restore] restoring previous sbctl state" >&2
+
+    rm -rf -- "$SBCTL_DIR"
+    tar \
+      --acls \
+      --xattrs \
+      --numeric-owner \
+      -C /var/lib \
+      -xzf "$PREVIOUS_ARCHIVE"
+
+    echo "[secureboot-restore] previous sbctl state restored" >&2
+  fi
+
+  exit "$exit_code"
+}
+
+[[ $EUID -eq 0 ]] || die "root権限で実行してほしい"
+[[ $# -eq 1 ]] || usage
+
+readonly ARCHIVE="$1"
+readonly CHECKSUM="${ARCHIVE}.sha256"
+readonly TEMP_DIR="$(mktemp -d /var/tmp/secureboot-restore.XXXXXXXX)"
+readonly TIMESTAMP="$(date '+%Y%m%d-%H%M%S')"
+readonly PREVIOUS_ARCHIVE="${BACKUP_DIR}/sbctl-before-restore-${TIMESTAMP}.tar.gz"
+
+trap 'rm -rf -- "$TEMP_DIR"' RETURN
+trap restore_previous_state EXIT
+
+command -v sbctl >/dev/null 2>&1 \
+  || die "sbctl が見つからない"
+
+command -v tar >/dev/null 2>&1 \
+  || die "tar が見つからない"
+
+[[ -f "$ARCHIVE" ]] \
+  || die "バックアップが存在しない: ${ARCHIVE}"
+
+[[ -d /sys/firmware/efi ]] \
+  || die "UEFI起動環境ではない"
+
+mountpoint -q "$ESP_DIR" \
+  || die "${ESP_DIR} がマウントされていない"
+
+if [[ -f "$CHECKSUM" ]]; then
+  echo "[secureboot-restore] verifying checksum"
+  (
+    cd "$(dirname -- "$ARCHIVE")"
+    sha256sum -c "$(basename -- "$CHECKSUM")"
+  )
+else
+  echo "[secureboot-restore] WARNING: checksum file not found" >&2
+fi
+
+echo "[secureboot-restore] validating archive"
+
+tar -tzf "$ARCHIVE" >/dev/null
+
+tar -tzf "$ARCHIVE" \
+  | grep -qx 'sbctl/GUID' \
+  || die "アーカイブにsbctl/GUIDがない"
+
+for required in \
+  sbctl/keys/PK/PK.key \
+  sbctl/keys/PK/PK.pem \
+  sbctl/keys/KEK/KEK.key \
+  sbctl/keys/KEK/KEK.pem \
+  sbctl/keys/db/db.key \
+  sbctl/keys/db/db.pem
+do
+  tar -tzf "$ARCHIVE" | grep -qx "$required" \
+    || die "アーカイブに必要ファイルがない: ${required}"
+done
+
+tar \
+  --acls \
+  --xattrs \
+  --numeric-owner \
+  -C "$TEMP_DIR" \
+  -xzf "$ARCHIVE"
+
+install -d -o root -g root -m 700 "$BACKUP_DIR"
+
+if [[ -d "$SBCTL_DIR" ]]; then
+  echo "[secureboot-restore] backing up current sbctl state: ${PREVIOUS_ARCHIVE}"
+
+  tar \
+    --acls \
+    --xattrs \
+    --numeric-owner \
+    -C /var/lib \
+    -czf "$PREVIOUS_ARCHIVE" \
+    sbctl
+
+  chmod 600 "$PREVIOUS_ARCHIVE"
+fi
+
+echo "[secureboot-restore] restoring sbctl state"
+
+rm -rf -- "$SBCTL_DIR"
+cp -a -- "${TEMP_DIR}/sbctl" "$SBCTL_DIR"
+
+chown -R root:root "$SBCTL_DIR"
+chmod 700 "$SBCTL_DIR"
+chmod 700 "${SBCTL_DIR}/keys"
+
+find "${SBCTL_DIR}/keys" -type d -exec chmod 700 {} +
+find "${SBCTL_DIR}/keys" -type f -exec chmod 600 {} +
+
+echo "[secureboot-restore] rebuilding and signing Secure Boot GRUB"
+
+[[ -x "$REFRESH_GRUB" ]] \
+  || die "${REFRESH_GRUB} が配置されていない"
+
+"$REFRESH_GRUB"
+
+echo "[secureboot-restore] signing existing kernels"
+
+for kernel in /boot/vmlinuz-*; do
+  [[ -f "$kernel" ]] || continue
+  sbctl sign --save "$kernel"
+done
+
+for grub_efi in \
+  /boot/efi/EFI/arch-grub/grubx64.efi \
+  /boot/efi/EFI/arch-grub-secure/grubx64.efi
+do
+  [[ -f "$grub_efi" ]] || continue
+  sbctl sign --save "$grub_efi"
+done
+
+echo "[secureboot-restore] verifying signatures"
+sbctl verify
+
+rm -rf -- "$TEMP_DIR"
+trap - RETURN
+trap - EXIT
+
+echo
+echo "[secureboot-restore] completed"
+echo
+echo "次に確認すること:"
+echo "  sudo sbctl status"
+echo "  sudo sbctl verify"
+echo
+echo "UEFI側に鍵が未登録の場合のみ、手動で次を行う:"
+echo "  1. UEFIでPlatform Keyを削除してSetup Modeへ入る"
+echo "  2. sudo sbctl enroll-keys --microsoft --firmware-builtin=db,KEK"
+echo "  3. UEFIでSecure Bootを有効化する"
+

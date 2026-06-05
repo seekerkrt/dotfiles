@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# -----------------------------------------------------------------------------
+# 責務:
+#   sbctlの鍵・Owner GUID・署名対象DBをまとめてバックアップする。
+#
+# POLICY:
+#   - 秘密鍵を含むため、出力ファイルはrootのみ読み取り可能にする。
+#   - バックアップ先はdotfilesリポジトリ外を前提とする。
+#   - SHA-256を同時生成し、復元前に破損確認できるようにする。
+#
+# LANDMINE:
+#   出力物にはSecure Boot秘密鍵が含まれる。
+#   公開Git・クラウド共有・他人が読める場所へ置かないこと。
+# -----------------------------------------------------------------------------
+
+readonly SBCTL_DIR="/var/lib/sbctl"
+
+die() {
+  echo "[secureboot-backup] ERROR: $*" >&2
+  exit 1
+}
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  sudo secureboot-backup <destination-directory>
+
+Example:
+  sudo secureboot-backup /linuxshare/SecureBoot
+EOF
+  exit 2
+}
+
+[[ $EUID -eq 0 ]] || die "root権限で実行してほしい"
+[[ $# -eq 1 ]] || usage
+
+readonly DEST_DIR="$1"
+readonly TIMESTAMP="$(date '+%Y%m%d-%H%M%S')"
+readonly ARCHIVE="${DEST_DIR}/sbctl-state-${TIMESTAMP}.tar.gz"
+readonly CHECKSUM="${ARCHIVE}.sha256"
+
+[[ -d "$SBCTL_DIR" ]] || die "${SBCTL_DIR} が存在しない"
+[[ -f "${SBCTL_DIR}/GUID" ]] || die "sbctl Owner GUID が存在しない"
+[[ -d "${SBCTL_DIR}/keys" ]] || die "sbctl鍵ディレクトリが存在しない"
+
+install -d -o root -g root -m 700 "$DEST_DIR"
+
+echo "[secureboot-backup] creating: ${ARCHIVE}"
+
+tar \
+  --acls \
+  --xattrs \
+  --numeric-owner \
+  -C /var/lib \
+  -czf "$ARCHIVE" \
+  sbctl
+
+chmod 600 "$ARCHIVE"
+
+sha256sum "$ARCHIVE" >"$CHECKSUM"
+chmod 600 "$CHECKSUM"
+
+echo "[secureboot-backup] verifying archive"
+tar -tzf "$ARCHIVE" >/dev/null
+sha256sum -c "$CHECKSUM"
+
+echo
+echo "[secureboot-backup] completed"
+echo "  archive : ${ARCHIVE}"
+echo "  checksum: ${CHECKSUM}"
+

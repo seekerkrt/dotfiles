@@ -60,3 +60,8 @@ vscode/.config/Code/Cache/
 !.config/Code/User/keybindings.json
 !.config/Code/User/snippets/
 !.config/Code/User/snippets/**
+
+# Secure Boot private keys must never enter this repository.
+system/secureboot/keys/
+system/secureboot/**/*.key
+system/secureboot/**/*.pem

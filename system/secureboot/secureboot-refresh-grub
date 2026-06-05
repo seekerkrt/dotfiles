@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# -----------------------------------------------------------------------------
+# 責務:
+#   Secure Boot対応GRUB EFIイメージを再生成し、sbctlで署名・検証する。
+#
+# POLICY:
+#   - EFI BootOrder / NVRAMは変更しない。
+#   - grub.cfgは自動再生成しない。
+#   - Secure Boot秘密鍵やUEFI登録鍵は変更しない。
+#   - 更新失敗時は、直前まで動いていた署名済みGRUBを復元する。
+#
+# LANDMINE:
+#   grub-install直後のgrubx64.efiは未署名。
+#   署名処理が失敗した状態で再起動すると、Secure Bootに拒否される。
+# -----------------------------------------------------------------------------
+
+readonly ESP_DIR="/boot/efi"
+readonly BOOTLOADER_ID="arch-grub-secure"
+readonly EFI_FILE="${ESP_DIR}/EFI/${BOOTLOADER_ID}/grubx64.efi"
+
+# POLICY:
+# ESP内にバックアップを置くとsbctl verifyの走査対象になるため、
+# ルートファイルシステム側へ一時退避する。
+readonly BACKUP_DIR="/var/lib/secureboot-backups"
+readonly BACKUP_FILE="${BACKUP_DIR}/${BOOTLOADER_ID}-grubx64.efi.before-refresh"
+
+readonly -a GRUB_MODULES=(
+  tpm
+  part_gpt
+  part_msdos
+  fat
+  ext2
+  normal
+  configfile
+  linux
+  chain
+  search
+  search_fs_uuid
+  search_fs_file
+  all_video
+  efi_gop
+  efi_uga
+  gfxterm
+  gettext
+  gzio
+  bli
+)
+
+die() {
+  echo "[secureboot-grub] ERROR: $*" >&2
+  exit 1
+}
+
+restore_on_failure() {
+  local exit_code=$?
+
+  # LANDMINE:
+  # EXIT trap内でexitすると再度trapされる可能性を避ける。
+  trap - EXIT
+
+  if ((exit_code == 0)); then
+    rm -f -- "$BACKUP_FILE"
+    exit 0
+  fi
+
+  echo "[secureboot-grub] ERROR: refresh failed" >&2
+
+  if [[ -f "$BACKUP_FILE" ]]; then
+    echo "[secureboot-grub] restoring previous signed GRUB: ${EFI_FILE}" >&2
+
+    cp -af -- "$BACKUP_FILE" "$EFI_FILE"
+    sync
+
+    echo "[secureboot-grub] previous GRUB restored" >&2
+  else
+    echo "[secureboot-grub] WARNING: no previous GRUB backup available" >&2
+  fi
+
+  exit "$exit_code"
+}
+
+trap restore_on_failure EXIT
+
+[[ $EUID -eq 0 ]] || die "root権限で実行してほしい"
+
+command -v grub-install >/dev/null 2>&1 \
+  || die "grub-install が見つからない"
+
+command -v sbctl >/dev/null 2>&1 \
+  || die "sbctl が見つからない"
+
+command -v mountpoint >/dev/null 2>&1 \
+  || die "mountpoint が見つからない"
+
+[[ -d /sys/firmware/efi ]] \
+  || die "UEFI起動環境ではない"
+
+mountpoint -q "$ESP_DIR" \
+  || die "${ESP_DIR} がマウントされていない"
+
+[[ -d /var/lib/sbctl/keys ]] \
+  || die "sbctl鍵が配置されていない"
+
+install -d -o root -g root -m 700 "$BACKUP_DIR"
+
+if [[ -f "$EFI_FILE" ]]; then
+  echo "[secureboot-grub] backing up current signed GRUB: ${BACKUP_FILE}"
+  cp -af -- "$EFI_FILE" "$BACKUP_FILE"
+else
+  # NOTE:
+  # 新規復旧時など、既存EFIファイルがない場合は復元元も存在しない。
+  rm -f -- "$BACKUP_FILE"
+fi
+
+echo "[secureboot-grub] rebuilding: ${EFI_FILE}"
+
+grub-install \
+  --target=x86_64-efi \
+  --efi-directory="$ESP_DIR" \
+  --bootloader-id="$BOOTLOADER_ID" \
+  --no-nvram \
+  --disable-shim-lock \
+  --modules="${GRUB_MODULES[*]}"
+
+echo "[secureboot-grub] signing: ${EFI_FILE}"
+sbctl sign --save "$EFI_FILE"
+
+echo "[secureboot-grub] verifying: ${EFI_FILE}"
+sbctl verify "$EFI_FILE"
+
+sync
+
+rm -f -- "$BACKUP_FILE"
+trap - EXIT
+
+echo "[secureboot-grub] completed"

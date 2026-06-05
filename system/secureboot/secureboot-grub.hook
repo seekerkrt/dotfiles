@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = grub
+
+[Action]
+Description = Rebuilding and signing Secure Boot GRUB image...
+When = PostTransaction
+Exec = /usr/local/sbin/secureboot-refresh-grub
