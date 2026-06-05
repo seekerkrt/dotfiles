@@ -1,6 +1,15 @@
-#! /usr/bin/env sh
+#!/usr/bin/env sh
 
 set -u
+
+# RESPONSIBILITY:
+# npmでグローバル導入しているAI CLIをまとめて最新版へ更新する。
+#
+# NOTE:
+# npmはinstall scriptを持つグローバルパッケージに対して、
+# allow-scripts未承認の警告を表示する場合がある。
+# 現在のnpm approve-scriptsはプロジェクトのpackage.json向けであり、
+# npm install -gの承認状態を管理できないため、警告はそのまま扱う。
 
 log() {
     printf '%s\n' "$*"
@@ -12,6 +21,7 @@ show_version() {
 
     if command -v "$cmd" >/dev/null 2>&1; then
         version="$("$cmd" --version 2>/dev/null || true)"
+
         if [ -n "$version" ]; then
             log "    ${label}: ${version}"
         else
@@ -55,7 +65,7 @@ run_step "Update Claude Code CLI" \
     npm install -g @anthropic-ai/claude-code@latest
 
 run_step "Update Google Gemini CLI" \
-     npm install -g @google/gemini-cli@latest
+    npm install -g @google/gemini-cli@latest
 
 log ""
 log "Versions after update"
