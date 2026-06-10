@@ -76,3 +76,6 @@ stow/gemini/.gemini/history/
 stow/gemini/.gemini/tmp/
 stow/gemini/.gemini/*.log
 stow/gemini/.gemini/logs.json
+
+# SSH secrets are not managed by this repository.
+stow/ssh/
