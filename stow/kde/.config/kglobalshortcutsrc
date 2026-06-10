@@ -347,6 +347,8 @@ switch to previous activity=,,前のアクティビティに切り替え
 toggle do not disturb=,,マナーモードをオン/オフ
 
 [services][org.kde.spectacle.desktop]
+CurrentMonitorScreenShot=
+OpenWithoutScreenshot=
 RecordRegion=\t
 RecordWindow=
 
