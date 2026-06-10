@@ -65,3 +65,14 @@ vscode/.config/Code/Cache/
 system/secureboot/keys/
 system/secureboot/**/*.key
 system/secureboot/**/*.pem
+
+# Gemini CLI local/private state
+stow/gemini/.gemini/google_accounts.json
+stow/gemini/.gemini/oauth_creds.json
+stow/gemini/.gemini/installation_id
+stow/gemini/.gemini/state.json
+stow/gemini/.gemini/projects.json
+stow/gemini/.gemini/history/
+stow/gemini/.gemini/tmp/
+stow/gemini/.gemini/*.log
+stow/gemini/.gemini/logs.json
