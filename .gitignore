@@ -79,3 +79,8 @@ stow/gemini/.gemini/logs.json
 
 # SSH secrets are not managed by this repository.
 stow/ssh/
+
+# VSCode local workspace/session state
+vscode/.config/Code/User/workspaceStorage/
+vscode/.config/Code/User/globalStorage/
+vscode/.config/Code/User/History/
