@@ -17,29 +17,29 @@
 
 ### プロジェクトの主な構造
 .
-├── stow/                     # GNU Stowで展開するアプリ別設定ディレクトリ
-│   ├── alacritty/            # 端末（Myrica Mフォント、不透明度0.6）
-│   ├── bash/                 # 普段は使わないが環境変数・エイリアスなど最小限定義
-│   ├── btop/                 # TTYテーマ、Vimキー無効の基本設定
-│   ├── claude/               # 開発相棒（AI）用のカスタムルール (CLAUDE.md)
-│   ├── codex/                # 開発相棒（AI）用のカスタムルール (AGENTS.md)
-│   ├── hypr/                 # Hyprland（DP-1 144Hz / HDMI-A-1 144Hz）デュアルモニタ、ピン留め設定
-│   ├── kde/                  # KDE Plasma（Krohnkiteタイルスクリプト有効、ショートカット）
-│   ├── nvim/                 # Neovim (Pure v0.11 Native LSP + Lazy.nvim、monokai常用)
-│   ├── scripts/              # 個人用バイナリ・自作スクリプト群（Chrome起動、cpfuncなど）
-│   ├── tmux/                 # zshデフォルト起動、Viコピーモード、ペイン分割パス維持
-│   ├── vscode/               # VS Code設定（Myrica Mフォント、clangd用query-driver）
-│   ├── waybar/               # タスクバー、Hyprland連携
-│   ├── wezterm/              # メイン端末（WebGpu有効、copy-on-select、Monokai Dark）
-│   └── zsh/                  # メインシェル、プロンプトにvcs_infoによるGit情報連携
-├── system/secureboot/        # Secure Boot運用関連のコア設定・フック
-├── pkglist/                  # pacmanで明示的に導入したパッケージの記録（official / foreign）
-├── apply-stow.sh             # 全 stowed パッケージのリンク生成スクリプト
-├── remove-stow.sh            # 全 stowed パッケージのリンク削除スクリプト
-├── update-pkglist.sh         # 現在のインストール済みパッケージを pkglist/ に保存
-├── restore-pkglist.sh        # pkglist/ からパッケージを再現（yay/paru自動検知）
-├── backup-ssh-allowlist.sh   # ~/.ssh から特定の鍵とconfigのみを暗号化(GPG)バックアップ
-└── setup-system.sh           # root所有のシステム設定（Secure Bootスクリプトなど）を配置
+├── stow/   （GNU Stowで展開するアプリ別設定ディレクトリ）
+│   ├── alacritty/   （端末：Myrica Mフォント、不透明度0.6）
+│   ├── bash/   （環境変数・エイリアスなど最小限定義）
+│   ├── btop/   （TTYテーマ、Vimキー無効の基本設定）
+│   ├── claude/   （CLAUDE.md カスタムルール）
+│   ├── codex/   （AGENTS.md カスタムルール）
+│   ├── hypr/   （Hyprlandデュアルモニタ、ピン留め設定）
+│   ├── kde/   （KDE Plasma：Krohnkite有効、ショートカット）
+│   ├── nvim/   （Pure v0.11 Native LSP + Lazy.nvim、monokai常用）
+│   ├── scripts/   （個人用スクリプト群：Chrome起動、cpfuncなど）
+│   ├── tmux/   （zshデフォルト起動、Viコピーモード、ペイン分割パス維持）
+│   ├── vscode/   （VS Code設定：Myrica Mフォント、clangd用query-driver）
+│   ├── waybar/   （タスクバー、Hyprland連携）
+│   ├── wezterm/   （メイン端末：WebGpu有効、copy-on-select、Monokai Dark）
+│   └── zsh/   （メインシェル、プロンプトにvcs_infoによるGit情報連携）
+├── system/secureboot/   （Secure Boot運用関連のコア設定・フック）
+├── pkglist/   （pacmanで明示的に導入したパッケージの記録）
+├── apply-stow.sh   （全 stowed パッケージのリンク生成スクリプト）
+├── remove-stow.sh   （全 stowed パッケージのリンク削除スクリプト）
+├── update-pkglist.sh   （現在のインストール済みパッケージを pkglist/ に保存）
+├── restore-pkglist.sh   （pkglist/ からパッケージを再現）
+├── backup-ssh-allowlist.sh   （~/.ssh から特定の鍵とconfigのみを暗号化バックアップ）
+└── setup-system.sh   （root所有のシステム設定を配置）
 
 ### 主要スクリプトの使い方
 
