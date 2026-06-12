@@ -3,13 +3,22 @@ set -eu
 
 BACKUP_NAME="ssh-backup.tar.gz.gpg"
 
+# Allowlist:
+# Only these files are included in the encrypted backup.
+# authorized_keys / known_hosts / known_hosts.old are intentionally excluded.
+INCLUDE_PATHS='
+.ssh/config
+.ssh/id_ed25519
+.ssh/id_ed25519.pub
+'
+
 usage() {
   cat >&2 <<USAGE
 usage:
   $0 BACKUP_DIR
 
 description:
-  Backup ~/.ssh as an encrypted GPG archive.
+  Backup selected ~/.ssh files as an encrypted GPG archive.
 
 arguments:
   BACKUP_DIR  Directory where ${BACKUP_NAME} will be created.
@@ -19,6 +28,16 @@ example:
 
 output:
   BACKUP_DIR/${BACKUP_NAME}
+
+included files:
+  ~/.ssh/config
+  ~/.ssh/id_ed25519
+  ~/.ssh/id_ed25519.pub
+
+excluded files:
+  ~/.ssh/authorized_keys
+  ~/.ssh/known_hosts
+  ~/.ssh/known_hosts.old
 USAGE
 }
 
@@ -56,17 +75,48 @@ if [ -e "$BACKUP_FILE" ]; then
   mv -- "$BACKUP_FILE" "$OLD_FILE"
 fi
 
-TMP_TAR="$(mktemp --tmpdir ssh-backup.XXXXXX.tar.gz)"
+umask 077
+
+TMP_DIR="$(mktemp -d --tmpdir ssh-backup.XXXXXX)"
+TMP_TAR="$TMP_DIR/ssh-backup.tar.gz"
+TMP_LIST="$TMP_DIR/include.txt"
 
 cleanup() {
-  rm -f -- "$TMP_TAR"
+  rm -rf -- "$TMP_DIR"
 }
 trap cleanup EXIT INT TERM
 
+: > "$TMP_LIST"
+FOUND=0
+
+for REL_PATH in $INCLUDE_PATHS; do
+  SRC_PATH="$HOME/$REL_PATH"
+
+  if [ ! -e "$SRC_PATH" ]; then
+    echo "[ssh] notice: skip missing file: ~/$REL_PATH"
+    continue
+  fi
+
+  if [ ! -f "$SRC_PATH" ]; then
+    echo "[ssh] warning: skip non-regular file: ~/$REL_PATH" >&2
+    continue
+  fi
+
+  printf '%s\n' "$REL_PATH" >> "$TMP_LIST"
+  FOUND=1
+done
+
+if [ "$FOUND" -ne 1 ]; then
+  echo "[ssh] error: no allowlisted SSH files were found." >&2
+  exit 1
+fi
+
 echo "[ssh] backup from: $SOURCE_DIR"
 echo "[ssh] backup to:   $BACKUP_FILE"
+echo "[ssh] include:"
+sed 's/^/[ssh]   ~\//' "$TMP_LIST"
 
-tar -C "$HOME" -czf "$TMP_TAR" .ssh
+tar -C "$HOME" -czf "$TMP_TAR" -T "$TMP_LIST"
 gpg -c --output "$BACKUP_FILE" "$TMP_TAR"
 
 chmod 600 "$BACKUP_FILE" 2>/dev/null || true
