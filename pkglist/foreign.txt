@@ -1,5 +1,4 @@
 asp
-downgrade
 game-devices-udev
 google-chrome
 hyprqt6engine
@@ -10,7 +9,6 @@ keyleds-git
 leaf-markdown-viewer-bin
 mingw-w64-lua
 nkf
-onlyoffice-bin
 proton-ge-custom-bin
 rtl8761b-firmware
 steamcmd
@@ -25,4 +23,3 @@ vkd3d-proton-bin
 x86_64-elf-binutils
 x86_64-elf-gcc
 xpadneo-dkms-git
-yay

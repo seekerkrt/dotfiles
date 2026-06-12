@@ -19,6 +19,11 @@ breeze
 breeze-gtk
 breeze-plymouth
 btop
+btrfs-progs
+cachyos-keyring
+cachyos-mirrorlist
+cachyos-v3-mirrorlist
+cachyos-v4-mirrorlist
 ccache
 clamav
 clamtk
@@ -35,6 +40,7 @@ dkms
 dolphin
 dos2unix
 dosfstools
+downgrade
 drkonqi
 efibootmgr
 efitools
@@ -65,7 +71,6 @@ grub
 gwenview
 helvum
 htop
-hyprland
 hyprpaper
 inetutils
 jdk-openjdk
@@ -108,6 +113,8 @@ libva-nvidia-driver
 lightdm
 lightdm-gtk-greeter
 linux
+linux-cachyos-bore
+linux-cachyos-bore-headers
 linux-headers
 linux-lts
 linux-lts-headers
@@ -116,6 +123,7 @@ linux-zen-headers
 lua-language-server
 mako
 man-db
+markdownlint-cli2
 mesa-docs
 milou
 mingw-w64-binutils
@@ -138,11 +146,13 @@ noto-fonts-cjk
 noto-fonts-extra
 npm
 ntfs-3g
+ntfsprogs
 nvidia-open-dkms
 obs-studio
 obsidian
 ocean-sound-theme
 okular
+onlyoffice-bin
 openbsd-netcat
 opencl-mesa
 openssh
@@ -272,6 +282,7 @@ xorg-xwayland
 xorg-xwd
 xorg-xwininfo
 xorg-xwud
+yay
 yazi
 zip
 zoxide
