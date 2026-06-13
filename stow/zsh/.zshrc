@@ -183,12 +183,14 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^x^e' edit-command-line
 
-
 # ---- user functions (autoload) ----
 fpath=("$HOME/.zsh/functions" $fpath)
-typeset -U path fpath
-autoload -Uz cpfunc cpc cins csrc cfn csrcq cplines cplinesn
+typeset -U fpath
 
+for func_file in "$HOME"/.zsh/functions/*(.N); do
+  autoload -Uz "${func_file:t}"
+done
+unset func_file
 
 ff() {
   fd -t f . | fzf --preview "bat --style=plain --color=always {}" --preview-window=right:60%
