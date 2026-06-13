@@ -1,14 +1,14 @@
-# ~/.codex/config.toml
-# Plusプラン向け・常用の最小構成
-
-model = "gpt-5.5"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 web_search = "cached"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
 model_verbosity = "medium"
-approvals_reviewer = "user"
 
 [sandbox_workspace_write]
 network_access = false
 
+[projects."/home/seeke/game-engine"]
+trust_level = "trusted"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 1
