@@ -12,3 +12,9 @@ approvals_reviewer = "user"
 [sandbox_workspace_write]
 network_access = false
 
+[projects."/home/seeke/game-engine"]
+trust_level = "trusted"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 1
+
