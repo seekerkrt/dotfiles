@@ -22,6 +22,9 @@ export EDITOR=nvim
 export VISUAL=nvim
 export DIFFPROG="nvim -d"
 
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+
 #export CROSSDEV=/opt/crossdev
 export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin:$HOME/.local/npm-global/bin"
 
