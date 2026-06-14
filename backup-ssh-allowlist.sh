@@ -41,6 +41,47 @@ excluded files:
 USAGE
 }
 
+file_timestamp() {
+  FILE="$1"
+
+  # GNU stat:
+  #   %W = birth time as seconds since Epoch; 0 or -1 if unknown
+  #   %Y = modification time as seconds since Epoch
+  #
+  # Some filesystems / mount options do not expose birth time.
+  # In that case, fall back to mtime.
+  EPOCH="$(stat -c '%W' -- "$FILE" 2>/dev/null || printf '0')"
+
+  case "$EPOCH" in
+    ''|0|-1)
+      EPOCH="$(stat -c '%Y' -- "$FILE")"
+      ;;
+  esac
+
+  date -d "@$EPOCH" +%Y%m%d-%H%M%S
+}
+
+archived_backup_path() {
+  FILE="$1"
+  TS="$(file_timestamp "$FILE")"
+
+  CANDIDATE="$FILE.$TS.bak"
+  if [ ! -e "$CANDIDATE" ]; then
+    printf '%s\n' "$CANDIDATE"
+    return 0
+  fi
+
+  N=1
+  while :; do
+    CANDIDATE="$FILE.$TS.$N.bak"
+    if [ ! -e "$CANDIDATE" ]; then
+      printf '%s\n' "$CANDIDATE"
+      return 0
+    fi
+    N=$((N + 1))
+  done
+}
+
 if [ "$#" -ne 1 ]; then
   usage
   exit 1
@@ -67,22 +108,16 @@ if [ ! -d "$BACKUP_DIR" ]; then
   exit 1
 fi
 
-if [ -e "$BACKUP_FILE" ]; then
-  TS="$(date +%Y%m%d-%H%M%S)"
-  OLD_FILE="$BACKUP_FILE.$TS.bak"
-  echo "[ssh] notice: existing backup found."
-  echo "[ssh] move old backup to: $OLD_FILE"
-  mv -- "$BACKUP_FILE" "$OLD_FILE"
-fi
-
 umask 077
 
 TMP_DIR="$(mktemp -d --tmpdir ssh-backup.XXXXXX)"
 TMP_TAR="$TMP_DIR/ssh-backup.tar.gz"
 TMP_LIST="$TMP_DIR/include.txt"
+TMP_BACKUP_FILE="$(mktemp "$BACKUP_DIR/.${BACKUP_NAME}.XXXXXX")"
 
 cleanup() {
   rm -rf -- "$TMP_DIR"
+  rm -f -- "$TMP_BACKUP_FILE"
 }
 trap cleanup EXIT INT TERM
 
@@ -117,9 +152,27 @@ echo "[ssh] include:"
 sed 's/^/[ssh]   ~\//' "$TMP_LIST"
 
 tar -C "$HOME" -czf "$TMP_TAR" -T "$TMP_LIST"
-gpg -c --output "$BACKUP_FILE" "$TMP_TAR"
 
+# mktemp creates the file first.
+# Remove it so gpg can create it cleanly without overwrite prompts.
+rm -f -- "$TMP_BACKUP_FILE"
+gpg -c --output "$TMP_BACKUP_FILE" "$TMP_TAR"
+
+chmod 600 "$TMP_BACKUP_FILE" 2>/dev/null || true
+
+# Rotate the existing backup only after the new encrypted backup was created.
+if [ -e "$BACKUP_FILE" ]; then
+  OLD_FILE="$(archived_backup_path "$BACKUP_FILE")"
+  echo "[ssh] notice: existing backup found."
+  echo "[ssh] move old backup to: $OLD_FILE"
+  mv -- "$BACKUP_FILE" "$OLD_FILE"
+fi
+
+mv -- "$TMP_BACKUP_FILE" "$BACKUP_FILE"
 chmod 600 "$BACKUP_FILE" 2>/dev/null || true
+
+# Prevent cleanup from removing the final backup after mv.
+TMP_BACKUP_FILE=""
 
 echo "[ssh] done."
 echo "[ssh] encrypted backup: $BACKUP_FILE"
