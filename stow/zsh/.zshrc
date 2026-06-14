@@ -218,3 +218,4 @@ codex-plan() {
 codex-api() {
   CODEX_HOME="$HOME/.codex-api" codex "$@"
 }
+setopt interactive_comments
