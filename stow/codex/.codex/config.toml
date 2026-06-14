@@ -15,6 +15,13 @@ network_access = false
 [projects."/home/seeke/game-engine"]
 trust_level = "trusted"
 
+[projects."/home/seeke/jpacker-devel"]
+trust_level = "trusted"
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "model", "reasoning", "project-name", "git-branch", "branch-changes", "context-used", "five-hour-limit", "weekly-limit"]
+status_line_use_colors = true
+
 [tui.model_availability_nux]
-"gpt-5.5" = 1
+"gpt-5.5" = 3
 

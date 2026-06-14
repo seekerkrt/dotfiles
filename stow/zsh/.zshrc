@@ -47,8 +47,11 @@ export VSCODE_CONF=~/config/Code/User/settings.json
 alias ls="ls -F --color=auto"
 alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
-alias bat='bat --paging=never --style=plain'
+alias bat='bat --paging=auto'
+alias b='bat -n --paging=never'
+alias bl='bat -n --paging=always'
 #alias ccat='command cat'
+
 alias eza='eza -F'
 #alias nvim='LC_MESSAGES=C nvim'
 #alias emacs="emacs -nw"
