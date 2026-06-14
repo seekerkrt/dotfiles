@@ -210,3 +210,11 @@ fcd() { cd "$(fd -t d . | fzf)" }
 
 eval "$(zoxide init zsh)"
 eval "$(atuin init zsh --disable-up-arrow)"
+
+codex-plan() {
+  codex "$@"
+}
+
+codex-api() {
+  CODEX_HOME="$HOME/.codex-api" codex "$@"
+}
