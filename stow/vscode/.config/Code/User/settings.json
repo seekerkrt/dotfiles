@@ -1,131 +1,148 @@
 {
-    "editor.fontFamily": "MyricaM M",
-    "editor.fontSize": 14,
-    "editor.fontLigatures": true,
-    "editor.autoIndent": "full",
-    "editor.insertSpaces": true,
-    "editor.tabSize": 4,
-    "editor.detectIndentation": false,
-    "editor.formatOnPaste": true,
-    "editor.formatOnType": true,
+"editor.fontFamily": "MyricaM M",
+"editor.fontSize": 14,
+"editor.fontLigatures": true,
+"editor.autoIndent": "full",
+"editor.insertSpaces": true,
+"editor.tabSize": 4,
+"editor.detectIndentation": false,
+"editor.formatOnPaste": true,
+"editor.formatOnType": true,
+"editor.formatOnSave": true,
+"editor.acceptSuggestionOnEnter": "smart",
+"editor.suggestSelection": "first",
+
+```
+"files.encoding": "utf8",
+"files.eol": "\n",
+"files.insertFinalNewline": true,
+"files.trimFinalNewlines": true,
+"files.trimTrailingWhitespace": true,
+"files.enableTrash": false,
+"files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+},
+"files.associations": {
+    "*.jc": "cpp",
+    "*.jh": "cpp"
+},
+
+"breadcrumbs.enabled": true,
+"window.zoomLevel": 1,
+"workbench.settings.editor": "json",
+"workbench.iconTheme": "vscode-icons",
+"workbench.editor.empty.hint": "hidden",
+"workbench.editorAssociations": {
+    "*.lnk": "default"
+},
+
+"terminal.integrated.fontFamily": "JetBrains Mono, Noto Sans Mono CJK JP",
+"terminal.integrated.fontSize": 12,
+"terminal.integrated.lineHeight": 1.0,
+"terminal.integrated.defaultProfile.linux": "zsh",
+"terminal.integrated.cursorBlinking": true,
+"terminal.integrated.cursorStyle": "underline",
+"terminal.integrated.defaultProfile.windows": "Zsh",
+"terminal.integrated.profiles.windows": {
+    "PowerShell": {
+        "source": "PowerShell",
+        "icon": "terminal-powershell"
+    },
+    "Command Prompt": {
+        "path": [
+            "${env:windir}\\Sysnative\\cmd.exe",
+            "${env:windir}\\System32\\cmd.exe"
+        ],
+        "args": [
+            "/k",
+            "chcp",
+            "65001"
+        ],
+        "icon": "terminal-cmd"
+    },
+    "Zsh": {
+        "path": "C:\\msys64\\usr\\bin\\zsh.exe",
+        "args": [
+            "--login"
+        ],
+        "env": {
+            "MSYSTEM": "MINGW64",
+            "CHERE_INVOKING": "1"
+        },
+        "icon": "terminal-linux"
+    }
+},
+"terminal.integrated.env.windows": {
+    "MSYSTEM": "MINGW64",
+    "CHERE_INVOKING": "1"
+},
+
+"C_Cpp.clang_format_path": "/usr/bin/clang-format",
+"C_Cpp.clang_format_style": "file",
+"C_Cpp.default.compilerPath": "/usr/bin/g++",
+"C_Cpp.intelliSenseEngine": "disabled",
+
+"clangd.arguments": [
+    "--compile-commands-dir=${workspaceFolder}",
+    "--query-driver=/usr/bin/x86_64-elf-g++,/usr/bin/x86_64-elf-gcc,/usr/bin/x86_64-w64-mingw32-g++,/usr/bin/x86_64-w64-mingw32-gcc",
+    "--clang-tidy=false"
+],
+
+"cmake.configureOnOpen": true,
+"makefile.configureOnOpen": true,
+
+"todo-tree.highlights.enabled": true,
+"todo-tree.ripgrep.ripgrep": "/usr/bin/rg",
+
+"debug.onTaskErrors": "debugAnyway",
+
+"git.useIntegratedAskPass": false,
+"git.ignoreMissingGitWarning": true,
+"git.openRepositoryInParentFolders": "never",
+
+"gitlens.advanced.messages": {
+    "suppressGitMissingWarning": true
+},
+"gitlens.defaultDateLocale": null,
+
+"html.format.endWithNewline": true,
+"markdown.preview.breaks": true,
+"markdownlint.config": {
+    "MD013": false,
+    "MD033": false,
+    "MD041": false
+},
+
+"pasteImage.path": "${currentFileDir}/images/${currentFileNameWithoutExt}",
+"pasteImage.namePrefix": "img-",
+
+"vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+"redhat.telemetry.enabled": true,
+
+"[cpp]": {
+    "editor.formatOnSave": false
+},
+"[c]": {
+    "editor.formatOnSave": false
+},
+"[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+        "comments": "off",
+        "strings": "on",
+        "other": "on"
+    },
     "editor.formatOnSave": true,
-    "explorer.confirmDelete": false,
-    "html.format.endWithNewline": true,
-    "files.encoding": "utf8",
-    "files.eol": "\n",
-    "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true,
-    "files.trimTrailingWhitespace": true,
-    "files.enableTrash": false,
-    "breadcrumbs.enabled": true,
-    "workbench.settings.editor": "json",
-    "editor.acceptSuggestionOnEnter": "smart",
-    "editor.suggestSelection": "first",
-    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    "C_Cpp.clang_format_path": "/usr/bin/clang-format",
-    "C_Cpp.clang_format_style": "file",
-    "C_Cpp.default.compilerPath": "/usr/bin/g++",
-    "todo-tree.highlights.enabled": true,
-    "window.zoomLevel": 1,
-    "debug.onTaskErrors": "debugAnyway",
-    "git.useIntegratedAskPass": false,
-    "git.ignoreMissingGitWarning": true,
-    "terminal.integrated.fontFamily": "JetBrains Mono, Noto Sans Mono CJK JP",
-    "terminal.integrated.fontSize": 12,
-    "terminal.integrated.lineHeight": 1.0,
-    "terminal.integrated.defaultProfile.linux": "zsh",
-    "terminal.integrated.cursorBlinking": true,
-    "terminal.integrated.cursorStyle": "underline",
-    "terminal.integrated.defaultProfile.windows": "Zsh",
-    "terminal.integrated.profiles.windows": {
-        "PowerShell": {
-            "source": "PowerShell",
-            "icon": "terminal-powershell"
-        },
-        "Command Prompt": {
-            "path": [
-                "${env:windir}\\Sysnative\\cmd.exe",
-                "${env:windir}\\System32\\cmd.exe"
-            ],
-            "args": [
-                "/k",
-                "chcp",
-                "65001"
-            ],
-            "icon": "terminal-cmd"
-        },
-        "Zsh": {
-            "path": "C:\\msys64\\usr\\bin\\zsh.exe",
-            "args": [
-                "--login"
-            ],
-            "env": {
-                "MSYSTEM": "MINGW64",
-                "CHERE_INVOKING": "1"
-            },
-            "icon": "terminal-linux"
-        }
-    },
-    "terminal.integrated.env.windows": {
-        "MSYSTEM": "MINGW64",
-        "CHERE_INVOKING": "1"
-    },
-    "workbench.iconTheme": "vscode-icons",
-    "workbench.editor.empty.hint": "hidden",
-    "workbench.editorAssociations": {
-        "*.lnk": "default"
-    },
-    "files.exclude": {
-        "**/.classpath": true,
-        "**/.project": true,
-        "**/.settings": true,
-        "**/.factorypath": true
-    },
-    "cmake.configureOnOpen": true,
-    "makefile.configureOnOpen": true,
-    "gitlens.advanced.messages": {
-        "suppressGitMissingWarning": true
-    },
-    "gitlens.defaultDateLocale": null,
-    "redhat.telemetry.enabled": true,
-    "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}",
-        "--query-driver=/usr/bin/x86_64-elf-g++,/usr/bin/x86_64-elf-gcc",
-        "--clang-tidy=false"
-    ],
-    "git.openRepositoryInParentFolders": "never",
-    "markdown.preview.breaks": true,
-    "markdownlint.config": {
-        "MD013": false,
-        "MD033": false,
-        "MD041": false
-    },
-    "pasteImage.path": "${currentFileDir}/images/${currentFileNameWithoutExt}",
-    "pasteImage.namePrefix": "img-",
-    "[cpp]": {
-        "editor.formatOnSave": false
-    },
-    "[c]": {
-        "editor.formatOnSave": false
-    },
-    "[markdown]": {
-        "editor.wordWrap": "on",
-        "editor.quickSuggestions": {
-            "comments": "off",
-            "strings": "on",
-            "other": "on"
-        },
-        "editor.formatOnSave": true,
-        "editor.renderWhitespace": "selection",
-        "files.trimTrailingWhitespace": false
-    },
-    "[mdx]": {
-        "editor.wordWrap": "on"
-    }
-   
-    "files.associations": {
-        "*.jc": "cpp",
-        "*.jh": "cpp"
-    }
+    "editor.renderWhitespace": "selection",
+    "files.trimTrailingWhitespace": false
+},
+"[mdx]": {
+    "editor.wordWrap": "on"
+}
+```
+
 }
 
