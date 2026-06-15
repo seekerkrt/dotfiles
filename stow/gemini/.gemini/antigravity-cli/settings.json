@@ -1,9 +1,11 @@
 {
   "colorScheme": "tokyo night",
+  "enableTelemetry": false,
   "enableTerminalSandbox": true,
   "general": {
     "vimMode": true
   },
+  "model": "Gemini 3.5 Flash (High)",
   "security": {
     "auth": {
       "selectedType": "oauth-personal"
