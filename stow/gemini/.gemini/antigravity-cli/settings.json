@@ -1,11 +1,18 @@
 {
-  "colorScheme": "tokyo night",
+  "allowNonWorkspaceAccess": true,
+  "colorScheme": "solarized dark",
   "enableTelemetry": false,
   "enableTerminalSandbox": true,
   "general": {
     "vimMode": true
   },
   "model": "Gemini 3.5 Flash (High)",
+  "permissions": {
+    "allow": [
+      "command(git status)",
+      "command(git diff)"
+    ]
+  },
   "security": {
     "auth": {
       "selectedType": "oauth-personal"
