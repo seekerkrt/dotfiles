@@ -22,6 +22,11 @@
       "telemetry": "disabled"
     }
   },
+  "statusLine": {
+    "type": "",
+    "command": "",
+    "enabled": true
+  },
   "ui": {
     "inlineThinkingMode": "full"
   }
