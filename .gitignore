@@ -88,6 +88,9 @@ stow/gemini/.gemini/antigravity-cli/knowledge/
 stow/gemini/.gemini/antigravity-cli/log/
 stow/gemini/.gemini/config/
 stow/gemini/.gemini/antigravity-cli/conversations/
+stow/gemini/.gemini/antigravity-cli/brain/
+
+
 # SSH secrets are not managed by this repository.
 stow/ssh/
 
