@@ -1,6 +1,5 @@
 {
   "colorScheme": "tokyo night",
-  "enableTelemetry": false,
   "enableTerminalSandbox": true,
   "general": {
     "vimMode": true

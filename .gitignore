@@ -76,7 +76,17 @@ stow/gemini/.gemini/history/
 stow/gemini/.gemini/tmp/
 stow/gemini/.gemini/*.log
 stow/gemini/.gemini/logs.json
-
+stow/gemini/.gemini/antigravity-cli/bin/
+stow/gemini/.gemini/antigravity-cli/builtin/
+stow/gemini/.gemini/antigravity-cli/cache/
+stow/gemini/.gemini/antigravity-cli/cli.log
+stow/gemini/.gemini/antigravity-cli/history.jsonl
+stow/gemini/.gemini/antigravity-cli/implicit/
+stow/gemini/.gemini/antigravity-cli/installation_id
+stow/gemini/.gemini/antigravity-cli/keybindings.json
+stow/gemini/.gemini/antigravity-cli/knowledge/
+stow/gemini/.gemini/antigravity-cli/log/
+stow/gemini/.gemini/config/
 # SSH secrets are not managed by this repository.
 stow/ssh/
 
