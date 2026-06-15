@@ -32,24 +32,46 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 │   ├── alacritty/            # Alacritty設定
 │   ├── bash/                 # Bash設定
 │   ├── btop/                 # btop設定
+│   ├── chrome/               # Chrome設定
+│   ├── clang-format/         # clang-format設定
 │   ├── claude/               # Claude用ルール
 │   ├── codex/                # Codex用ルール
+│   ├── conky/                # Conky設定
+│   ├── emacs/                # Emacs設定
+│   ├── env/                  # 環境変数設定
+│   ├── fonts/                # フォント設定
+│   ├── foot/                 # footターミナル設定
+│   ├── gemini/               # Gemini設定
+│   ├── git/                  # Git設定
 │   ├── hypr/                 # Hyprland設定
 │   ├── kde/                  # KDE設定
+│   ├── mako/                 # mako通知ツール設定
 │   ├── nvim/                 # Neovim設定
 │   ├── scripts/              # 個人用スクリプト
+│   ├── sway/                 # Sway設定
+│   ├── systemd-user/         # systemdユーザーサービス設定
 │   ├── tmux/                 # tmux設定
+│   ├── tmuxp/                # tmuxp設定
+│   ├── vim/                  # Vim設定
 │   ├── vscode/               # VS Code設定
 │   ├── waybar/               # Waybar設定
 │   ├── wezterm/              # WezTerm設定
-│   └── zsh/                  # Zsh設定
+│   ├── xorg/                 # X.Org設定
+│   ├── yazi/                 # yaziファイラー設定
+│   ├── zsh/                  # Zsh設定
+│   └── zsh-functions/        # Zsh関数
 ├── system/secureboot/        # Secure Boot関連の設定とスクリプト
 ├── pkglist/                  # 明示インストール済みパッケージ一覧
+├── encrypted/                # 暗号化されたバックアップファイル等
+├── sample/                   # システム設定ファイルのサンプル
 ├── apply-stow.sh             # Stowリンクを作成
 ├── remove-stow.sh            # Stowリンクを削除
 ├── update-pkglist.sh         # パッケージ一覧を更新
 ├── restore-pkglist.sh        # パッケージ一覧から復元
-├── backup-ssh-allowlist.sh   # SSH設定を暗号化バックアップ
+├── backup-ssh-allowlist.sh   # SSH鍵と設定を暗号化バックアップ
+├── restore-ssh-allowlist.sh  # 暗号化したSSH鍵と設定を復元
+├── backup-ssh-config.sh      # SSH設定のみを暗号化バックアップ
+├── restore-ssh-config.sh     # 暗号化したSSH設定のみを復元
 └── setup-system.sh           # システム側設定を配置
 ```
 
@@ -100,6 +122,20 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 ./restore-ssh-allowlist.sh /path/to/secure-backup-dir
 ```
 
+また、`~/.ssh/config` のみを取り扱う簡易的なバックアップ・復元スクリプトも用意されています（暗号化ファイルは `encrypted/ssh-config.tar.gz.gpg` に配置されます）。
+
+・SSH設定のみバックアップ:
+
+```sh
+./backup-ssh-config.sh
+```
+
+・SSH設定のみ復元:
+
+```sh
+./restore-ssh-config.sh
+```
+
 #### 4. システム側 Secure Boot 構成の配置
 
 ```sh
@@ -139,24 +175,46 @@ and package-list backups.
 │   ├── alacritty/            # Alacritty config
 │   ├── bash/                 # Bash config
 │   ├── btop/                 # btop config
+│   ├── chrome/               # Chrome config
+│   ├── clang-format/         # clang-format config
 │   ├── claude/               # Claude rules
 │   ├── codex/                # Codex rules
+│   ├── conky/                # Conky config
+│   ├── emacs/                # Emacs config
+│   ├── env/                  # Environment variables config
+│   ├── fonts/                # Fonts config
+│   ├── foot/                 # foot terminal config
+│   ├── gemini/               # Gemini config
+│   ├── git/                  # Git config
 │   ├── hypr/                 # Hyprland config
 │   ├── kde/                  # KDE config
+│   ├── mako/                 # mako notification daemon config
 │   ├── nvim/                 # Neovim config
 │   ├── scripts/              # Local scripts
+│   ├── sway/                 # Sway config
+│   ├── systemd-user/         # systemd user services config
 │   ├── tmux/                 # tmux config
+│   ├── tmuxp/                # tmuxp config
+│   ├── vim/                  # Vim config
 │   ├── vscode/               # VS Code config
 │   ├── waybar/               # Waybar config
 │   ├── wezterm/              # WezTerm config
-│   └── zsh/                  # Zsh config
+│   ├── xorg/                 # X.Org config
+│   ├── yazi/                 # yazi terminal file manager config
+│   ├── zsh/                  # Zsh config
+│   └── zsh-functions/        # Zsh functions
 ├── system/secureboot/        # Secure Boot config and scripts
 ├── pkglist/                  # Explicit package lists
+├── encrypted/                # Encrypted backup storage
+├── sample/                   # System configuration samples
 ├── apply-stow.sh             # Create Stow links
 ├── remove-stow.sh            # Remove Stow links
 ├── update-pkglist.sh         # Update package lists
 ├── restore-pkglist.sh        # Restore packages from lists
-├── backup-ssh-allowlist.sh   # Back up SSH config with GPG
+├── backup-ssh-allowlist.sh   # Back up SSH keys and config with GPG
+├── restore-ssh-allowlist.sh  # Restore SSH keys and config from GPG
+├── backup-ssh-config.sh      # Back up only SSH config with GPG
+├── restore-ssh-config.sh     # Restore only SSH config from GPG
 └── setup-system.sh           # Install system-side config
 ```
 
@@ -191,11 +249,10 @@ Track and sync installed packages across installations.
 （Automatically detects yay or paru for foreign/AUR packages and applies
 --needed）
 
-#### 3. SSH Configuration Backup
+#### 3. SSH Configuration Backup and Restore
 
-Securely backs up critical SSH files into a GPG-encrypted archive outside the
-git history.
-・Backup:
+Securely backs up critical SSH files (including private keys) into a GPG-encrypted archive outside the git history.
+・Backup (excludes known_hosts, etc.):
 
 ```sh
 ./backup-ssh-allowlist.sh /path/to/secure-backup-dir
@@ -205,6 +262,20 @@ git history.
 
 ```sh
 ./restore-ssh-allowlist.sh /path/to/secure-backup-dir
+```
+
+Additionally, utility scripts to backup and restore only the `~/.ssh/config` file are available (the encrypted archive is saved in `encrypted/ssh-config.tar.gz.gpg`).
+
+・Backup SSH Config only:
+
+```sh
+./backup-ssh-config.sh
+```
+
+・Restore SSH Config only:
+
+```sh
+./restore-ssh-config.sh
 ```
 
 #### 4. Secure Boot Setup (System-wide)
