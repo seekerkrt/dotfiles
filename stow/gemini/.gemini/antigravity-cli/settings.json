@@ -1,4 +1,10 @@
 {
+  "colorScheme": "tokyo night",
+  "enableTelemetry": false,
+  "enableTerminalSandbox": true,
+  "general": {
+    "vimMode": true
+  },
   "security": {
     "auth": {
       "selectedType": "oauth-personal"
@@ -8,20 +14,7 @@
       "telemetry": "disabled"
     }
   },
-  "general": {
-    "vimMode": true
-  },
   "ui": {
     "inlineThinkingMode": "full"
-  },
-  "model": {
-    "compressionThreshold": 0.5
-  },
-  "context": {
-    "fileName": [
-      "AGENTS.md",
-      "CLAUDE.md",
-      "GEMINI.md"
-    ]
   }
 }
