@@ -63,6 +63,7 @@ gimp
 git
 git-filter-repo
 github-cli
+glab
 gnome-keyring
 go
 gparted
@@ -202,6 +203,7 @@ ruby
 sbctl
 sd
 sddm-kcm
+shellcheck
 sl
 slurp
 spectacle

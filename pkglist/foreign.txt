@@ -1,3 +1,4 @@
+antigravity-cli
 asp
 game-devices-udev
 google-chrome
