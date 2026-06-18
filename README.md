@@ -24,6 +24,9 @@
 GNU Stowによるホームディレクトリへの展開、Secure Boot運用スクリプト、
 パッケージ一覧のバックアップなどを含みます。
 
+本リポジトリはGitHubを本家として運用されており、GitLab上の同名リポジトリはバックアップミラーです。主な更新元はGitHubです。
+また、秘密鍵やトークンなどの機密情報は管理対象外となっています。
+
 ### プロジェクトの主な構造
 
 ```text
@@ -166,6 +169,9 @@ sudo ./setup-system.sh
 This repository manages and syncs the author's (seekerkrt) dotfiles.
 It includes GNU Stow deployment, Secure Boot maintenance scripts,
 and package-list backups.
+
+This repository is primarily hosted on GitHub, and the same-named repository on GitLab serves as a backup mirror. GitHub is the primary upstream for updates.
+Additionally, sensitive information such as private keys and tokens is excluded from this repository.
 
 ### Repository Structure
 
