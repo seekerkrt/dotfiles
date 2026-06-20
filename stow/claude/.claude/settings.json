@@ -29,12 +29,13 @@
       "Bash(git add:*)"
     ]
   },
-  "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true
-  },
   "statusLine": {
     "type": "command",
     "command": "npx -y ccstatusline@latest",
     "padding": 0
-  }
+  },
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "theme": "dark"
 }

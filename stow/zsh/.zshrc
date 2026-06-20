@@ -52,7 +52,7 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 export EIX_LIMIT=0
 
 export AWESOME_CONF=~/.config/awesome/rc.lua
-export VSCODE_CONF=~/.config/Code/User/settings.json
+export VSCODE_CONF=~/config/Code/User/settings.json
 
 # export CROSSDEV=/opt/crossdev
 # export ARCH_RUST_CROSS=x86_64-pc-windows-gnu
@@ -239,6 +239,24 @@ codex-plan() {
 
 codex-api() {
   CODEX_HOME="$HOME/.codex-api" codex "$@"
+}
+
+claude-api-on() {
+  local model="${1:-sonnet}"
+
+  export ANTHROPIC_API_KEY="$(
+    gpg --quiet --decrypt "$HOME/secrets/claude-code-api-key.txt.gpg" | tr -d '\r\n'
+  )"
+  export ANTHROPIC_MODEL="$model"
+
+  echo "ANTHROPIC_API_KEY set"
+  echo "ANTHROPIC_MODEL=$ANTHROPIC_MODEL"
+}
+
+claude-api-off() {
+  unset ANTHROPIC_API_KEY
+  unset ANTHROPIC_MODEL
+  echo "Claude API env unset"
 }
 
 # -----------------------------------------------------------------------------
