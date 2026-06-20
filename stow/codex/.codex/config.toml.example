@@ -1,4 +1,4 @@
-# ~/.codex/config.toml
+# ~/.codex/config.toml.example
 # Plusプラン向け・常用の最小構成
 
 model = "gpt-5.5"
@@ -12,22 +12,9 @@ approvals_reviewer = "user"
 [sandbox_workspace_write]
 network_access = false
 
-[projects."/home/seeke/game-engine"]
-trust_level = "trusted"
-
-[projects."/home/seeke/jpacker-devel"]
-trust_level = "trusted"
-
-[projects."/home/seeke"]
-trust_level = "trusted"
-
-[projects."/home/seeke/dotfiles"]
-trust_level = "trusted"
-
 [tui]
 status_line = ["model-with-reasoning", "current-dir", "model", "reasoning", "project-name", "git-branch", "branch-changes", "context-used", "five-hour-limit", "weekly-limit"]
 status_line_use_colors = true
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
-
