@@ -1,34 +1,31 @@
 [user]
 	name = seekerkrt
 	email = 4817613+seekerkrt@users.noreply.github.com
+
 [color]
 	diff = auto
 	status = auto
 	branch = auto
- 	ui = auto
+	ui = auto
 
 [core]
 	autocrlf = input
-	quotepath = false
 	fileMode = false
-	quatopath = false
-	pager = delta
-   
+	pager = cat
+
 [init]
 	defaultBranch = main
+
 [pull]
 	rebase = true
 	ff = only
+
 [sendpack]
 	sideband = false
+
 [push]
 	followTags = true
-[pager]
-	log = false
 [alias]
-	mff = merge --ff-only
-[interactive]
-	diffFilter = delta --color-only
-[delta]
-	navigate = true
-	side-by-side = false
+    mff = merge --ff-only
+[pager]
+       log = false
