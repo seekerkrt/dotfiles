@@ -12,6 +12,7 @@
 	quotepath = false
 	fileMode = false
 	quatopath = false
+	pager = delta
    
 [init]
 	defaultBranch = main
@@ -26,3 +27,8 @@
 	log = false
 [alias]
 	mff = merge --ff-only
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	side-by-side = false
