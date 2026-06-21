@@ -58,6 +58,7 @@ fd
 ffmpegthumbnailer
 fio
 firefox
+fish
 flatpak-kcm
 gimp
 git
@@ -219,6 +220,7 @@ tree
 ttf-jetbrains-mono
 ttf-jetbrains-mono-nerd
 ufw
+unrar
 vim
 virtualbox
 virtualbox-host-dkms

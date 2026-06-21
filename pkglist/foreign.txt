@@ -2,9 +2,6 @@ antigravity-cli
 asp
 game-devices-udev
 google-chrome
-hyprqt6engine
-i386-elf-binutils
-i386-elf-gcc
 jpacker
 keyleds-git
 leaf-markdown-viewer-bin
