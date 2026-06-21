@@ -110,3 +110,7 @@ vscode/.config/Code/User/History/
 # Codex writes local project trust entries here.
 # Keep the real config local; track config.toml.example instead.
 stow/codex/.codex/config.toml
+
+# Antigravity CLI runtime/update cache
+stow/gemini/.gemini/antigravity-cli/last_check.timestamp
+stow/gemini/.gemini/antigravity-cli/updater/

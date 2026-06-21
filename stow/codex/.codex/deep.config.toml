@@ -11,4 +11,4 @@ network_access = false
 trust_level = "trusted"
 
 [tui.model_availability_nux]
-"gpt-5.5" = 2
+"gpt-5.5" = 3
