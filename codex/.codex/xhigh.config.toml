@@ -1,0 +1,10 @@
+# Heavy-duty profile for difficult debugging / architecture work.
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+model_reasoning_effort = "xhigh"
+model_verbosity = "medium"
+
+[sandbox_workspace_write]
+network_access = false
