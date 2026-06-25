@@ -3,8 +3,9 @@
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 web_search = "cached"
-model_reasoning_effort = "xhigh"
+model_reasoning_effort = "medium"
 model_verbosity = "medium"
+model = "gpt-5.5"
 
 [sandbox_workspace_write]
 network_access = false
