@@ -244,6 +244,10 @@ update_ep0_dequeue_before_address_device(slot);
 
 ---
 
+## ツール使用方針
+- ファイル検索には `grep` ではなく `rg`（ripgrep）を優先すること
+
+---
 ## 迷ったときのデフォルト
 
 迷った場合は、以下をデフォルトとする。
