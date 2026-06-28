@@ -1,0 +1,85 @@
+# ~/.codex/rules/default.rules
+# Managed by dotfiles/stow.
+# Allow only low-risk Git read/inspection commands.
+
+prefix_rule(
+    pattern = ["git", "status"],
+    decision = "allow",
+    justification = "Read-only working tree status is safe.",
+    match = [
+        "git status",
+        "git status --short --branch",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "--no-pager", "status"],
+    decision = "allow",
+    justification = "Read-only working tree status is safe.",
+    match = [
+        "git --no-pager status --short --branch",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "branch", "--show-current"],
+    decision = "allow",
+    justification = "Read-only current branch check.",
+)
+
+prefix_rule(
+    pattern = ["git", "log", "--oneline"],
+    decision = "allow",
+    justification = "Read-only recent commit history.",
+    match = [
+        "git log --oneline --decorate -5",
+        "git log --oneline --decorate -10",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "--no-pager", "log", "--oneline"],
+    decision = "allow",
+    justification = "Read-only recent commit history.",
+)
+
+prefix_rule(
+    pattern = ["git", "diff", "--stat"],
+    decision = "allow",
+    justification = "Read-only diff summary.",
+)
+
+prefix_rule(
+    pattern = ["git", "diff", "--name-only"],
+    decision = "allow",
+    justification = "Read-only changed file list.",
+)
+
+prefix_rule(
+    pattern = ["git", "--no-pager", "diff", "--no-ext-diff", "--stat"],
+    decision = "allow",
+    justification = "Read-only diff summary without external diff.",
+)
+
+prefix_rule(
+    pattern = ["git", "--no-pager", "diff", "--no-ext-diff", "--name-only"],
+    decision = "allow",
+    justification = "Read-only changed file list without external diff.",
+)
+
+prefix_rule(
+    pattern = ["git", "remote", "-v"],
+    decision = "allow",
+    justification = "Read-only remote listing.",
+)
+
+prefix_rule(
+    pattern = ["git", "rev-parse"],
+    decision = "allow",
+    justification = "Read-only revision/path query.",
+    match = [
+        "git rev-parse HEAD",
+        "git rev-parse --abbrev-ref HEAD",
+        "git rev-parse --show-toplevel",
+    ],
+)
