@@ -257,3 +257,17 @@ update_ep0_dequeue_before_address_device(slot);
 - まだ編集しない
 - 根拠を出す
 - 最小の次の一手を 1 つ提案する
+
+## ChatGPT handoff
+
+非自明なコーディング作業を終える前に、`chatgpt-handoff` skill を使って ChatGPT 向けの引き継ぎメモを作成してください。
+
+引き継ぎメモは `~/chatgpt-handoff/` 配下に、実行ごとのタイムスタンプ付きMarkdownファイルとして作成してください。
+
+作成してはいけないファイル:
+
+- `latest.md`
+- `codex-latest.md`
+- `claude-latest.md`
+
+引き継ぎメモは git add / commit / stage しないでください。
