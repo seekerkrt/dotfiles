@@ -213,6 +213,17 @@ update_ep0_dequeue_before_address_device(slot);
 - 英語併記例:
   - `docs: update current JADEC_STATE status`
 
+
+## GitHub CLI / gh
+
+Codex sandbox 内では `gh` が Linux keyring 上の GitHub token を読めないことがあるため、通常作業では `gh` コマンドを使わないでください。
+
+GitHub Issue / PR / milestone / comment の確認や操作が必要な場合は、利用可能なGitHub連携機能を優先してください。
+
+`gh` が明示的に必要な場合だけ、事前にユーザーへ確認してください。
+
+Codex内で `gh auth logout` や `gh auth login` を実行しないでください。通常端末側では `gh` 認証が正常なため、Codex内で再認証すると既存の認証状態を壊す可能性があります。
+
 ---
 
 ## 変更提案時の判断軸
