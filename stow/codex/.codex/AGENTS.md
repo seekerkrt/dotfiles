@@ -267,9 +267,9 @@ Codex内で `gh auth logout` や `gh auth login` を実行しないでくださ�
 
 ## ChatGPT handoff
 
-非自明なコーディング作業を終える前に、`chatgpt-handoff` skill を使って ChatGPT 向けの引き継ぎメモを作成してください。
+非自明なコーディング作業を終える前に、`handoff` skill を使って ChatGPT 向けの引き継ぎメモを作成してください。
 
-引き継ぎメモは `~/chatgpt-handoff/` 配下に、実行ごとのタイムスタンプ付きMarkdownファイルとして作成してください。
+引き継ぎメモは `~/handoff/` 配下に、実行ごとのタイムスタンプ付きMarkdownファイルとして作成してください。
 
 作成してはいけないファイル:
 

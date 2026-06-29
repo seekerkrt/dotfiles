@@ -1,5 +1,5 @@
 ---
-name: chatgpt-handoff
+name: handoff
 description: "非自明なコーディング作業、リポジトリ調査、検証、Issue/PR作業、デバッグ、設計レビューを終えるときに、ChatGPTへ渡すための日本語Markdown引き継ぎメモを作成する。"
 ---
 
@@ -13,12 +13,12 @@ ChatGPTへ作業結果を渡すための、短くても必要情報が揃ったM
 
 引き継ぎメモは次のディレクトリ配下に作成する。
 
-`~/chatgpt-handoff/`
+`~/handoff/`
 
 ディレクトリが存在しない場合は作成してよい。
 
 ```bash
-mkdir -p ~/chatgpt-handoff
+mkdir -p ~/handoff
 ```
 
 # ファイル名
@@ -31,10 +31,10 @@ mkdir -p ~/chatgpt-handoff
 
 例:
 
-- `~/chatgpt-handoff/codex-jadeos-20260629-081530.md`
-- `~/chatgpt-handoff/codex-jadeos-issue24-20260629-081530.md`
-- `~/chatgpt-handoff/claude-jpacker-issue154-20260629-081530.md`
-- `~/chatgpt-handoff/codex-jadeos-usb-realhw-20260629-081530.md`
+- `~/handoff/codex-jadeos-20260629-081530.md`
+- `~/handoff/codex-jadeos-issue24-20260629-081530.md`
+- `~/handoff/claude-jpacker-issue154-20260629-081530.md`
+- `~/handoff/codex-jadeos-usb-realhw-20260629-081530.md`
 
 作成してはいけないファイル:
 
@@ -148,7 +148,7 @@ mkdir -p ~/chatgpt-handoff
 
 ```bash
 git status --short --branch
-ls -l ~/chatgpt-handoff/
+ls -l ~/handoff/
 ```
 
-引き継ぎメモ自体はリポジトリ外の `~/chatgpt-handoff/` に置くため、通常は作業中リポジトリの `git status` に出てこない。
+引き継ぎメモ自体はリポジトリ外の `~/handoff/` に置くため、通常は作業中リポジトリの `git status` に出てこない。
