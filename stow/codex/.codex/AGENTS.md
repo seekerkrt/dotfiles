@@ -189,6 +189,7 @@ update_ep0_dequeue_before_address_device(slot);
 ## Git 運用ルール
 
 - 大きな変更前は `git status` を確認する
+- コミット前に `git status` で stage 対象を確認し、`git diff --check` で空白エラーを確認する
 - 変更は論理単位で分ける
 - `git add .` を無条件に使わない
 - 可能なら stage 対象を絞る
