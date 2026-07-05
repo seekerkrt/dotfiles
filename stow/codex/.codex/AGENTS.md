@@ -1,5 +1,19 @@
 # 個人共通 AGENTS.md
 
+## 最重要ルール（常に適用）
+
+詳細は以下の各節にある。迷ったら、まずこれだけは守る。
+
+- 日本語で返答・説明する
+- 編集の前にまず調査し、根拠を示す
+- 明示依頼がない限り、push / commit / 破壊的削除 / 広範囲 rename / broad refactor をしない
+- 調査のみの依頼では、ファイル編集も `git add` / `commit` もしない
+- 事実 / 推測 / 提案 を混ぜない。不確実な点は「未確認」と書く
+- 変更は最小スコープに保ち、unrelated change を混ぜない
+- 迷ったら編集せず、根拠を出して次の一手を 1 つ提案する
+
+---
+
 ## 基本方針
 
 - まず調査し、根拠を集めてから提案・編集する
@@ -270,12 +284,4 @@ Codex内で `gh auth logout` や `gh auth login` を実行しないでくださ�
 
 非自明なコーディング作業を終える前に、`handoff` skill を使って ChatGPT 向けの引き継ぎメモを作成してください。
 
-引き継ぎメモは `~/handoff/` 配下に、実行ごとのタイムスタンプ付きMarkdownファイルとして作成してください。
-
-作成してはいけないファイル:
-
-- `latest.md`
-- `codex-latest.md`
-- `claude-latest.md`
-
-引き継ぎメモは git add / commit / stage しないでください。
+出力先・ファイル名・必須項目・禁止事項（`latest.md` 系の作成禁止、git add / commit / stage しない等）は `handoff` skill の指示に従ってください。
