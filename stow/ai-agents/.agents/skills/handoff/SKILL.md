@@ -151,4 +151,31 @@ git status --short --branch
 ls -l ~/handoff/
 ```
 
+## PR作成時の handoff 方針
+
+作業ブランチを push し、draft PR を作成できた場合は、原則として別途 handoff Markdown は作成しない。
+
+この場合は、PR body を handoff として扱えるように十分な情報を書くこと。
+
+PR body には以下を含める。
+
+* Summary
+* Scope / non-scope notes
+* Validation
+* Known issues / risks
+* Next recommended action
+
+ただし、以下のいずれかに当てはまる場合は、`~/handoff` に timestamped handoff Markdown を作成する。
+
+* PR を作成していない
+* branch を push していない
+* 変更が未commit、または一部だけ commit 済み
+* 作業が調査途中で止まっている
+* PR body に収まりにくい重要な観測、仮説、実機ログ、次の検証課題がある
+* JadeOS USB 実機 bring-up のような長期調査・深掘り作業である
+
+PR 作成を指示されていたが失敗した場合も、handoff Markdown を作成する。その場合は、失敗理由、branch、commit 状態、validation、次にやることを明記する。
 引き継ぎメモ自体はリポジトリ外の `~/handoff/` に置くため、通常は作業中リポジトリの `git status` に出てこない。
+
+
+

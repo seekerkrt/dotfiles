@@ -275,6 +275,9 @@ update_ep0_dequeue_before_address_device(slot);
 
 ## ChatGPT handoff
 
-非自明なコーディング作業を終える前に、`handoff` skill を使って ChatGPT 向けの引き継ぎメモを作成してください。
+非自明なコーディング作業を終える際は、`handoff` skill を使って ChatGPT 向けの引き継ぎメモを作成してください。
+
+ただし、PR を作成して push できた場合は、原則として別途 handoff Markdown は作成しません。PR body を handoff として十分な内容にしてください。
+PR 未作成・未push・未commit・調査途中、または実機観測・仮説・次の一手の共有が重要な場合は、`~/handoff` に timestamped Markdown を作成してください。
 
 出力先・ファイル名・必須項目・禁止事項（`latest.md` 系の作成禁止、git add / commit / stage しない等）は `handoff` skill の指示に従ってください。
