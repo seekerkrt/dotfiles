@@ -1,5 +1,5 @@
-antigravity-cli
 asp
+downgrade
 game-devices-udev
 google-chrome
 jpacker
@@ -7,6 +7,7 @@ keyleds-git
 leaf-markdown-viewer-bin
 mingw-w64-lua
 nkf
+onlyoffice-bin
 proton-ge-custom-bin
 rtl8761b-firmware
 steamcmd
@@ -16,8 +17,10 @@ ttf-myricam
 ttf-noto-sans-mono-cjk-vf
 ttf-plemoljp-bin
 ttf-udev-gothic
+ventoy-bin
 visual-studio-code-bin
 vkd3d-proton-bin
 x86_64-elf-binutils
 x86_64-elf-gcc
 xpadneo-dkms-git
+yay
