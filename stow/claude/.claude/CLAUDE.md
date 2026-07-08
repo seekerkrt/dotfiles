@@ -274,8 +274,7 @@ update_ep0_dequeue_before_address_device(slot);
 - 最小の次の一手を 1 つ提案する
 
 ## ChatGPT handoff
-
-非自明なコーディング作業を終える際は、`handoff` skill を使って ChatGPT 向けの引き継ぎメモを作成してください。
+非自明なコーディング作業を終える際は、ChatGPTなどへ作業状態を引き継げる形で引き継ぎメモを作成してください。
 
 ただし、PR を作成して push できた場合は、原則として別途 handoff Markdown は作成しません。PR body を handoff として十分な内容にしてください。
 PR 未作成・未push・未commit・調査途中、または実機観測・仮説・次の一手の共有が重要な場合は、`~/handoff` に timestamped Markdown を作成してください。
