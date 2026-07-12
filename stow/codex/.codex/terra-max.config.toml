@@ -1,0 +1,6 @@
+# ~/.codex/terra-max.config.toml
+# Inherits approval, sandbox, web-search, and verbosity defaults
+# from ~/.codex/config.toml.
+
+model = "gpt-5.6-terra"
+model_reasoning_effort = "max"

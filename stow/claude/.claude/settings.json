@@ -29,6 +29,7 @@
       "Bash(git add:*)"
     ]
   },
+  "model": "claude-fable-5[1m]",
   "statusLine": {
     "type": "command",
     "command": "npx -y ccstatusline@latest",
@@ -38,5 +39,7 @@
     "clangd-lsp@claude-plugins-official": true
   },
   "language": "Japanese",
-  "theme": "dark"
+  "effortLevel": "xhigh",
+  "theme": "dark",
+  "autoCompactEnabled": true
 }

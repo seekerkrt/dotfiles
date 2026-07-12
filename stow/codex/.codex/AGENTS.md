@@ -231,9 +231,7 @@ update_ep0_dequeue_before_address_device(slot);
 
 ## GitHub CLI / gh
 
-Codex sandbox 内では `gh` が Linux keyring 上の GitHub token を読めないことがあるため、通常作業では `gh` コマンドを使わないでください。
-
-GitHub Issue / PR / milestone / comment の確認や操作が必要な場合は、利用可能なGitHub連携機能を優先してください。
+Codex sandbox 内では `gh` が Linux keyring 上の GitHub token を読めないことがあるため、通常作業では `gh`を使ってもよいが、どうしても利用できない場合でGitHub Issue / PR / milestone / comment の確認や操作が必要な場合は、利用可能なGitHub連携機能を優先してください。
 
 `gh` が明示的に必要な場合だけ、事前にユーザーへ確認してください。
 

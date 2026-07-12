@@ -1,0 +1,6 @@
+# ~/.codex/luna-xhigh.config.toml
+# Inherits approval, sandbox, web-search, and verbosity defaults
+# from ~/.codex/config.toml.
+
+model = "gpt-5.6-luna"
+model_reasoning_effort = "xhigh"

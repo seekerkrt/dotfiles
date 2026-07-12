@@ -62,6 +62,8 @@ export VSCODE_CONF=~/config/Code/User/settings.json
 export MAKEFLAGS="-j6"
 # export CHOST=$(uname -m)-pc-linux-gnu
 
+export LIBVIRT_DEFAULT_URI='qemu:///system'
+
 # -----------------------------------------------------------------------------
 # Alias
 # -----------------------------------------------------------------------------
@@ -240,6 +242,25 @@ codex-plan() {
 
 codex-api() {
   CODEX_HOME="$HOME/.codex-api" codex "$@"
+}
+
+codex-kvm() {
+  if (( ! $+commands[codex] )); then
+    print -u2 'codex-kvm: codex コマンドが見つかりません'
+    return 127
+  fi
+
+  if [[ ! -c /dev/kvm ]]; then
+    print -u2 'codex-kvm: /dev/kvm が存在しません'
+    return 1
+  fi
+
+  if [[ ! -r /dev/kvm || ! -w /dev/kvm ]]; then
+    print -u2 'codex-kvm: /dev/kvm への読み書き権限がありません'
+    return 1
+  fi
+
+  command codex --sandbox danger-full-access "$@"
 }
 
 claude-api-on() {
