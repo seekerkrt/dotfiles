@@ -1,0 +1,17 @@
+prefix_rule(
+    pattern = [
+        ["qemu-system-x86_64", "/usr/bin/qemu-system-x86_64"],
+        "-accel",
+        "kvm",
+    ],
+    decision = "allow",
+    justification = "QEMU/KVM試験をサンドボックス外で確認なしに実行する",
+    match = [
+        "qemu-system-x86_64 -accel kvm -cpu host",
+        "/usr/bin/qemu-system-x86_64 -accel kvm -m 512M",
+    ],
+    not_match = [
+        "qemu-system-x86_64 -accel tcg -cpu max",
+        "qemu-system-x86_64 -enable-kvm -cpu host",
+    ],
+)
