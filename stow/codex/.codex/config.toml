@@ -1,0 +1,56 @@
+# ~/.codex/config.toml
+# Proプラン向け・常用構成
+#
+# 通常のworkspace権限を維持しつつ、
+# QEMU/KVM用に /dev/kvm だけ追加で読み書きを許可する。
+
+model = "gpt-5.6-sol"
+approval_policy = "on-request"
+default_permissions = "workspace-kvm"
+web_search = "cached"
+model_reasoning_effort = "xhigh"
+model_verbosity = "medium"
+approvals_reviewer = "user"
+service_tier = "default"
+
+# 通常の :workspace 権限を継承し、
+# /dev/kvm だけ追加でアクセス可能にする。
+[permissions.workspace-kvm]
+description = "通常のworkspace権限にKVMデバイスアクセスだけを追加"
+extends = ":workspace"
+
+[permissions.workspace-kvm.filesystem]
+"/dev/kvm" = "write"
+
+# 従来の workspace-write と同様、サンドボックス内ネットワークは無効。
+[permissions.workspace-kvm.network]
+enabled = false
+
+[tui]
+status_line = [
+    "model-with-reasoning",
+    "current-dir",
+    "project-name",
+    "git-branch",
+    "branch-changes",
+    "context-used",
+    "five-hour-limit",
+    "weekly-limit",
+    "pull-request-number",
+]
+status_line_use_colors = true
+theme = "solarized-dark"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+"gpt-5.6-sol" = 4
+
+[notice]
+hide_full_access_warning = true
+
+[notice.model_migrations]
+"gpt-5.4" = "gpt-5.5"
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
