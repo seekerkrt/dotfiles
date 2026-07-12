@@ -1,17 +1,35 @@
+# JadeOSの公開runターゲットを、KVM利用のためサンドボックス外で実行する。
+#
+# make自体を丸ごと許可せず、指定したrun系ターゲットだけを許可する。
+
 prefix_rule(
     pattern = [
-        ["qemu-system-x86_64", "/usr/bin/qemu-system-x86_64"],
-        "-accel",
-        "kvm",
+        ["make", "/usr/bin/make"],
+        [
+            "run",
+            "run-debug",
+            "run-log",
+            "run-debug-log",
+            "rebuild-debug",
+        ],
     ],
     decision = "allow",
-    justification = "QEMU/KVM試験をサンドボックス外で確認なしに実行する",
+    justification = "JadeOSのQEMU/KVM runターゲットをホスト環境で実行する",
     match = [
-        "qemu-system-x86_64 -accel kvm -cpu host",
-        "/usr/bin/qemu-system-x86_64 -accel kvm -m 512M",
+        "make run",
+        "make run-debug",
+        "make run-log",
+        "make run-debug-log",
+        "make rebuild-debug",
+        "/usr/bin/make run-debug",
     ],
     not_match = [
-        "qemu-system-x86_64 -accel tcg -cpu max",
-        "qemu-system-x86_64 -enable-kvm -cpu host",
+        "make",
+        "make iso",
+        "make iso-debug",
+        "make clean",
+        "make distclean",
+        "make run-internal",
+        "make run-debug-extra",
     ],
 )
