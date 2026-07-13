@@ -40,6 +40,7 @@ mkdir -p ~/handoff
 作成してはいけないファイル:
 
 - `latest.md`
+- `current.md`
 - `codex-latest.md`
 - `claude-latest.md`
 
@@ -48,14 +49,16 @@ mkdir -p ~/handoff
 引き継ぎメモには、次の項目を含める。
 
 1. リポジトリ名と現在ブランチ
-2. 作業目的
+2. 作業目的と意図的に守ったscope / non-scope
 3. 読んだファイル
 4. 変更したファイル
-5. 変更内容または調査結果の要約
-6. 実行した検証コマンドと結果
-7. 既知の問題、リスク、不確実な点
-8. 次に推奨する作業
-9. `git status --short --branch` の結果
+5. 実施した作業と実施していない作業
+6. 変更内容または調査結果の要約
+7. 実行した検証コマンドと結果
+8. 既知の問題、リスク、不確実な点
+9. 次に推奨する作業
+10. `git status --short --branch` の結果
+11. commit、pushの実施有無
 
 # ルール
 
@@ -90,6 +93,14 @@ mkdir -p ~/handoff
 
 <依頼された作業内容と、意図的に守った作業範囲を書く。>
 
+## Structure before
+
+<構造変更がある場合、編集前の配置を書く。該当しない場合は省略してよい。>
+
+## Structure after
+
+<構造変更がある場合、編集後の配置を書く。該当しない場合は省略してよい。>
+
 ## Files read
 
 - `path/to/file`
@@ -103,6 +114,14 @@ mkdir -p ~/handoff
 変更がない場合:
 
 - 変更なし。
+
+## Work completed
+
+- <実施した作業>
+
+## Work not performed
+
+- <実施していない作業と理由>
 
 ## Summary
 
@@ -141,7 +160,33 @@ mkdir -p ~/handoff
 ```text
 <git status --short --branch の出力>
 ```
+
+## Git operations
+
+- git add: 未実施 / 実施
+- commit: 未実施 / 実施
+- push: 未実施 / 実施
 ~~~
+
+# 禁止事項
+
+- `latest.md`、`current.md`等の固定名を作ること
+- handoffファイルの `git add`、stage、commit
+- handoff作成を理由にしたpush
+- 作業していない変更や検証を完了扱いすること
+- 未確認事項を事実として書くこと
+- 長いlogを根拠整理なしにそのまま貼ること
+- ユーザーの既存変更をrestore、reset、stash、cleanすること
+
+# 失敗時・未確認時の扱い
+
+- 不明点は断定せず「未確認」または「要確認」と書く。
+- commandが失敗した場合は、失敗したcommand、理由、部分成功の有無を記録する。
+- 出力先へ書き込めない場合は、固定名やrepository内fileで代用せず、handoff未作成と理由を報告する。
+- branch、HEAD、GitHub状態等を確認できない場合は、推測で埋めない。
+- 外部観測の解釈に確信がない場合は、観測値と仮説を別項目にする。
+- ファイル変更がない場合は「変更なし」と明記する。
+- 調査のみの場合は、調査結果と次の一手を中心に書く。
 
 # 作成後の確認
 
