@@ -5,13 +5,15 @@
 詳細は以下の各節にある。迷ったら、まずこれだけは守る。
 
 - 日本語で返答・説明する
-- 編集の前にまず調査し、根拠を示す
-- 明示依頼がない限り、push / commit / 破壊的削除 / 広範囲 rename / broad refactor をしない
-- 調査のみの依頼では、ファイル編集も `git add` / `commit` もしない
-- 事実 / 推測 / 提案 を混ぜない。不確実な点は「未確認」と書く
+- 編集の前に関連ファイル、参照経路、docs、既存契約を調査し、根拠を示す
+- 調査のみの依頼では、ファイル編集も `git add` / commit / push もしない
+- 明示依頼がない限り、stage / commit / push / 破壊的削除 / 広範囲 rename / broad refactor をしない
+- ユーザーの既存変更を尊重し、勝手に restore / reset / stash / clean しない
+- 事実 / 推測 / 提案 / 未確認 を混ぜない。不確実な点は「未確認」と書く
 - 変更は最小スコープに保ち、unrelated change を混ぜない
 - GitHub側への書き込みは、対象と操作内容の明示依頼がある場合だけ行う
-- 認証情報・token・credentialを探索、表示、変更しない
+- 認証情報・token・credential・cookie・秘密鍵を探索、表示、保存、変更しない
+- 実行していない検証を成功扱いしない
 - 迷ったら編集せず、根拠を出して次の一手を 1 つ提案する
 
 ---
@@ -20,7 +22,8 @@
 
 - まず調査し、根拠を集めてから提案・編集する
 - 不確かなことは断言しない
-- 推測だけで未提出部分を実装しない
+- 推測だけで未確認部分を実装しない
+- 一般論だけでなく、具体的なfile / function / symbol / call pathへ対応させる
 - 大規模変更を勝手に進めない
 - まずは最小の安全な一手を優先する
 - 日本語で説明する
@@ -40,7 +43,7 @@
 - まず推し案を出し、その後に理由を短く説明する
 - 長い選択肢リストをいきなり並べず、必要な場合だけ案を列挙する
 - コードやログが貼られた直後は、分析を広げすぎず、次の一手を 1 つに絞る
-- 事実 / 推測 / 提案 は混ぜない
+- 事実 / 推測 / 提案 / 未確認 は混ぜない
 - レビュー時は「何が問題か」「なぜ問題か」「どう直すか」を分けて書く
 
 基本の流れは、必要に応じて次の形にする。
@@ -87,20 +90,14 @@
 変更前は、可能な限り次の順で進める。
 
 1. 関連ファイルを洗い出す
-2. 呼び出し経路・参照経路を確認する
+2. 呼び出し経路・参照経路・owner・source of truthを確認する
 3. 近傍の命名・責務・コメント流儀を確認する
-4. docs や設計文書があるか確認する
+4. docs・tests・build設定・既存契約を確認する
 5. そのうえで提案・編集する
 
-### 調査のみ依頼された場合
+調査のみの依頼では `audit` Skillを使用する。調査中はファイル編集、stage、commit、pushを行わず、具体的なfile / function / symbol / call pathに根拠を対応させる。
 
-- ファイル編集しない
-- `git add` / `commit` しない
-- 根拠とともに報告する
-- 不要ファイル判定では、以下を分けて述べる
-  - 本当に未使用
-  - 現状 dormant だが意図的に残している可能性あり
-  - 判定保留
+推測だけで未確認部分を実装しない。不要ファイルや未使用コードの判定、finding形式、Issue / PR分割候補等の詳細は `audit` Skillに従う。
 
 ---
 
@@ -201,11 +198,8 @@ update_ep0_dequeue_before_address_device(slot);
 - 広範囲 rename
 - broad refactor
 - unrelated file edits
-- 無関係な `git add`
-- 無関係な commit
-- push
-- force push
-- branch / tagの削除
+- `git add`、commit、push、force push
+- branch / tagの作成、削除
 - GitHub側への書き込み
 - 認証・credential・秘密情報に関する変更
 - 危険な shell command 実行
@@ -214,212 +208,64 @@ update_ep0_dequeue_before_address_device(slot);
 
 ---
 
-## Git 運用ルール
+## Git安全規則
 
 - 大きな変更前は `git status` を確認する
-- コミット前に `git status` でstage対象を確認する
-- コミット前に `git diff --check` で空白エラーを確認する
-- 変更は論理単位で分ける
-- `git add .` を無条件に使わない
-- 可能ならstage対象を絞る
-- コミットは「意味の塊」で切る
-- unrelated changeがある場合は勝手にstage、restore、stashしない
 - 既存の未コミット変更をユーザーの作業として尊重する
-- branch切り替え前は、現在の変更へ影響しないか確認する
+- 変更は論理単位に保ち、unrelated changeを混ぜない
+- branch切り替え等で現在の変更へ影響しないか事前に確認する
+- read-onlyのGit確認は必要に応じて行ってよい
 
-### 明示依頼なしに行わないGit操作
+明示依頼なしに、次の操作を行わない。
 
-- `git add`
-- `git commit`
-- `git push`
-- `git reset`
-- `git restore`
-- `git checkout -- <path>`
-- `git clean`
-- `git stash`
-- `git rebase`
-- `git merge`
-- `git cherry-pick`
-- branch / tagの作成・削除
+- `git add`、commit、push
+- restore、reset、`checkout -- <path>`、clean、stash
+- rebase、merge、cherry-pick
+- branch / tagの作成、削除
 - force push
-- remoteやcredential helperの変更
+- remote、credential helper、protocol設定の変更
 
-read-onlyのGit確認は必要に応じて行ってよい。
+unrelated changeがある場合も、勝手にstage、restore、reset、stash、cleanしない。
 
-例:
+---
 
-- `git status`
-- `git diff`
-- `git diff --cached`
-- `git log`
-- `git show`
-- `git branch`
-- `git remote -v`
-- `git rev-parse`
-- `git ls-files`
-- `git grep`
+## read-only監査
 
-### コミット支援時
+実装前監査、責務境界監査、未使用コード監査、docsと実装の整合確認、Issue化前の調査、または「調査だけ」「監査だけ」の依頼では `audit` Skillを使用する。
 
-- 変更内容を日本語で要約する
-- コミット粒度の提案をする
-- stage対象を明示する
-- コミットメッセージは日本語の件名を主とする
-- 必要に応じて、同等内容の英語メッセージも併記する
-- docs-only変更でも同様に扱う
+調査中はファイル編集、stage、commit、pushを行わない。事実、推測、提案、未確認を分け、一般論だけでなく具体的なfile / function / symbol / call pathへ対応させる。
 
-英語併記が必要な場合は、次のどちらかで提案してよい。
+---
 
-```bash
-git commit -m "<日本語件名>" -m "<英語要約>"
-```
+## 検証
 
-または、日本語件名と英語件名を別行で明示する。
+非自明な変更の検証では `verify` Skillを使用する。
 
-### コミットメッセージ例
+実行していない検証を成功扱いしない。build、test、runtime、QEMU、VirtualBox、実機等を混同せず、未実施項目と環境制約を明記する。
 
-日本語件名:
+検証だけの依頼では、明示依頼なしに修正、stage、commit、pushを行わない。
 
-```text
-docs: JADEC_STATEの現在地を更新
-```
+---
 
-英語併記例:
+## commit準備
 
-```text
-docs: update current JADEC_STATE status
-```
+commit前の差分整理、stage候補、commit粒度、メッセージ案の作成では `commit-prep` Skillを使用する。
+
+明示依頼がない限りstageやcommitを実行しない。unrelated changeを含めず、実行していないtestをcommit本文へ書かない。
 
 ---
 
 ## GitHub操作
 
-GitHub repository、Issue、PR、Actions、release等を確認・操作する場合は、利用可能なら `github` skill の指示に従う。
+GitHub repository、Issue、PR、Actions、release、branch、tag等を確認、操作する場合は、利用可能なら `github` Skillを使用する。
 
-具体的なコマンド、調査順序、Issue / PR / Actions / release別の手順、`gh api`の扱い、書き込み後の確認方法は `github` skill側へ置く。
+GitHub側への書き込みは、ユーザーから対象と操作内容の明示依頼がある場合だけ行う。相談、レビュー、調査依頼を、書き込み依頼として扱わない。
 
-この節では、skillが読み込まれない場合でも必ず守る安全規則だけを定める。
+認証情報、token、credential、cookie、秘密鍵を探索、表示、保存、変更しない。`gh`が利用できなくても、login、logout、refresh、account切り替え、scope変更、credential helper変更等で認証状態を修復しない。
 
-### 基本方針
+PR merge、削除、permission変更、force操作、`--admin`、複数対象への一括操作等の重大操作は、ユーザーの依頼があっても実行直前に対象と内容を再確認する。
 
-- ローカルrepository、branch、remote、作業ツリーを先に確認する
-- GitHub閲覧では、利用可能なら `gh` のread-only操作を優先する
-- `gh`が利用できない場合は、認証状態を変更せず、利用可能なGitHub連携機能へ切り替える
-- GitHub側への書き込みは、ユーザーから対象と操作内容の明示依頼がある場合だけ行う
-- GitHub側の状態を推測だけで断定しない
-- 書き込み後は可能な範囲でread-only確認を行う
-
-### read-only操作
-
-必要に応じて、次のようなread-only確認を行ってよい。
-
-- `gh auth status`
-- `gh repo view`
-- `gh issue list`
-- `gh issue view`
-- `gh pr list`
-- `gh pr view`
-- `gh pr diff`
-- `gh pr checks`
-- `gh run list`
-- `gh run view`
-- `gh workflow list`
-- `gh workflow view`
-- `gh release list`
-- `gh release view`
-- `gh api --method GET ...`
-
-read-only調査で `gh api` を使う場合は、必ず `--method GET` を明示する。
-
-### `gh` が利用できない場合
-
-sandbox、Linux keyring、credential helper、認証socket、権限制約等により、Codex内から `gh` が利用できないことがある。
-
-その場合は次を守る。
-
-- 認証状態を変更して直そうとしない
-- tokenやcredentialを探さない
-- ユーザーへ再ログインを要求しない
-- ローカル端末側の認証状態を壊さない
-- 利用可能なGitHub連携機能へ切り替える
-- 確認できなかった内容は「未確認」と書く
-
-### 認証・秘密情報に関する禁止事項
-
-Codex内では、明示依頼の有無にかかわらず、次を実行しない。
-
-- `gh auth login`
-- `gh auth logout`
-- `gh auth refresh`
-- `gh auth switch`
-- `gh auth setup-git`
-- `gh auth token`
-- token、credential、cookie、秘密鍵の探索・表示・コピー・保存
-- `GH_TOKEN` / `GITHUB_TOKEN`等の秘密値の読み出し・表示
-- credential store、keyring、password storeの探索
-- active accountの変更
-- 認証scopeの変更
-- Git credential helperの変更
-- GitHub認証を直す目的での設定変更
-
-認証に問題がある場合は、認証を修復せず、利用可能なGitHub連携機能へ切り替える。
-
-### 明示依頼が必要なGitHub操作
-
-次のようなGitHub側の状態を変更する操作は、ユーザーから対象と操作内容の明示依頼がある場合だけ実行する。
-
-- Issueのcreate、edit、comment、close、reopen
-- PRのcreate、edit、comment、close、reopen
-- PR reviewのapprove、request changes、comment
-- PRのready化、draft化、update-branch
-- PR merge
-- label、assignee、milestone、projectの変更
-- branch / tagの作成・削除
-- releaseのcreate、edit、delete
-- release assetのupload、delete
-- workflowのrun、enable、disable、rerun、cancel、delete
-- repositoryの作成、rename、archive、delete、transfer
-- repository visibilityやdefault branchの変更
-- secret、variable、environmentの変更
-- SSH key、GPG key、deploy keyの変更
-- collaborator、team、permissionの変更
-- ruleset、branch protectionの変更
-- GitHub API上のmutation
-
-### 重大操作
-
-次の重大操作は、ユーザーの依頼があっても、実行直前に対象と内容を再確認する。
-
-- PR merge
-- branch / tagの削除
-- release削除
-- repositoryのdelete、transfer、archive、visibility変更
-- secret、key、permissionの変更
-- ruleset、branch protectionの変更
-- workflowのdisable
-- workflow runのcancel、delete
-- forceを伴うbranch更新
-- 複数対象への一括変更・一括削除
-
-### ローカル状態を変更する `gh` 操作
-
-次の操作はGitHub閲覧ではないため、明示依頼なしに実行しない。
-
-- `gh pr checkout`
-- `gh repo clone`
-- `gh repo sync`
-- `gh repo sync --force`
-- `gh repo set-default`
-- `gh config set`
-- `gh alias set`
-- `gh alias import`
-- `gh alias delete`
-- `gh extension install`
-- `gh extension upgrade`
-- `gh extension remove`
-- 未確認の `gh` extensionの実行
-- browserやeditorを起動する操作
-- Git remote、branch、credential helper、protocol設定を変更する操作
+具体的なcommand、repository / branch / remoteの確認順序、Issue / PR / Actions / release別手順、`gh api`の境界、fallback、操作後確認、失敗時と報告形式は `github` Skillに従う。
 
 ---
 
@@ -466,13 +312,8 @@ Codex内では、明示依頼の有無にかかわらず、次を実行しない
 
 ## ChatGPT handoff
 
-非自明なコーディング作業を終える前に、`handoff` skill を使ってChatGPT向けの引き継ぎメモを作成する。
+非自明なコーディング、リポジトリ調査、検証、Issue / PR作業、デバッグ、設計レビューを終える前に、`handoff` Skillを使ってChatGPT向けの引き継ぎメモを作成する。
 
-出力先、ファイル名、必須項目、禁止事項は `handoff` skillの指示に従う。
+handoffの出力先、日時付きの一意なファイル名、必須項目、検証結果、未確認事項、次の一手、PR作成時の扱いは `handoff` Skillに従う。
 
-特に次を守る。
-
-- `latest.md`系の固定ファイルを作成しない
-- handoffファイルを勝手に `git add` / stage / commitしない
-- 事実、変更内容、検証結果、未確認点、次の一手を分けて書く
-- 作業していない内容を完了扱いしない
+handoffファイルを勝手に `git add`、stage、commit、pushしない。作業していない内容や実行していない検証を完了扱いしない。
