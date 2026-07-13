@@ -10,6 +10,8 @@
 - 調査のみの依頼では、ファイル編集も `git add` / `commit` もしない
 - 事実 / 推測 / 提案 を混ぜない。不確実な点は「未確認」と書く
 - 変更は最小スコープに保ち、unrelated change を混ぜない
+- GitHub側への書き込みは、対象と操作内容の明示依頼がある場合だけ行う
+- 認証情報・token・credentialを探索、表示、変更しない
 - 迷ったら編集せず、根拠を出して次の一手を 1 つ提案する
 
 ---
@@ -196,6 +198,10 @@ update_ep0_dequeue_before_address_device(slot);
 - 無関係な `git add`
 - 無関係な commit
 - push
+- force push
+- branch / tag の削除
+- GitHub側への書き込み
+- 認証・credential・秘密情報に関する変更
 - 危険な shell command 実行
 
 ---
@@ -227,6 +233,131 @@ update_ep0_dequeue_before_address_device(slot);
   - `docs: JADEC_STATEの現在地を更新`
 - 英語併記例:
   - `docs: update current JADEC_STATE status`
+
+---
+
+## GitHub操作
+
+GitHub repository、Issue、PR、Actions、release等を確認・操作する場合は、利用可能なら `github` skill の指示に従う。
+
+具体的なコマンド、調査順序、Issue / PR / Actions / release別の手順、`gh api` の扱い、書き込み後の確認方法は `github` skill側へ置く。
+
+この節では、skillが読み込まれない場合でも必ず守る安全規則だけを定める。
+
+### 基本方針
+
+- ローカルrepository、branch、remote、作業ツリーを先に確認する
+- GitHub閲覧では、利用可能なら `gh` のread-only操作を優先する
+- `gh` が利用できない場合は、認証状態や設定を変更して直そうとせず、ローカルの `git` で確認できる範囲に留めるか、その旨をユーザーに伝える
+- GitHub側への書き込みは、ユーザーから対象と操作内容の明示依頼がある場合だけ行う
+- GitHub側の状態を推測だけで断定しない
+- 書き込み後は可能な範囲でread-only確認を行う
+
+### read-only操作
+
+必要に応じて、次のようなread-only確認を行ってよい。
+
+- `gh auth status`
+- `gh repo view`
+- `gh issue list`
+- `gh issue view`
+- `gh pr list`
+- `gh pr view`
+- `gh pr diff`
+- `gh pr checks`
+- `gh run list`
+- `gh run view`
+- `gh workflow list`
+- `gh workflow view`
+- `gh release list`
+- `gh release view`
+- `gh api --method GET ...`
+
+read-only調査で `gh api` を使う場合は、必ず `--method GET` を明示する。
+
+### `gh` が利用できない場合
+
+Bash allow/denylistの設定等により、`gh` そのもの、または一部subcommandが利用できないことがある。
+
+その場合は次を守る。
+
+- 認証状態を変更して直そうとしない
+- tokenやcredentialを探さない
+- ユーザーへ再ログインを要求しない
+- denylistを回避しようとせず、必要なsubcommandがあればユーザーに許可を依頼する
+- 確認できなかった内容は「未確認」と書く
+
+### 認証・秘密情報に関する禁止事項
+
+明示依頼の有無にかかわらず、次を実行しない。
+
+- `gh auth login`
+- `gh auth logout`
+- `gh auth refresh`
+- `gh auth switch`
+- `gh auth setup-git`
+- `gh auth token`
+- token、credential、cookie、秘密鍵の探索・表示・コピー・保存
+- `GH_TOKEN` / `GITHUB_TOKEN` 等の秘密値の読み出し・表示
+- credential store、keyring、password storeの探索
+- active accountの変更
+- 認証scopeの変更
+- Git credential helperの変更
+
+認証に問題がある場合は、認証を修復しようとせず、状況をユーザーに伝える。
+
+### 明示依頼が必要なGitHub操作
+
+- Issueのcreate、edit、comment、close、reopen
+- PRのcreate、edit、comment、close、reopen
+- PR reviewのapprove、request changes、comment
+- PRのready化、draft化、update-branch
+- PR merge
+- label、assignee、milestone、projectの変更
+- branch / tagの作成・削除
+- releaseのcreate、edit、delete
+- release assetのupload、delete
+- workflowのrun、enable、disable、rerun、cancel、delete
+- repositoryの作成、rename、archive、delete、transfer
+- repository visibilityやdefault branchの変更
+- secret、variable、environmentの変更
+- SSH key、GPG key、deploy keyの変更
+- collaborator、team、permissionの変更
+- ruleset、branch protectionの変更
+- GitHub API上のmutation
+
+### 重大操作
+
+次の重大操作は、ユーザーの依頼があっても、実行直前に対象と内容を再確認する。
+
+- PR merge
+- branch / tagの削除
+- release削除
+- repositoryのdelete、transfer、archive、visibility変更
+- secret、key、permissionの変更
+- ruleset、branch protectionの変更
+- workflowのdisable
+- workflow runのcancel、delete
+- forceを伴うbranch更新
+- 複数対象への一括変更・一括削除
+
+### ローカル状態を変更する `gh` 操作
+
+次の操作はGitHub閲覧ではないため、明示依頼なしに実行しない。
+
+- `gh pr checkout`
+- `gh repo clone`
+- `gh repo sync`
+- `gh repo sync --force`
+- `gh repo set-default`
+- `gh config set`
+- `gh alias set` / `gh alias import` / `gh alias delete`
+- `gh extension install` / `upgrade` / `remove`
+- 未確認の `gh` extensionの実行
+- browserやeditorを起動する操作
+- Git remote、branch、credential helper、protocol設定を変更する操作
+
+詳細な調査手順・コマンド例・報告フォーマットは `github` skill を参照する。
 
 ---
 
