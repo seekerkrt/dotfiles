@@ -29,7 +29,6 @@
       "Bash(git add:*)"
     ]
   },
-  "model": "claude-fable-5[1m]",
   "statusLine": {
     "type": "command",
     "command": "npx -y ccstatusline@latest",
