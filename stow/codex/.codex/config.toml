@@ -9,8 +9,8 @@ model_reasoning_effort = "max"
 model_verbosity = "medium"
 approvals_reviewer = "user"
 service_tier = "fast"
-model_context_window = 1050000
-model_auto_compact_token_limit = 900000
+#model_context_window = 1050000
+#model_auto_compact_token_limit = 900000
 
 
 [tui]
@@ -43,3 +43,4 @@ url = "https://developers.openai.com/mcp"
 
 [features]
 prevent_idle_sleep = true
+
