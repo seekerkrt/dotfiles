@@ -228,6 +228,12 @@ update_ep0_dequeue_before_address_device(slot);
 unrelated changeがある場合も、勝手にstage、restore、reset、stash、cleanしない。
 
 ---
+## Skillの読み取り
+
+- 複数のSkillを適用する場合、各 `SKILL.md` は一度にまとめて読まず、必要になる順に1つずつ読む。
+- `SKILL.md` の読み取り結果が途中で省略された場合は、範囲を分割して最後まで確認してから作業を進める。
+- Skill内の `references/` は、現在の作業に必要なものだけ読む。
+- 作業に不要なSkillやreferenceを、形式的にすべて読み込まない。
 
 ## read-only監査
 
