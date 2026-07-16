@@ -10,8 +10,34 @@ prefix_rule(pattern=["sh", "tests/test-conflicts-replaces.sh"], decision="allow"
 prefix_rule(pattern=["sh", "tests/test-pacman-routing.sh"], decision="allow")
 prefix_rule(pattern=["make", "test-cli-parser", "test-source-selection"], decision="allow")
 prefix_rule(pattern=["make", "test-needed-contract"], decision="allow")
-prefix_rule(pattern=["make", "test-pacman-routing", "test-aur-rpc-validation", "test-conflicts-replaces"], decision="allow")
+prefix_rule(
+    pattern=[
+        "make",
+        "test-pacman-routing",
+        "test-aur-rpc-validation",
+        "test-conflicts-replaces",
+    ],
+    decision="allow",
+)
 prefix_rule(pattern=["make", "test-pkgbuild-export"], decision="allow")
 prefix_rule(pattern=["make", "test-build-cache-symlink"], decision="allow")
-prefix_rule(pattern=["gh", "issue", "view"], decision="allow")
 prefix_rule(pattern=["make", "test-aur-rpc-validation"], decision="allow")
+
+prefix_rule(
+    pattern=["gh", "issue", "view"],
+    decision="allow",
+    justification="GitHub Issueの参照専用コマンドを自動許可する",
+    match=[
+        "gh issue view 203",
+        "gh issue view 203 --comments",
+        "gh issue view 203 --json number,title,body,state,labels,assignees,comments,url",
+        "gh issue view 203 --repo seekerkrt/jadeos",
+    ],
+    not_match=[
+        "gh issue list",
+        "gh issue edit 203",
+        "gh issue close 203",
+        "gh issue create",
+        "gh pr view 203",
+    ],
+)
