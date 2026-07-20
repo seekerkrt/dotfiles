@@ -1,6 +1,6 @@
 ---
 name: handoff-inline
-description: 非自明な開発作業や調査結果について、ユーザーがhandoff-inline、inline、本文だけ、保存不要、ファイル不要、fileを作らない等を明示した場合に、repositoryや~/handoffへfileを作らず、現在の応答本文へ短い日本語引き継ぎを出力する。通常の永続handoff生成、PR body運用、repository archiveには使用しない。
+description: 非自明な開発作業や調査について、ユーザーがinline、本文だけ、保存不要、ファイル不要等を明示した場合に、fileを作らず現在の応答本文へ短い日本語引き継ぎを出力する。通常handoff生成やrepository archiveには使用しない。
 ---
 
 # 目的
