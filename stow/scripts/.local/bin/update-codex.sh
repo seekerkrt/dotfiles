@@ -3,16 +3,12 @@
 set -u
 
 # RESPONSIBILITY:
-# npmでグローバル導入しているAI CLIをまとめて最新版へ更新する。
+# npmでグローバル導入しているOpenAI Codex CLIを最新版へ更新する。
 # AUR/pacman管理のAI CLIはこのスクリプトでは扱わない。
 #
 # NOTE:
-# Claude Codeはpostinstallでプラットフォーム固有のネイティブ
-# バイナリを導入するため、このパッケージに限ってinstall scriptを
-# 明示的に許可する。
-#
 # npm installが終了コード0を返してもCLI本体が実行不能な場合があるため、
-# 更新後に各CLIの --version を実行し、正常動作を検証する。
+# 更新後に --version を実行し、正常動作を検証する。
 
 log() {
     printf '%s\n' "$*"
@@ -99,22 +95,16 @@ run_step() {
     fi
 }
 
-log "AI CLI update script"
+log "OpenAI Codex CLI update script"
 log "start: $(date '+%Y-%m-%d %H:%M:%S')"
 
 log ""
 log "Current versions (before update)"
 show_version "codex" "codex"
-show_version "claude" "claude"
 
 run_step "Update OpenAI Codex CLI" \
     npm install -g \
     @openai/codex@latest
-
-run_step "Update Claude Code CLI" \
-    npm install -g \
-    --allow-scripts=@anthropic-ai/claude-code \
-    @anthropic-ai/claude-code@latest
 
 # シェルがコマンドパスをキャッシュしている場合に備えて更新する。
 hash -r 2>/dev/null || true
@@ -124,16 +114,10 @@ log "Versions after update"
 
 if ! verify_version "codex" "codex"; then
     log ""
-    log "AI CLI update verification failed."
-    exit 1
-fi
-
-if ! verify_version "claude" "claude"; then
-    log ""
-    log "AI CLI update verification failed."
+    log "OpenAI Codex CLI update verification failed."
     exit 1
 fi
 
 log ""
-log "All updates completed and verified successfully."
+log "OpenAI Codex CLI update completed and verified successfully."
 log "end: $(date '+%Y-%m-%d %H:%M:%S')"
