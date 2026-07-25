@@ -75,6 +75,7 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 ├── restore-ssh-allowlist.sh  # 暗号化したSSH鍵と設定を復元
 ├── backup-ssh-config.sh      # SSH設定のみを暗号化バックアップ
 ├── restore-ssh-config.sh     # 暗号化したSSH設定のみを復元
+├── install-claude-code.sh    # Claude Codeをnpmでインストール
 └── setup-system.sh           # システム側設定を配置
 ```
 
@@ -221,6 +222,7 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 ├── restore-ssh-allowlist.sh  # Restore SSH keys and config from GPG
 ├── backup-ssh-config.sh      # Back up only SSH config with GPG
 ├── restore-ssh-config.sh     # Restore only SSH config from GPG
+├── install-claude-code.sh    # Install Claude Code with npm
 └── setup-system.sh           # Install system-side config
 ```
 
