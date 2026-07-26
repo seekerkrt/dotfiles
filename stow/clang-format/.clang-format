@@ -1,27 +1,46 @@
+BasedOnStyle: LLVM
+
 AccessModifierOffset: -4
+
 AlignAfterOpenBracket: true
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: true
-AlignEscapedNewlinesLeft: true
-AlignTrailingComments: true
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignEscapedNewlines: Left
+AlignTrailingComments: Leave
+
+AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: false
+
 BinPackArguments: true
 BinPackParameters: true
-IndentCaseLabels: true
-TabWidth: 4
-IndentWidth: 4
-UseTab: Never
+
+BreakBeforeBraces: Attach
+
 ColumnLimit: 0
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+FixNamespaceComments: false
+
+IncludeBlocks: Preserve
+SortIncludes:
+  Enabled: false
+SortUsingDeclarations: Never
+
+IndentCaseLabels: true
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
+
 SpaceAfterCStyleCast: false
-#SpaceBeforeParens: ControlStatements
 SpaceBeforeParens: Never
 SpacesBeforeTrailingComments: 0
 SpacesInCStyleCastParentheses: false
 SpacesInSquareBrackets: false
-PointerAlignment: Left
-BreakBeforeBraces: Attach
