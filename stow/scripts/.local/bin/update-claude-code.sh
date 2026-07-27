@@ -16,6 +16,8 @@ npm install -g \
     --allow-scripts=@anthropic-ai/claude-code \
     @anthropic-ai/claude-code@latest
 
+npm i -g ccstatusline@latest
+
 # シェルがコマンドパスをキャッシュしている場合に備えて更新する。
 hash -r 2>/dev/null || true
 

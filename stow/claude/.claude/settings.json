@@ -2,6 +2,10 @@
   "env": {
     "DISABLE_TELEMETRY": "1"
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(make:*)",
@@ -17,23 +21,35 @@
       "Bash(eza:*)",
       "Bash(cat:*)",
       "Bash(bat:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(rg:*)"
     ],
     "deny": [
       "Bash(git push:*)",
       "Bash(rm -rf:*)",
-      "Bash(sudo:*)"
+      "Bash(sudo:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.config/gh/**)"
     ],
     "ask": [
       "Bash(git commit:*)",
       "Bash(git add:*)"
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "npx -y ccstatusline@latest",
-    "padding": 0
+  "permissions": {
+  "additionalDirectories": ["~/handoff"]
   },
+  "model": "opus",
+
+    "statusLine": {
+        "type": "command",
+        "command": "$HOME/.local/npm-global/bin/ccstatusline",
+        "padding": 0
+    },
+
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
   },
