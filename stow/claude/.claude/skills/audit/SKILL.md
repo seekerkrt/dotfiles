@@ -63,7 +63,7 @@ repository固有の検索・解析commandは、既存docsや構造から決め�
 
 # finding形式
 
-各findingには最低限、次を含める。
+Critical / High のfindingには、最低限次を含める。
 
 ```text
 Severity:
@@ -81,6 +81,21 @@ Suggested issue title:
 `Evidence`には、可能な限りfile path、functionまたはsymbol、該当行、call path、docsやtestの対応箇所を含める。
 
 `Suggested fix direction`は実装済みのように書かず、最小scopeの方向性として示す。複数案を出す場合も、推し案を先に置く。
+
+## Severity別の記述粒度
+
+Severityに応じて記述量を変える。上の10項目はCritical / Highの形式とする。
+
+- Critical / High: 10項目すべてを記述する。
+- Medium: `Severity` / `Confidence` / `Area` / `Evidence` /
+  `Suggested fix direction` の5項目を記述する。`Expected contract` と
+  `Actual behavior` は、契約の不整合そのものがfindingの主題である場合に
+  限り加える。
+- Low: 1行で記述する。形式は `Area | 内容 | Suggested fix direction`。
+  SeverityとConfidenceは、表のヘッダまたは節見出しでまとめて示してよい。
+
+記述量を減らすためにSeverityを下げない。Severityの判定は影響度に基づいて
+行い、記述量はその結果として決まる。
 
 ## Severity
 
@@ -152,8 +167,9 @@ IssueやPRの作成は行わない。GitHub側へ書き込む場合は、別途�
 - scope / non-goal
 
 findings:
-- Severity / Confidence / Area
-- Evidence / Risk / Suggested fix direction
+- 総件数と Severity 分布
+- Area 一覧
+（各 finding の詳細は「finding形式」に従って記述する。ここでは再掲しない）
 
 未確認:
 - ...
