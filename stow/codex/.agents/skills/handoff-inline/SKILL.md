@@ -7,7 +7,7 @@ description: 非自明な作業のhandoffについて、ユーザーがhandoff-i
 
 ## 基本契約
 
-最初に`../handoff/SKILL.md`を読み、そのauthority、事実性、必須情報、ユーザー追加指定overlayを適用する。本Skillは共通契約を再定義せず、output modeだけを次のように上書きする。
+最初に `~/.agents/skills/handoff/SKILL.md` を読み、そのauthority、事実性、必須情報、ユーザー追加指定overlayを適用する。本Skillは共通契約を再定義せず、output modeだけを次のように上書きする。
 
 ```text
 保存先: 最終応答本文だけ
