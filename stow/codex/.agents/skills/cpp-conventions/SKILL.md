@@ -1,87 +1,103 @@
 ---
 name: cpp-conventions
-description: "C/C++のコードを生成・編集・レビューする際は必ず使用する。命名、コメント運用(WHY/POLICY/LANDMINE/NOTE)、キャスト、C++機能の使い分けなど全プロジェクト共通のC++規約ベースライン。プロジェクトに docs/CODING_CONVENTIONS.md がある場合はそちらが正であり、本規約は共通部分のみを定める。"
+description: C++コードの生成・編集・review、およびC++から利用するC互換headerやC/C++共有境界で使用し、C++標準、宣言と定義の分離、共通命名、コメント、所有権、C++機能、castの全project共通baselineを適用する。repositoryにdocs/CODING_CONVENTIONS.mdがあれば必ず併読し、build設定とproject規約が本Skillと異なる部分はproject側を優先する。
 ---
 
-# 共通 C++ コーディング規約(全プロジェクトベースライン)
+# C++共通規約
 
-## 位置づけと優先順位
+## 適用順
 
-- この規約は全プロジェクト共通のベースラインである。
-- リポジトリに `docs/CODING_CONVENTIONS.md` がある場合、**そちらを正とする**。
-  実装前に必ず読み、矛盾したらプロジェクト規約を優先する。
-- 以下はプロジェクトごとに方針が分かれるため、この規約では**決めない**。
-  必ずプロジェクト規約を確認すること。
-  - 例外の可否(例: JadeOS=原則使わない / jpacker=内部の失敗伝播に使いCLI境界で捕捉)
-  - 標準ライブラリの可否(freestanding か hosted か)
-  - 関数・メソッド命名(例: JadeOS=public PascalCase・内部 snake_case / jpacker=全般 snake_case)
-  - ファイル分割方針(.hpp/.cpp 必須分離か、既存単一ファイル尊重か)
-  - `reinterpret_cast` の許容範囲と閉じ込め先
+1. 作業対象に適用される`AGENTS.md`を読む。
+2. repositoryの`docs/CODING_CONVENTIONS.md`が存在すれば読む。
+3. Makefile、CMake等の実際のbuild設定からcompiler、C++標準、例外、RTTI、warningを確認する。
+4. project側に明示がない部分へ本Skillの共通baselineを適用する。
 
-## 命名(共通部分)
+現在のcompile条件は実際のbuild設定を事実として扱い、project固有の意図はproject規約を正とする。両者が食い違う場合は片方を推測で正しいものとして扱わず、不整合を報告する。コード、docs、build設定の修正は今回のscopeに含まれる場合だけ行う。
 
-- 型 / クラス / 構造体 / `enum class` 名は PascalCase。
-- クラスのメンバ変数は `_` 接尾辞を付ける(例: `slot_`, `state_`)。
-  外部に公開する必要があるものだけ `public` にし、それ以外は `protected` / `private` にする。
-- 構造体のメンバ変数は接尾辞を付けない。単純なデータ集約として扱い、基本的に `public` のままでよい。
-- 名前空間は原則小文字。
-- 定数・マクロは UPPER_SNAKE_CASE。マジックナンバーは `const` / `constexpr` の
-  意味が残る名前の定数へ寄せる。
-- ローカル変数・関数引数は snake_case。
-- グローバル変数は極力使わない。必要なら `g_` 接頭辞を付け、翻訳単位内に閉じる。
-- 関数内 `static` は原則避ける。必要な場合は `s_` 接頭辞と、寿命・副作用が
-  分かる名前を付ける。
-- 翻訳単位内限定の関数・変数・定数・補助型は無名 namespace に閉じ込める。
-  cpp グローバルの `static` は既存コードでは許容、新規は無名 namespace を優先。
-- bool 変数・bool 関数は `is_` / `has_` / `should_` / `can_` / `needs_` など
-  真偽の意味が読める名前を優先する。
-- `tmp` / `ret` / `val` / `obj` のような曖昧な名前は、短い局所処理以外では避ける。
+本SkillはC++を主対象とする。C互換headerやC/C++共有ABI境界では適用可能な項目だけを使い、純粋なCコードの命名、cast、配置はproject規約と周辺コードを優先する。
 
-## コメント運用(共通)
+## C++標準
 
-- コメントは多めでよい。ただしコードを見れば分かる WHAT の逐語説明は避ける。
-- 優先して残す: **WHY**(なぜこの実装か) / **POLICY**(守るべき方針・契約) /
-  **LANDMINE**(触ると壊れる箇所) / **NOTE**(暫定事情・将来の整理観点)。
-- 特に明示する: 一時対応か恒久契約か / 雑に共通化すると壊れる理由 /
-  依存順・初期化順に意味がある箇所 / 外部仕様(ハードウェア・外部コマンド・API)に
-  引きずられている処理。
-- ファイル先頭に責務・前提・地雷のヘッダコメントを置いてよい。
-  見出し・区切りコメントは、責務境界と編集時のランドマークとして歓迎する。
+- C++20を共通baselineとする。
+- repositoryのbuild設定またはproject規約が別の標準を明示する場合は、project側を優先する。
+- 作業目的に含まれないC++標準の引き上げ・引き下げを混ぜない。
+- C++20より新しい機能やcompiler拡張を、対応するcompiler設定の確認なしに導入しない。
 
-## C++ 機能の使い分け(共通)
+## 宣言と定義
 
-積極的に使う:
-- **RAII**: ロック・後始末・状態復元。成功時だけ commit し、失敗時は
-  destructor で掃除する構造を優先する。
-- **`enum class`**: 種別・状態を型安全に表現する。
-- **`constexpr` / `static_assert`**: 定数と前提条件の検証。
-- **薄いテンプレート**: ゼロコスト寄りで意図が明快なものに限る。
-- 所有権と寿命を明示する move semantics / `unique_ptr` 相当の表現。
+- 非自明なclass、複数箇所から利用する型、公開interfaceは、原則として宣言を`.hpp`、定義を`.cpp`へ分離する。
+- headerには公開契約と必要な宣言を置き、実装詳細と重い依存は可能な限り`.cpp`へ閉じ込める。
+- template、`constexpr`、`inline`、trivialな定義、C互換ABI header等、header側に定義が必要なものは例外とする。
+- 既存の単一file構成を、分離自体を目的として一括変更しない。
+- compatibility契約のないinclude forwardingだけのheaderや、責務を持たない共通headerを増やさない。
+- project規約が分離を必須化、緩和、または別配置を指定する場合は、その差分を優先する。
 
-慎重に使う:
-- **継承 / `virtual`**: 差し替え可能な抽象が本当に必要な場合のみ。
-  責務分離・合成・関数分割を先に検討する。
-- **operator overload**: ドメイン上自然で、読み手が挙動を誤解しないものに限る。
+## 共通命名
 
-避ける:
-- RTTI / `dynamic_cast` 前提の設計。
-- 重いテンプレートメタプログラミング。
-- 何をしているか追いにくい汎用ラッパー。
-- 既存処理を薄く包むだけの互換関数(`Init()` が `init()` を呼ぶだけ等)。
-- 「便利そう」という理由だけの global state。
+- 型、class、struct、`enum class`はPascalCaseを基本とする。
+- namespaceは小文字を基本とする。
+- local変数と関数引数はsnake_caseを基本とする。
+- class memberは`_`接尾辞、単純なdata aggregateのstruct memberは接尾辞なしを基本とする。
+- classの状態は`private` / `protected`を基本とし、単純なdata aggregateだけをpublic member中心で扱う。意味のないaccessorを形式的に増やさない。
+- 定数とmacroはUPPER_SNAKE_CASEを基本とし、magic numberは意味が残る`constexpr`等へ寄せる。
+- global stateは避ける。必要なら翻訳単位へ閉じ、project規約に従って寿命と副作用が分かる名前を付ける。
+- project規約に別指定がなければ、必要なglobal変数は`g_`、function-local staticは`s_`を付ける。どちらも導入理由、寿命、再入性への影響を確認する。
+- translation unit限定の関数、変数、定数、補助型は無名namespaceへ閉じることを基本とする。
+- boolは`is_`、`has_`、`should_`、`can_`、`needs_`等、真偽の意味が読める名前を優先する。
+- `tmp`、`ret`、`val`、`obj`等の曖昧な名前は、短い局所処理以外で避ける。
 
-## キャスト(共通)
+public / internal関数、enum value、file名等の命名がprojectごとに異なる場合は、project規約と周辺コードへ従う。
 
-- **Cスタイルキャスト `(T)x` は使わない。**
-- 意味のある変換は `static_cast`。
-- `const_cast` は理由を説明できる場合のみ。
-- `dynamic_cast` は常用しない。
-- `reinterpret_cast` の可否と閉じ込め先はプロジェクト規約に従う
-  (例: JadeOS では arch / drivers / mmio 等の low-level 境界のみ)。
+## コメント
 
-## 変更の出し方(共通)
+- コードを見れば分かるWHATの逐語説明を量産しない。
+- 次の情報を優先して残す。
+  - `WHY`: なぜこの実装、構造、順序なのか。
+  - `POLICY`: 守る契約、方針、前提は何か。
+  - `LANDMINE`: 何を雑に変えると壊れるか。
+  - `NOTE`: 暫定事情、補足、将来の整理観点は何か。
+- 外部仕様、hardware、ABI、protocol、OS、外部commandに引きずられる処理、依存順・初期化順、ownershipやlifetimeが読み取りにくい箇所へ意図を残す。
+- 宣言と定義の両方へ同じ説明を複製せず、その場所で必要な契約を置く。
+- file headerや区切りコメントは、責務境界と編集時のlandmarkとして必要な場合に使う。
 
-- まず変更対象の周辺コードのスタイル(命名・責務分割・コメント粒度・
-  エラー処理)に合わせる。不明瞭な場合はプロジェクト規約に従う。
-- 大規模整形・広範囲 rename・unrelated cleanup を機能変更に混ぜない。
-- 差分はレビューしやすい粒度に保つ。
+## C++機能と所有権
+
+- RAIIでlock、resource、temporary state、cleanupをscopeへ束ねる。
+- `enum class`で状態・種別を型安全に表現する。
+- `constexpr`と`static_assert`で定数とcompile-time invariantを表現する。
+- C++内の単なる定数は`constexpr`等を使い、`#define`は条件compile、C / asm共有、token操作等、preprocessorである必要がある用途へ限定する。
+- 所有者、borrow、寿命、move後の状態をinterfaceと型から読めるようにする。
+- owning pointerには`unique_ptr`相当の単一所有表現を優先し、生pointerを暗黙のownerにしない。
+- 継承と`virtual`は差し替え可能な抽象が必要な場合に限り、合成や責務分割を先に検討する。
+- RTTI、`dynamic_cast`、例外の可否はproject規約とbuild設定を確認する。許可されていても、具体型へ戻さないと成立しない設計や不明瞭な制御フローを常用しない。
+- templateは型安全や重複削減の効果が明確な薄い用途に留め、追跡しにくいmetaprogrammingを増やさない。
+- operator overloadはdomain上自然で、挙動を誤解しない場合だけ使う。
+- 別名を増やすだけのforwarding functionや薄いcompatibility wrapperは、移行契約や利用者が明確な場合だけ作る。
+
+## cast
+
+- C++コードではC-style castを使わない。
+- 通常の値変換、enumと整数、前提を確認済みの継承階層変換には`static_cast`を使う。具体型へのdowncastは、その前提をinterfaceで表せないか先に確認する。
+- `const_cast`は外す必要と安全性を説明できる境界だけで使う。
+- `dynamic_cast`はRTTIが許可され、runtime型判定が設計上必要な場合だけ使う。
+- `reinterpret_cast`の可否と閉じ込め先はproject規約へ従う。明示がなければ新規導入せず、hardware、ABI、生memory等の境界を先に特定する。
+
+## Project側で決める事項
+
+本Skillでは次を断定しない。
+
+- freestanding / hosted
+- 例外とRTTIの可否
+- 標準libraryの利用範囲
+- public / internal関数の命名
+- `reinterpret_cast`を許可する層
+- directory構成とABI headerの配置
+- `.hpp` / `.cpp`分離を必須化する範囲
+- formatter、compiler、warning policy
+
+## 差分の作り方
+
+- 変更対象の周辺で、命名、責務、error処理、comment粒度、include順を確認する。
+- project全体の整形、広範囲rename、unrelated cleanupを機能変更へ混ぜない。
+- 既存違反を、この作業と無関係に一括修正しない。
+- 新しい公開契約を作る場合は、project docsとtestへ反映する必要性を確認する。
