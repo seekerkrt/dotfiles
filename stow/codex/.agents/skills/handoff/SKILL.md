@@ -57,7 +57,7 @@ handoff内のbranch、commit SHA、line番号、caller一覧、validation、推�
 
 ## Evidence collection
 
-1. repository root、repository名、branch、HEAD、日時、agentを確認する。
+1. repository root、repository名、branch、HEAD、日時、agentを確認し、filename用のbranch-slugを決める。
 2. 関連する場合はIssue / PRとの対応を確認し、scopeとphaseを決める。
 3. 作成前の`git status --short --branch`を記録する。
 4. 読んだfile、変更したfile、実施内容、non-goalを整理する。
@@ -95,7 +95,7 @@ handoff内のbranch、commit SHA、line番号、caller一覧、validation、推�
 通常handoffは次へ作る。
 
 ```text
-~/handoff/<repo>/<scope>/<YYYYMMDD-HHMMSS>-<agent>-<phase>.md
+~/handoff/<repo>/<scope>/<YYYYMMDD-HHMMSS>-<agent>-<branch-slug>-<phase>.md
 ```
 
 `<scope>`は次の順で決める。
@@ -105,9 +105,38 @@ handoff内のbranch、commit SHA、line番号、caller一覧、validation、推�
 - 特定テーマ: `topic-<short-kebab-slug>`
 - repository全体または分類不能: `general`
 
+`<branch-slug>`は、handoff作成時点で実際にcheckoutされているbranchから決める。
+
+```bash
+git branch --show-current
+```
+
+- 通常branch: branch名の`/`だけを`-`へ置換する。
+- detached HEAD: `detached-<short-sha>`とし、short-shaは12文字程度を使う。
+
+branch名をIssue名やtask内容から推測しない。大文字小文字、`.`、`_`等を理由なく変更せず、branchを識別できる情報をできるだけ保持する。
+
+```text
+feat/issue-281-upgrade-all-cli     → feat-issue-281-upgrade-all-cli
+fix/issue-243-ramfs-filename-bound → fix-issue-243-ramfs-filename-bound
+develop                            → develop
+main                               → main
+detached HEAD a1b2c3d4e5f6...      → detached-a1b2c3d4e5f6
+```
+
 phaseは`audit`、`design`、`investigation`、`implementation`、`validation`、`commit-push`、`pr-create`、`pr-review`、`merge-cleanup`、`release`等、実際の段階を示す短い名前にする。
 
-`latest.md`、`current.md`等の固定名を作らない。既存handoffを移動、rename、削除しない。必要なdirectoryだけ作る。
+例:
+
+```text
+~/handoff/jpacker/issue-281/20260728-100747-codex-feat-issue-281-upgrade-all-cli-implementation.md
+~/handoff/jadeos/issue-243/20260724-094904-codex-fix-issue-243-ramfs-filename-bound-validation.md
+~/handoff/dotfiles/topic-handoff-filename/20260728-130000-claude-sonnet-main-validation.md
+```
+
+filenameのbranch-slugは本文の代替ではない。`Current state`の`Branch:`へ、置換前の完全なbranch名を引き続き記録する。
+
+`latest.md`、`current.md`等の固定名を作らない。既存handoffを移動、rename、削除しない。この命名は新規handoffだけへ適用し、旧`<YYYYMMDD-HHMMSS>-<agent>-<phase>.md`形式の既存handoffはそのまま残す。必要なdirectoryだけ作る。
 
 新規永続handoffでは次を記録する。
 
@@ -210,9 +239,12 @@ test -f ~/handoff/<repo>/<scope>/<filename>
 
 次を確認する。
 
-- filenameがtimestamp、agent、phaseを持つ。
+- filenameがtimestamp、agent、branch-slug、phaseを持つ。
+- branch-slugが作成時点のbranch、またはdetached HEADの`detached-<short-sha>`と対応する。
 - repo / scope directoryが正しい。
+- 既存handoffをrename、移動、削除していない。
 - 必須情報とarchive metadataがある。
+- 本文の`Branch:`に完全なbranch名がある。
 - `Archive status`が`not archived`である。
 - repositoryがhandoff生成によってdirtyになっていない。
 - handoffをstage、commit、pushしていない。

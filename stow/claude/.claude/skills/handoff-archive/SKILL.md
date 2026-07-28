@@ -34,6 +34,24 @@ repo / scopeだけ指定、候補が1file:
 
 `latest`、mtime、曖昧なglobだけで複数候補から選ばない。複数fileはexact listまたは明確な集合が指定された場合だけ扱う。
 
+## Filename形式
+
+新規に生成されるhandoffは次の形式を要求する。
+
+```text
+<YYYYMMDD-HHMMSS>-<agent>-<branch-slug>-<phase>.md
+```
+
+次のlegacy形式もarchive対象として受理する。
+
+```text
+<YYYYMMDD-HHMMSS>-<agent>-<phase>.md
+```
+
+- legacy filenameからbranch名を推測しない。
+- archive時にbranch-slugを追加するrenameをしない。
+- source filenameをそのままdestinationへ維持する。
+
 ## Source validation
 
 各sourceについて確認する。
@@ -41,7 +59,7 @@ repo / scopeだけ指定、候補が1file:
 - regular Markdown fileで、symlinkではない。
 - 解決後も`~/handoff/<repo>/<scope>/`配下にあり、path traversalがない。
 - 読み取り可能でemptyではない。
-- filenameが`<YYYYMMDD-HHMMSS>-<agent>-<phase>.md`である。
+- filenameが新形式`<YYYYMMDD-HHMMSS>-<agent>-<branch-slug>-<phase>.md`、またはlegacy形式`<YYYYMMDD-HHMMSS>-<agent>-<phase>.md`である。
 - repository、task、summary / completed、validation、Git status、Git operationsに相当する情報がある。
 - handoff内のRepoとtarget repositoryが一致する。
 
@@ -96,7 +114,7 @@ docs/handoffs/<scope>/<source-filename>
 - 一致: `already archived`として書き換えない。
 - 不一致: 上書き、renameによる回避をせず停止する。
 
-sourceのtimestamp、agent、phaseを変更しない。
+sourceのtimestamp、agent、branch-slug、phaseをarchive時に書き換えない。legacy形式に存在しないbranch-slugを補完しない。byte-identical copy契約はどちらの形式でも同じとする。
 
 ## README policy
 
