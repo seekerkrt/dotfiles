@@ -37,14 +37,14 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 │   ├── btop/                 # btop設定
 │   ├── chrome/               # Chrome設定
 │   ├── clang-format/         # clang-format設定
-│   ├── claude/               # Claude用ルール
-│   ├── codex/                # Codex用ルール
+│   ├── claude/               # Claude Code設定（→ エージェント設定の参照先）
+│   ├── codex/                # Codex設定（→ エージェント設定の参照先）
 │   ├── conky/                # Conky設定
 │   ├── emacs/                # Emacs設定
 │   ├── env/                  # 環境変数設定
 │   ├── fonts/                # フォント設定
 │   ├── foot/                 # footターミナル設定
-│   ├── gemini/               # Gemini設定
+│   ├── gemini/               # Antigravity CLI設定（→ エージェント設定の参照先）
 │   ├── git/                  # Git設定
 │   ├── hypr/                 # Hyprland設定
 │   ├── kde/                  # KDE設定
@@ -75,9 +75,53 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 ├── restore-ssh-allowlist.sh  # 暗号化したSSH鍵と設定を復元
 ├── backup-ssh-config.sh      # SSH設定のみを暗号化バックアップ
 ├── restore-ssh-config.sh     # 暗号化したSSH設定のみを復元
-├── install-claude-code.sh    # Claude Codeをnpmでインストール
 └── setup-system.sh           # システム側設定を配置
 ```
+
+### コーディングエージェント設定の参照先
+
+> [!IMPORTANT]
+> **共通契約の正本は `stow/codex/.codex/AGENTS.md` の1つだけです。**
+> `CLAUDE.md` と `GEMINI.md` はそこからの一方向同期による移植版であり、
+> エージェント固有の差分だけを局所的に持ちます。
+> 共通ルールを変更する場合は、必ずCodex正本を先に直してください。
+
+各エージェントが実際に読むファイルと、このリポジトリ内での実体の対応は次のとおりです。
+
+| エージェント | リポジトリ内の実体 | 実際の参照先 | 内容 |
+| --- | --- | --- | --- |
+| Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **共通契約の正本** |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 8種 |
+| Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | モデル別プロファイル |
+| Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Codex正本からの移植 |
+| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 8種 |
+| Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、プラグイン等 |
+| Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 8種 |
+
+Skillは3エージェント共通で次の8種を配置しています。
+
+```text
+audit  commit-prep  cpp-conventions  github
+handoff  handoff-inline  handoff-archive  verify
+```
+
+> [!NOTE]
+> **Claude Codeだけは `verify` ではなく `verify-diff` という名前です。**
+> `verify` が組み込みコマンドと衝突するため、意図的にリネームしています。
+> 中身の契約は他エージェントの `verify` と同じです。
+
+handoff系3種（`handoff` / `handoff-inline` / `handoff-archive`）は、
+front matterを除いた本文を3エージェントで一致させる運用です。
+`handoff-inline` の親Skill参照パスだけがエージェント固有差分として許容されます。
+
+> [!WARNING]
+> **`~/.gemini` はディレクトリごとsymlinkされています。**
+> このためAntigravity CLIの実行時データ（`history.jsonl`、`log/`、
+> `conversations/`、`brain/` 等）もこのリポジトリ配下へ書き込まれます。
+> これらは `.gitignore` で除外済みで、追跡対象は `GEMINI.md`、
+> `settings.json`、`skills/` のみです。
+> Codex・Claude Codeはファイル／ディレクトリ単位のsymlinkのため、この問題はありません。
 
 ### 主要スクリプトの使い方
 
@@ -184,14 +228,14 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 │   ├── btop/                 # btop config
 │   ├── chrome/               # Chrome config
 │   ├── clang-format/         # clang-format config
-│   ├── claude/               # Claude rules
-│   ├── codex/                # Codex rules
+│   ├── claude/               # Claude Code config (see: Agent Configuration)
+│   ├── codex/                # Codex config (see: Agent Configuration)
 │   ├── conky/                # Conky config
 │   ├── emacs/                # Emacs config
 │   ├── env/                  # Environment variables config
 │   ├── fonts/                # Fonts config
 │   ├── foot/                 # foot terminal config
-│   ├── gemini/               # Gemini config
+│   ├── gemini/               # Antigravity CLI config (see: Agent Configuration)
 │   ├── git/                  # Git config
 │   ├── hypr/                 # Hyprland config
 │   ├── kde/                  # KDE config
@@ -222,9 +266,55 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 ├── restore-ssh-allowlist.sh  # Restore SSH keys and config from GPG
 ├── backup-ssh-config.sh      # Back up only SSH config with GPG
 ├── restore-ssh-config.sh     # Restore only SSH config from GPG
-├── install-claude-code.sh    # Install Claude Code with npm
 └── setup-system.sh           # Install system-side config
 ```
+
+### Agent Configuration
+
+> [!IMPORTANT]
+> **`stow/codex/.codex/AGENTS.md` is the single source of truth for the shared contract.**
+> `CLAUDE.md` and `GEMINI.md` are one-way ports of that file and carry only
+> agent-specific deltas. Always edit the Codex source first when changing
+> a shared rule.
+
+Each agent reads the following files, backed by this repository:
+
+| Agent | Source in this repo | Resolved path | Contents |
+| --- | --- | --- | --- |
+| Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **Canonical shared contract** |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | 8 skills |
+| Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | Per-model profiles |
+| Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Port of the Codex source |
+| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 8 skills |
+| Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, plugins |
+| Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 8 skills |
+
+All three agents carry the same eight skills:
+
+```text
+audit  commit-prep  cpp-conventions  github
+handoff  handoff-inline  handoff-archive  verify
+```
+
+> [!NOTE]
+> **On Claude Code the skill is named `verify-diff`, not `verify`.**
+> It is renamed deliberately because `verify` collides with a built-in command.
+> The contract itself matches the other agents' `verify`.
+
+The three handoff skills (`handoff` / `handoff-inline` / `handoff-archive`)
+are kept body-identical across all three agents, front matter excluded.
+The only permitted per-agent delta is the parent-skill reference path in
+`handoff-inline`.
+
+> [!WARNING]
+> **`~/.gemini` is symlinked as a whole directory.**
+> As a result, Antigravity CLI runtime data (`history.jsonl`, `log/`,
+> `conversations/`, `brain/`, ...) is written inside this repository.
+> Those paths are excluded via `.gitignore`; only `GEMINI.md`,
+> `settings.json` and `skills/` are tracked.
+> Codex and Claude Code symlink individual files and directories, so they
+> are not affected.
 
 ### Usage of Core Scripts
 
