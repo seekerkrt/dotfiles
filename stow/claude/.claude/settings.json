@@ -21,8 +21,7 @@
       "Bash(eza:*)",
       "Bash(cat:*)",
       "Bash(bat:*)",
-      "Bash(grep:*)",
-      "Bash(rg:*)"
+      "Bash(grep:*)"
     ],
     "deny": [
       "Bash(git push:*)",
@@ -37,21 +36,20 @@
     "ask": [
       "Bash(git commit:*)",
       "Bash(git add:*)"
+    ],
+    "additionalDirectories": [
+      "~/handoff"
     ]
   },
-  "permissions": {
-  "additionalDirectories": ["~/handoff"]
-  },
   "model": "opus",
-
-    "statusLine": {
-        "type": "command",
-        "command": "$HOME/.local/npm-global/bin/ccstatusline",
-        "padding": 0
-    },
-
+  "statusLine": {
+    "type": "command",
+    "command": "$HOME/.local/npm-global/bin/ccstatusline",
+    "padding": 0
+  },
   "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
   },
   "language": "Japanese",
   "effortLevel": "xhigh",
