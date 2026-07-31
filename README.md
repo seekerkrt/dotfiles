@@ -82,8 +82,9 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 
 > [!IMPORTANT]
 > **共通契約の正本は `stow/codex/.codex/AGENTS.md` の1つだけです。**
-> `CLAUDE.md` と `GEMINI.md` はそこからの一方向同期による移植版であり、
-> エージェント固有の差分だけを局所的に持ちます。
+> `CLAUDE.md` は `@~/.codex/AGENTS.md` でCodex正本をimportし、
+> `GEMINI.md` はそこからの一方向同期による移植版です。
+> どちらもエージェント固有の差分だけを局所的に持ちます。
 > 共通ルールを変更する場合は、必ずCodex正本を先に直してください。
 
 各エージェントが実際に読むファイルと、このリポジトリ内での実体の対応は次のとおりです。
@@ -93,7 +94,7 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **共通契約の正本** |
 | Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 9種 |
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | モデル別プロファイル |
-| Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Codex正本からの移植 |
+| Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Codex正本のimport＋固有差分 |
 | Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 9種 |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、プラグイン等 |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
@@ -282,9 +283,9 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 
 > [!IMPORTANT]
 > **`stow/codex/.codex/AGENTS.md` is the single source of truth for the shared contract.**
-> `CLAUDE.md` and `GEMINI.md` are one-way ports of that file and carry only
-> agent-specific deltas. Always edit the Codex source first when changing
-> a shared rule.
+> `CLAUDE.md` imports the Codex source via `@~/.codex/AGENTS.md`, and
+> `GEMINI.md` is a one-way port of it. Both carry only agent-specific
+> deltas. Always edit the Codex source first when changing a shared rule.
 
 Each agent reads the following files, backed by this repository:
 
@@ -293,7 +294,7 @@ Each agent reads the following files, backed by this repository:
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **Canonical shared contract** |
 | Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | 9 skills |
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | Per-model profiles |
-| Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Port of the Codex source |
+| Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Imports the Codex source + deltas |
 | Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 9 skills |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, plugins |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
