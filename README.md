@@ -91,25 +91,34 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 | エージェント | リポジトリ内の実体 | 実際の参照先 | 内容 |
 | --- | --- | --- | --- |
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **共通契約の正本** |
-| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 8種 |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 9種 |
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | モデル別プロファイル |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Codex正本からの移植 |
-| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 8種 |
+| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 9種 |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、プラグイン等 |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
-| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 8種 |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 9種 |
 
-Skillは3エージェント共通で次の8種を配置しています。
+Skillは3エージェント共通で次の9種を配置しています。
 
 ```text
 audit  commit-prep  cpp-conventions  github
-handoff  handoff-inline  handoff-archive  verify
+handoff  handoff-inline  handoff-archive  issue-slice  verify
 ```
 
 > [!NOTE]
 > **Claude Codeだけは `verify` ではなく `verify-diff` という名前です。**
 > `verify` が組み込みコマンドと衝突するため、意図的にリネームしています。
 > 中身の契約は他エージェントの `verify` と同じです。
+
+`issue-slice`はGitHub Issueまたは明示されたPR単位でscope / non-scopeを固定し、
+既存の`audit`、`cpp-conventions`、`verify`（Claude Codeでは`verify-diff`）、
+`commit-prep`、`github`、`handoff`へ必要な段階でroutingしながら、
+最小実装と検証を進めてcommit前で停止するオーケストレータです。
+
+長いtest、build、release-check、compiler、runtime、diff等の作業logは、
+repositoryへ追加せず`~/handoff/<repo>/<scope>/`へtimestamp付きfilenameで保存します。
+最終報告にはraw logを貼らず、pass / fail、保存path、重要な要点だけを記載します。
 
 handoff系3種（`handoff` / `handoff-inline` / `handoff-archive`）は、
 front matterを除いた本文を3エージェントで一致させる運用です。
@@ -282,25 +291,36 @@ Each agent reads the following files, backed by this repository:
 | Agent | Source in this repo | Resolved path | Contents |
 | --- | --- | --- | --- |
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **Canonical shared contract** |
-| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | 8 skills |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | 9 skills |
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | Per-model profiles |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Port of the Codex source |
-| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 8 skills |
+| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 9 skills |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, plugins |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
-| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 8 skills |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 9 skills |
 
-All three agents carry the same eight skills:
+All three agents carry the same nine skills:
 
 ```text
 audit  commit-prep  cpp-conventions  github
-handoff  handoff-inline  handoff-archive  verify
+handoff  handoff-inline  handoff-archive  issue-slice  verify
 ```
 
 > [!NOTE]
 > **On Claude Code the skill is named `verify-diff`, not `verify`.**
 > It is renamed deliberately because `verify` collides with a built-in command.
 > The contract itself matches the other agents' `verify`.
+
+`issue-slice` is the orchestrator for a GitHub Issue or an explicitly selected
+PR-sized implementation slice. It fixes scope and non-scope, routes to the
+existing `audit`, `cpp-conventions`, `verify` (`verify-diff` on Claude Code),
+`commit-prep`, `github`, and `handoff` skills when needed, performs the minimum
+implementation and verification, and stops before commit.
+
+Long test, build, release-check, compiler, runtime, and diff logs are kept
+outside the repository under `~/handoff/<repo>/<scope>/` with timestamped
+filenames. Final responses report pass / fail, the saved path, and key points
+instead of embedding raw logs.
 
 The three handoff skills (`handoff` / `handoff-inline` / `handoff-archive`)
 are kept body-identical across all three agents, front matter excluded.

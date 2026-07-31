@@ -110,6 +110,50 @@ device counter等は観測事実と解釈を分ける。
 実行していない検証は必ず`not run`とする。build成功をtest成功、test成功を
 runtime成功として扱わない。
 
+## 長い出力と作業artifact
+
+長い、または長くなる可能性が高いfull test、clean build、release-check、compiler
+full output、sanitizer、static analysis、large search、full diff、package build、
+runtime / VM等の出力はrepository外の次へ保存する。
+
+~~~text
+~/handoff/<repo>/<scope>/
+~~~
+
+`<scope>`はIssueなら`issue-<number>`、PRだけなら`pr-<number>`、特定テーマなら
+`topic-<short-kebab-slug>`、その他は`general`とする。filenameは次とし、
+`latest.*`等の固定名を作らず、既存artifactをrename、移動、削除しない。
+
+~~~text
+<YYYYMMDD-HHMMSS>-agy-<short-purpose>.<log|txt|diff>
+~~~
+
+次は、repositoryの正式な検証commandとして`make test`を確認できた場合の実行例で
+ある。`make test`を全repositoryへ固定するものではない。実際の利用時は、repository
+固有の指示、docs、build設定で確認した正式な検証commandへ置き換える。
+
+~~~bash
+mkdir -p ~/handoff/<repo>/<scope>
+timestamp=$(date +%Y%m%d-%H%M%S)
+log=~/handoff/<repo>/<scope>/"${timestamp}-agy-<purpose>.log"
+
+# 例: repositoryの正式な検証commandが `make test` の場合
+if make test >"$log" 2>&1; then
+    echo "PASS: $log"
+else
+    status=$?
+    echo "FAIL ($status): $log"
+    tail -n 120 "$log"
+    exit "$status"
+fi
+~~~
+
+- failure時だけroot cause判断に必要な箇所を表示し、exit statusとlog pathを報告する。
+- success時はpass、log path、期待条件の要点だけを報告する。raw logをterminal会話や
+  final responseへ貼らない。
+- raw log保存を通常handoff生成と混同せず、`handoff` Skillを自動起動しない。
+- raw logをrepositoryへ追加、stage、commitしない。
+
 ## 失敗時
 
 - 最初の根本原因候補と後続の連鎖errorを分ける。
@@ -141,4 +185,4 @@ environment blocked:
 - ...
 ~~~
 
-長いlogを貼らず、判断に必要なerror、warning、観測値を抜き出す。
+長い出力は上記の保存契約に従い、判断に必要なerror、warning、観測値だけを報告する。

@@ -71,6 +71,43 @@ runtime検証では環境を具体的に記録する。
 - `environment blocked`: dependency、権限、sandbox、network、hardware等で実行できない。
 - `flaky / inconclusive`: 再現が安定せず結論を確定できない。
 
+## 長い出力と作業artifact
+
+長い、または長くなる可能性が高いfull test、clean build、release-check、compiler full output、sanitizer、static analysis、large search、full diff、package build、runtime / VM等の出力は、repository外の次へ保存する。
+
+```text
+~/handoff/<repo>/<scope>/
+```
+
+`<scope>`は、Issueがあれば`issue-<number>`、PRだけなら`pr-<number>`、特定テーマなら`topic-<short-kebab-slug>`、それ以外は`general`とする。filenameは次とし、`latest.*`等の固定名を作らず、既存artifactをrename、移動、削除しない。
+
+```text
+<YYYYMMDD-HHMMSS>-codex-<short-purpose>.<log|txt|diff>
+```
+
+次は、repositoryの正式な検証commandとして`make test`を確認できた場合の実行例である。`make test`を全repositoryへ固定するものではない。実際の利用時は、repository固有の指示、docs、build設定で確認した正式な検証commandへ置き換える。
+
+```bash
+mkdir -p ~/handoff/<repo>/<scope>
+timestamp=$(date +%Y%m%d-%H%M%S)
+log=~/handoff/<repo>/<scope>/"${timestamp}-codex-<purpose>.log"
+
+# 例: repositoryの正式な検証commandが `make test` の場合
+if make test >"$log" 2>&1; then
+    echo "PASS: $log"
+else
+    status=$?
+    echo "FAIL ($status): $log"
+    tail -n 120 "$log"
+    exit "$status"
+fi
+```
+
+- failure時だけroot cause判断に必要な箇所を表示し、exit statusとlog pathを報告する。
+- success時はpass、log path、期待条件の要点だけを報告する。raw logをterminal会話やfinal responseへ貼らない。
+- raw log保存を通常handoff生成と混同せず、`handoff` Skillを自動起動しない。
+- raw logをrepositoryへ追加、stage、commitしない。
+
 ## 失敗時
 
 - 最初のroot cause候補と後続の連鎖errorを分ける。
@@ -101,4 +138,4 @@ runtime検証では環境を具体的に記録する。
 - ...
 ```
 
-長いlogは貼らず、判断に必要な行だけ抜き出す。未実施項目を成功項目の陰に隠さない。
+長い出力は上記の保存契約に従い、未実施項目を成功項目の陰に隠さない。

@@ -51,6 +51,14 @@ repositoryの文書が別のsource of truthや優先順位を指定している�
 
 具体的なGitHub workflowと認証境界は`github` Skillを正とする。
 
+## 長い出力と作業artifact
+
+- 長い、または長くなる可能性が高いtest、build、release-check、compiler、sanitizer、static analysis、runtime、VM、検索、diff、audit等の出力は、repository外の`~/handoff/<repo>/<scope>/`へ保存する。
+- `<scope>`は、Issueがあれば`issue-<number>`、PRだけなら`pr-<number>`、特定テーマなら`topic-<short-kebab-slug>`、それ以外は`general`とする。存在を確認していないIssueやPRの番号を使わない。
+- filenameは`<YYYYMMDD-HHMMSS>-<agent>-<short-purpose>.<log|txt|diff>`とし、`latest.*`等の固定名を作らない。既存artifactをrename、移動、削除しない。
+- stdout / stderrとexit statusを失わない形で保存する。failure時は保存pathとroot causeに関係する行だけ、success時はpass、保存path、重要な要点だけを報告する。raw logをfinal responseへ貼らない。
+- raw log保存は通常handoff生成とは別物であり、`handoff` Skillを自動起動しない。raw logをrepositoryへ追加、stage、commitしない。
+
 ## Claude Code固有の実行境界
 
 Claude Codeのpermission設定とhooksは、この文書へ追加される実行境界として扱う。allowされたtoolやcommandも依頼scopeの承認とはみなさず、ask / denyを別command、別tool、設定変更で回避しない。通常の許可確認が必要な場合は対象と影響を示し、許可されなければ未実施として報告する。
@@ -69,7 +77,8 @@ Claude Codeのpermission設定とhooksは、この文書へ追加される実行
 
 - `audit`: 実装前監査、read-only調査、責務境界、未使用判定、docs / 実装整合、Issue化前調査。
 - `cpp-conventions`: C++の生成、編集、review、およびC++から利用するC互換headerや共有ABI境界。repositoryの`docs/CODING_CONVENTIONS.md`とbuild設定も追加で読む。
-- `verify`: 非自明な変更後、または検証依頼。build、test、runtime、環境差を区別して報告する。
+- `issue-slice`: GitHub Issueまたは明示されたPR単位の実装scopeを、decision authority、repository固有契約、既存構造へ接続し、scopeを固定して最小実装・検証まで進める。明示依頼なしにstage / commit / pushしない。
+- `verify-diff`: Claude Codeでの非自明な変更後、または検証依頼。build、test、runtime、環境差を区別して報告する。
 - `commit-prep`: commit前の差分分類、stage候補、commit粒度、message案。明示依頼なしにstage / commitしない。
 - `github`: GitHub repository、Issue、PR、Actions、release、branch、tag、APIの調査または操作。
 - `handoff`: 通常のhandoffまたは引き継ぎメモを明示的に求められた場合に、既定契約へ今回の追加指定を反映し、再利用可能な永続handoffを作る。
