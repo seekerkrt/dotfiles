@@ -1,7 +1,11 @@
 prefix_rule(
-    pattern=["gh", "issue", "view"],
+    pattern=[
+        "gh",
+        ["issue", "pr", "repo", "run", "release", "workflow"],
+        ["list", "view"],
+    ],
     decision="allow",
-    justification="GitHub Issueの参照専用コマンドを自動許可する",
+    justification="GitHubのread-only list/viewコマンドを自動許可する",
 )
 prefix_rule(pattern=["git", "ls-remote"], decision="allow")
 prefix_rule(pattern=["gh", "pr", "view"], decision="allow")
