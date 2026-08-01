@@ -5,8 +5,12 @@ DOTFILES_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 STOW_DIR="$DOTFILES_DIR/stow"
 TARGET_DIR="$HOME"
 CODEX_RULES_IGNORE='^/\.codex/rules(/.*)?$'
+CODEX_CONFIG_IGNORE='^/\.codex(/.*)?$'
+CODEX_SKILLS_IGNORE='^/\.agents(/.*)?$'
 # CLIの--ignoreはpackage相対pathを先頭slashなしで照合する
 CODEX_RULES_CLI_IGNORE="^${CODEX_RULES_IGNORE#^/}"
+CODEX_CONFIG_CLI_IGNORE="^${CODEX_CONFIG_IGNORE#^/}"
+CODEX_SKILLS_CLI_IGNORE="^${CODEX_SKILLS_IGNORE#^/}"
 
 # remove対象から外したいパッケージ名（必要なら増やす）
 SKIP_PACKAGES="
@@ -18,8 +22,15 @@ stow_remove_one() {
     codex)
       stow -D -d "$STOW_DIR" -t "$TARGET_DIR" \
         --no-folding \
+        --ignore="$CODEX_CONFIG_IGNORE" \
+        --ignore="$CODEX_CONFIG_CLI_IGNORE" \
+        "$pkg"
+      stow -D -d "$STOW_DIR" -t "$TARGET_DIR" \
+        --no-folding \
         --ignore="$CODEX_RULES_IGNORE" \
         --ignore="$CODEX_RULES_CLI_IGNORE" \
+        --ignore="$CODEX_SKILLS_IGNORE" \
+        --ignore="$CODEX_SKILLS_CLI_IGNORE" \
         "$pkg"
       ;;
     vscode)
@@ -29,6 +40,21 @@ stow_remove_one() {
       stow -D -d "$STOW_DIR" -t "$TARGET_DIR" "$pkg"
       ;;
   esac
+}
+
+remove_codex_skill_dirs() {
+  src_dir="$STOW_DIR/codex/.agents/skills"
+  dst_dir="$TARGET_DIR/.agents/skills"
+
+  if [ -d "$src_dir" ]; then
+    for src in "$src_dir"/*; do
+      [ -d "$src" ] || continue
+      rmdir -- "$dst_dir/$(basename -- "$src")" 2>/dev/null || true
+    done
+  fi
+
+  rmdir -- "$dst_dir" 2>/dev/null || true
+  rmdir -- "$TARGET_DIR/.agents" 2>/dev/null || true
 }
 
 is_skipped() {
@@ -107,6 +133,7 @@ for path in "$STOW_DIR"/*; do
   stow_remove_one "$pkg"
 
   if [ "$pkg" = "codex" ]; then
+    remove_codex_skill_dirs
     remove_codex_rules
   fi
 done

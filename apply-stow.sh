@@ -5,8 +5,12 @@ DOTFILES_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 STOW_DIR="$DOTFILES_DIR/stow"
 TARGET_DIR="$HOME"
 CODEX_RULES_IGNORE='^/\.codex/rules(/.*)?$'
+CODEX_CONFIG_IGNORE='^/\.codex(/.*)?$'
+CODEX_SKILLS_IGNORE='^/\.agents(/.*)?$'
 # CLIの--ignoreはpackage相対pathを先頭slashなしで照合する
 CODEX_RULES_CLI_IGNORE="^${CODEX_RULES_IGNORE#^/}"
+CODEX_CONFIG_CLI_IGNORE="^${CODEX_CONFIG_IGNORE#^/}"
+CODEX_SKILLS_CLI_IGNORE="^${CODEX_SKILLS_IGNORE#^/}"
 
 # stow対象から外したいパッケージ名（必要なら増やす）
 SKIP_PACKAGES="
@@ -17,11 +21,15 @@ stow_one() {
   pkg="$1"
   case "$pkg" in
     codex)
+      # .codexはrulesの実ファイル配置に備えて展開し、Skill subtreeはfold対象に残す
       stow -d "$STOW_DIR" -t "$TARGET_DIR" \
         --no-folding \
         --ignore="$CODEX_RULES_IGNORE" \
         --ignore="$CODEX_RULES_CLI_IGNORE" \
+        --ignore="$CODEX_SKILLS_IGNORE" \
+        --ignore="$CODEX_SKILLS_CLI_IGNORE" \
         "$pkg"
+      stow_codex_skills
       ;;
     vscode)
       stow -d "$STOW_DIR" -t "$TARGET_DIR" --no-folding "$pkg"
@@ -30,6 +38,143 @@ stow_one() {
       stow -d "$STOW_DIR" -t "$TARGET_DIR" "$pkg"
       ;;
   esac
+}
+
+codex_skill_target_is_owned() {
+  src_root="$1"
+  dst_root="$2"
+
+  if [ -L "$dst_root" ]; then
+    [ "$src_root" -ef "$dst_root" ]
+    return
+  fi
+  if [ ! -e "$dst_root" ]; then
+    return 0
+  fi
+  if [ ! -d "$dst_root" ]; then
+    return 1
+  fi
+
+  find "$dst_root" -mindepth 1 -exec sh -c '
+    src_root="$1"
+    dst_root="$2"
+    shift 2
+
+    for dst_path do
+      relative_path=${dst_path#"$dst_root"/}
+      src_path="$src_root/$relative_path"
+
+      if [ -L "$dst_path" ]; then
+        [ -e "$src_path" ] && [ "$src_path" -ef "$dst_path" ] || exit 1
+      elif [ -d "$dst_path" ]; then
+        [ -d "$src_path" ] || exit 1
+      else
+        exit 1
+      fi
+    done
+  ' sh "$src_root" "$dst_root" {} +
+}
+
+stow_codex_skills() {
+  src_agents_dir="$STOW_DIR/codex/.agents"
+  src_dir="$STOW_DIR/codex/.agents/skills"
+  agents_dir="$TARGET_DIR/.agents"
+  dst_dir="$agents_dir/skills"
+
+  if [ ! -d "$src_dir" ]; then
+    echo "[stow] Codex Skill source not found: $src_dir" >&2
+    return 1
+  fi
+
+  found_skill=0
+  for src in "$src_dir"/*; do
+    [ -d "$src" ] || continue
+    found_skill=1
+  done
+  if [ "$found_skill" -eq 0 ]; then
+    echo "[stow] no Codex Skill directories found under: $src_dir" >&2
+    return 1
+  fi
+
+  folded_root=0
+  if [ -L "$agents_dir" ]; then
+    if [ ! "$src_agents_dir" -ef "$agents_dir" ]; then
+      echo "[stow] refusing to replace unmanaged Codex agents symlink: $agents_dir" >&2
+      return 1
+    fi
+    folded_root=1
+  elif [ -e "$agents_dir" ] && [ ! -d "$agents_dir" ]; then
+    echo "[stow] refusing to replace non-directory Codex agents path: $agents_dir" >&2
+    return 1
+  fi
+
+  if [ "$folded_root" -eq 0 ]; then
+    if [ -L "$dst_dir" ]; then
+      if [ ! "$src_dir" -ef "$dst_dir" ]; then
+        echo "[stow] refusing to replace unmanaged Codex Skill root symlink: $dst_dir" >&2
+        return 1
+      fi
+      folded_root=1
+    elif [ -e "$dst_dir" ] && [ ! -d "$dst_dir" ]; then
+      echo "[stow] refusing to replace non-directory Codex Skill root: $dst_dir" >&2
+      return 1
+    fi
+  fi
+
+  if [ "$folded_root" -eq 0 ]; then
+    for src in "$src_dir"/*; do
+      [ -d "$src" ] || continue
+
+      dst="$dst_dir/$(basename -- "$src")"
+      if ! codex_skill_target_is_owned "$src" "$dst"; then
+        echo "[stow] Codex Skill target contains unmanaged content: $dst" >&2
+        return 1
+      fi
+    done
+  fi
+
+  # 旧--no-folding配置のfile symlinkを外し、Skill directory単位でfoldし直す
+  stow -D -d "$STOW_DIR" -t "$TARGET_DIR" \
+    --no-folding \
+    --ignore="$CODEX_CONFIG_IGNORE" \
+    --ignore="$CODEX_CONFIG_CLI_IGNORE" \
+    codex
+
+  if [ -L "$agents_dir" ]; then
+    echo "[stow] refusing to replace symlinked Codex agents directory: $agents_dir" >&2
+    return 1
+  fi
+  if [ -e "$agents_dir" ] && [ ! -d "$agents_dir" ]; then
+    echo "[stow] refusing to replace non-directory Codex agents path: $agents_dir" >&2
+    return 1
+  fi
+  if [ -L "$dst_dir" ]; then
+    echo "[stow] refusing to replace symlinked Codex Skill root: $dst_dir" >&2
+    return 1
+  fi
+  if [ -e "$dst_dir" ] && [ ! -d "$dst_dir" ]; then
+    echo "[stow] refusing to replace non-directory Codex Skill root: $dst_dir" >&2
+    return 1
+  fi
+  mkdir -p -- "$dst_dir"
+
+  for src in "$src_dir"/*; do
+    [ -d "$src" ] || continue
+
+    dst="$dst_dir/$(basename -- "$src")"
+    if [ -d "$dst" ] && [ ! -L "$dst" ]; then
+      find "$dst" -depth -type d -empty -delete
+    fi
+    if [ -L "$dst" ] || [ -e "$dst" ]; then
+      echo "[stow] failed to clear previous Codex Skill target: $dst" >&2
+      return 1
+    fi
+  done
+
+  stow -d "$STOW_DIR" -t "$TARGET_DIR" \
+    --ignore="$CODEX_CONFIG_IGNORE" \
+    --ignore="$CODEX_CONFIG_CLI_IGNORE" \
+    codex
 }
 
 is_skipped() {
