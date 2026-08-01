@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
     "DISABLE_TELEMETRY": "1"
   },
@@ -9,9 +10,8 @@
   "permissions": {
     "allow": [
       "Bash(make:*)",
-      "Bash(make -j:*)",
       "Bash(qemu-system-x86_64:*)",
-      "Bash(git status)",
+      "Bash(git status:*)",
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(git branch:*)",
@@ -23,25 +23,32 @@
       "Bash(bat:*)",
       "Bash(grep:*)"
     ],
-    "deny": [
+    "ask": [
+      "Bash(rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(rm -rf:*)",
+      "Bash(git branch -d:*)",
+      "Bash(git branch -D:*)",
+      "Bash(git branch --delete:*)"
+    ],
+    "deny": [
       "Bash(sudo:*)",
-      "Read(./.env)",
-      "Read(./.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
       "Read(~/.ssh/**)",
       "Read(~/.gnupg/**)",
       "Read(~/.config/gh/**)"
-    ],
-    "ask": [
-      "Bash(git commit:*)",
-      "Bash(git add:*)"
     ],
     "additionalDirectories": [
       "~/handoff"
     ]
   },
   "model": "opus",
+  "effortLevel": "xhigh",
+  "language": "Japanese",
+  "theme": "dark",
+  "autoCompactEnabled": true,
   "statusLine": {
     "type": "command",
     "command": "$HOME/.local/npm-global/bin/ccstatusline",
@@ -50,9 +57,5 @@
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
-  },
-  "language": "Japanese",
-  "effortLevel": "xhigh",
-  "theme": "dark",
-  "autoCompactEnabled": true
+  }
 }
