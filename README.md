@@ -143,8 +143,9 @@ front matterを除いた本文を3エージェントで一致させる運用で�
 ./apply-stow.sh
 ```
 
-（展開時、vscode パッケージのみディレクトリ構造を維持するため
---no-folding オプションが自動適用されます。）
+（`vscode` パッケージ全体と、`codex` パッケージの `.codex` subtreeには
+`--no-folding` が適用されます。Codex Skillは
+`~/.agents/skills/<skill>` のdirectory symlinkとして展開されます。）
 
 #### 2. パッケージリストの更新と復元
 
@@ -347,8 +348,9 @@ Creates symlinks from the stow/ directory to your $HOME.
 ./apply-stow.sh
 ```
 
-（Note: The vscode profile automatically triggers --no-folding to keep the
-inner directory architecture intact.）
+(The `vscode` package and the `.codex` subtree of the `codex` package use
+`--no-folding`. Codex Skills are deployed as directory symlinks at
+`~/.agents/skills/<skill>`.)
 
 #### 2. Package Management
 
