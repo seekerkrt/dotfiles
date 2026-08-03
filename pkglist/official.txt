@@ -21,10 +21,12 @@ breeze-plymouth
 btop
 btrfs-progs
 ccache
+chezmoi
 clamav
 clamtk
 clang
 cli11
+cloc
 cmake
 cmatrix
 conky
@@ -34,6 +36,7 @@ dhcpcd
 discord
 discover
 dkms
+dnsmasq
 dolphin
 dos2unix
 dosfstools
@@ -43,6 +46,8 @@ dust
 efibootmgr
 efitools
 elisa
+emacs-lua-mode
+emacs-nox
 evtest
 exfatprogs
 eza
@@ -72,6 +77,7 @@ gparted
 gptfdisk
 grim
 grub
+gufw
 gwenview
 helvum
 htop
@@ -133,6 +139,7 @@ libratbag
 libreoffice-fresh
 libreoffice-fresh-ja
 libva-nvidia-driver
+libvirt
 lightdm
 lightdm-gtk-greeter
 linux
@@ -214,6 +221,7 @@ polkit-kde-agent
 powerdevil
 print-manager
 pyright
+python-pipx
 python-pynvim
 qemu-full
 qqc2-breeze-style
@@ -233,11 +241,14 @@ steam
 stow
 strace
 sweeper
+sysstat
 systemsettings
 terminator
 tldr
 tmux
 tmuxp
+tokei
+tomlplusplus
 tree
 ttf-jetbrains-mono
 ttf-jetbrains-mono-nerd
@@ -245,6 +256,8 @@ ufw
 umbrello
 unrar
 vim
+virt-manager
+virt-viewer
 virtualbox
 virtualbox-host-dkms
 vkd3d
@@ -274,6 +287,7 @@ xdg-user-dirs-gtk
 xf86-input-libinput
 xf86-video-vesa
 xorg-bdftopcf
+xorg-fonts-misc
 xorg-iceauth
 xorg-mkfontscale
 xorg-server
