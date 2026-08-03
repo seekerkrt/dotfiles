@@ -41,13 +41,30 @@ command、実行directory、dependency、targetの意味を確認する。見つ
 1. 変更scopeと影響する契約を把握する。
 2. diff、構文、参照、設定、docs、同期関係を静的に確認する。
 3. 対象変更に対応する`git diff --check`を実行する。working treeなら通常diff、staged変更なら`--cached`、commit済み変更なら明示されたbase / headまたはcommit rangeを使う。
-4. repositoryが定める最小のvalidator、build、test、lintを実行する。
-5. public API、共通library、build設定、serialization等へ影響する場合だけ、必要なbroader suiteへ広げる。
-6. runtime固有の変更なら、利用可能な環境と依頼scopeを確認してruntime検証する。
-7. 結果、未実施理由、環境制約、残るriskを記録する。
-8. 最後に対象diffと`git status --short --branch`を再確認する。
+4. repositoryが定める最小のvalidator、build、test、lintを実行する。実装途中はfocused validationを優先し、変更のたびにfull suiteを反復しない。
+5. public API、共通library、build設定、serialization等へ影響する場合だけ、必要なbroader suiteへ広げる。full testはslice完成時またはcommit-prep前を基本とし、失敗修正後はまず失敗targetをfocused rerunしてから、最後にfull suiteを1回実行する。
+6. release前または明示された最終監査では、repository契約に従ってclean build、full test、release-checkを実行する。
+7. runtime固有の変更なら、利用可能な環境と依頼scopeを確認してruntime検証する。
+8. 結果、未実施理由、環境制約、残るriskを記録する。
+9. 最後に対象diffと`git status --short --branch`を再確認する。
 
 docs-only変更では、repositoryの契約が要求しないbuildやruntime検証を形式的に実行しない。参照path、同期、front matter、Markdown構造等、変更内容に直接対応する静的検証を選ぶ。
+
+## GNU Make
+
+GNU Makeがrepositoryの正式な検証入口であることを確認でき、repositoryがparallel executionを禁止しておらず、targetの依存関係とtest fixtureがparallel-safeであり、既存の直列化／jobserver契約に反しない場合は、bounded parallelismを既定とする。
+
+既定形式は次とし、repositoryが提供するMakeの検証入口、たとえば`make`、`make test`、`make release-check`等へ適用する。
+
+```bash
+env -u MAKEFLAGS -u MFLAGS make -j8 --output-sync=target <target>
+```
+
+- repository内の既存`-j1`、`.NOTPARALLEL`、局所的な直列化、jobserver契約は上書きしない。適用されるjobserver契約がある場合は、その契約に従い、既定形式の環境変数解除を機械的に適用しない。
+- `clean`は必ず単独のmake invocationで実行し、build、test、release-checkと同じmake invocationへ混ぜない。
+- 同じworktreeで独立したtop-level make processを同時実行しない。
+- parallel safetyが不明、禁止されている、または共有fixture／固定outputの競合が疑われる場合は直列実行し、その理由を報告する。
+- parallel runが失敗しraceが疑われる場合は、該当targetを直列でも確認する。直列PASSをparallel failureの成功扱いにせず、parallelと直列の両方の結果を報告する。
 
 ## Runtime
 
@@ -92,8 +109,8 @@ mkdir -p ~/handoff/<repo>/<scope>
 timestamp=$(date +%Y%m%d-%H%M%S)
 log=~/handoff/<repo>/<scope>/"${timestamp}-claude-<purpose>.log"
 
-# 例: repositoryの正式な検証commandが `make test` の場合
-if make test >"$log" 2>&1; then
+# 例: GNU Make repositoryでparallel safetyを確認済み、正式な検証targetが `test` の場合
+if env -u MAKEFLAGS -u MFLAGS make -j8 --output-sync=target test >"$log" 2>&1; then
     echo "PASS: $log"
 else
     status=$?
