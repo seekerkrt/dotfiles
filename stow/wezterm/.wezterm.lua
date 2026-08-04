@@ -16,6 +16,7 @@ local EXPERIMENT_DARK_BG = true        -- falseでMonokai背景そのまま
 local EXPERIMENT_BG_GRADIENT = false
 local TRANSPARENT = false    --  true=0.70 / false=0.88
 
+-- config.emable_wayland = false
 
 -- =============================================================================
 -- Theme
