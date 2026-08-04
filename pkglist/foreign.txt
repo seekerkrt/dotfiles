@@ -1,16 +1,12 @@
-asp
 downgrade
 game-devices-udev
 google-chrome
-keyleds-git
 leaf-markdown-viewer-bin
 mingw-w64-lua
 moguet
 nkf
-onlyoffice-bin
 proton-ge-custom-bin
 rtl8761b-firmware
-steamcmd
 tree-sitter-cli-git
 tree-sitter-cpp
 ttf-myricam
