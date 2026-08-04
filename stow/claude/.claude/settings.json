@@ -55,7 +55,7 @@
     "pyright-lsp@claude-plugins-official": true
   },
   "language": "Japanese",
-  "effortLevel": "max",
+  "effortLevel": "xhigh",
   "theme": "dark",
   "autoCompactEnabled": true
 }
