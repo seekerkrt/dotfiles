@@ -1,0 +1,8 @@
+[build]
+rustc-wrapper = "sccache"
+
+[env]
+SCCACHE_CACHE_SIZE = "20G"
+
+[target.'cfg(target_os = "linux")']
+rustflags = ["-C", "link-arg=-fuse-ld=mold"]

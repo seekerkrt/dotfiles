@@ -17,6 +17,7 @@ ventoy-bin
 virtualbox-ext-oracle
 visual-studio-code-bin
 vkd3d-proton-bin
+wezterm-git
 x86_64-elf-binutils
 x86_64-elf-gcc
 xpadneo-dkms-git

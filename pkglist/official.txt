@@ -150,6 +150,7 @@ mingw-w64-crt
 mingw-w64-gcc
 mingw-w64-headers
 mingw-w64-winpthreads
+mold
 mplayer
 mtools
 namcap
@@ -210,6 +211,7 @@ rsync
 ruby
 rust-src
 sbctl
+sccache
 sd
 sddm-kcm
 shellcheck
@@ -222,6 +224,7 @@ strace
 sweeper
 systemsettings
 terminator
+time
 tldr
 tokei
 tomlplusplus
@@ -245,7 +248,6 @@ vulkan-intel
 vulkan-mesa-layers
 vulkan-swrast
 vulkan-virtio
-wezterm
 wget
 wine
 wine-gecko
