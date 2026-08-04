@@ -33,8 +33,6 @@
     ],
     "ask": [
       "Bash(rm:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(git branch -d:*)",
       "Bash(git branch -D:*)",
@@ -42,6 +40,20 @@
     ],
     "additionalDirectories": [
       "~/handoff"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/codex-rules-gate.py",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "model": "opus",
