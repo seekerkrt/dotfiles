@@ -26,3 +26,62 @@ prefix_rule(
     decision="allow",
     justification="MAKEFLAGSとMFLAGSを除去したmake実行を自動許可する",
 )
+prefix_rule(
+    pattern=["docker", "ps"],
+    decision="allow",
+    justification="Docker container一覧のread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "top"],
+    decision="allow",
+    justification="Docker container内processのread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "container", "ls"],
+    decision="allow",
+    justification="Docker container一覧のread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "images"],
+    decision="allow",
+    justification="Docker image一覧のread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "image", "ls"],
+    decision="allow",
+    justification="Docker image一覧のread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "network", "ls"],
+    decision="allow",
+    justification="Docker network一覧のread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "volume", "ls"],
+    decision="allow",
+    justification="Docker volume一覧のread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "version"],
+    decision="allow",
+    justification="Docker client/server versionのread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "info"],
+    decision="allow",
+    justification="Docker daemon情報のread-only確認を許可する",
+)
+
+prefix_rule(
+    pattern=["docker", "system", "df"],
+    decision="allow",
+    justification="Docker disk usageのread-only確認を許可する",
+)
