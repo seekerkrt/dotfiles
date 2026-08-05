@@ -2,15 +2,27 @@
 # Proプラン向け・常用構成
 #
 model = "gpt-5.6-sol"
+
 approval_policy = "on-request"
 default_permissions = ":workspace"
+
 web_search = "cached"
+
 model_reasoning_effort = "max"
 model_verbosity = "medium"
+
 approvals_reviewer = "user"
-service_tier = "fast"
+
+service_tier = "default"
 #model_context_window = 1050000
 #model_auto_compact_token_limit = 900000
+
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+writable_roots = [
+    "~/handoff",
+]
 
 
 [tui]
