@@ -85,3 +85,5 @@ prefix_rule(
     decision="allow",
     justification="Docker disk usageのread-only確認を許可する",
 )
+prefix_rule(pattern=["docker", "inspect"], decision="allow")
+prefix_rule(pattern=["docker", "logs"], decision="allow")
