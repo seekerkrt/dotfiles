@@ -22,8 +22,7 @@ prefix_rule(
         "-u",
         "MFLAGS",
         "make",
-        ["test", "release-check", "test-container-live-aur"],
     ],
     decision="allow",
-    justification="Moguetの固定検証targetを自動許可する",
+    justification="MAKEFLAGSとMFLAGSを除去したmake実行を自動許可する",
 )
