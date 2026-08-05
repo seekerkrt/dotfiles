@@ -11,8 +11,19 @@ prefix_rule(pattern=["git", "ls-remote"], decision="allow")
 prefix_rule(pattern=["gh", "pr", "view"], decision="allow")
 prefix_rule(pattern=["make"], decision="allow")
 prefix_rule(pattern=["git", "diff", "--check"], decision="allow")
-prefix_rule(pattern=["env", "-u", "MAKEFLAGS", "make"], decision="allow")
 prefix_rule(pattern=["git", "add", "--"], decision="allow")
 prefix_rule(pattern=["git", "commit", "-m"], decision="allow")
-prefix_rule(pattern=["env", "-u", "MAKEFLAGS", "-u", "MFLAGS", "make", "test"], decision="allow")
 prefix_rule(pattern=["gh", "api", "--method", "GET"], decision="allow")
+prefix_rule(
+    pattern=[
+        "env",
+        "-u",
+        "MAKEFLAGS",
+        "-u",
+        "MFLAGS",
+        "make",
+        ["test", "release-check", "test-container-live-aur"],
+    ],
+    decision="allow",
+    justification="Moguetの固定検証targetを自動許可する",
+)
