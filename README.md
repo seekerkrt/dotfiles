@@ -35,6 +35,8 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 │   ├── alacritty/            # Alacritty設定
 │   ├── bash/                 # Bash設定
 │   ├── btop/                 # btop設定
+│   ├── cargo/                # Cargo設定
+│   ├── ccache/               # ccache設定
 │   ├── chrome/               # Chrome設定
 │   ├── clang-format/         # clang-format設定
 │   ├── claude/               # Claude Code設定（→ エージェント設定の参照先）
@@ -49,6 +51,7 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 │   ├── hypr/                 # Hyprland設定
 │   ├── kde/                  # KDE設定
 │   ├── mako/                 # mako通知ツール設定
+│   ├── npm/                  # npm設定
 │   ├── nvim/                 # Neovim設定
 │   ├── scripts/              # 個人用スクリプト
 │   ├── sway/                 # Sway設定
@@ -237,6 +240,8 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 │   ├── alacritty/            # Alacritty config
 │   ├── bash/                 # Bash config
 │   ├── btop/                 # btop config
+│   ├── cargo/                # Cargo config
+│   ├── ccache/               # ccache config
 │   ├── chrome/               # Chrome config
 │   ├── clang-format/         # clang-format config
 │   ├── claude/               # Claude Code config (see: Agent Configuration)
@@ -251,6 +256,7 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 │   ├── hypr/                 # Hyprland config
 │   ├── kde/                  # KDE config
 │   ├── mako/                 # mako notification daemon config
+│   ├── npm/                  # npm config
 │   ├── nvim/                 # Neovim config
 │   ├── scripts/              # Local scripts
 │   ├── sway/                 # Sway config
