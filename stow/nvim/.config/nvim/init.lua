@@ -573,9 +573,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end)
         end
 
-        if client.server_capabilities and client.server_capabilities.semanticTokensProvider then
+        if client.server_capabilities
+            and client.server_capabilities.semanticTokensProvider then
             pcall(function()
-                vim.lsp.semantic_tokens.start(bufnr, client.id)
+             vim.lsp.semantic_tokens.enable(true, {
+                    bufnr = bufnr,
+                    client_id = client.id,
+                })
             end)
         end
 
