@@ -48,6 +48,7 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 │   ├── foot/                 # footターミナル設定
 │   ├── gemini/               # Antigravity CLI設定（→ エージェント設定の参照先）
 │   ├── git/                  # Git設定
+│   ├── grok/                 # Grok設定（→ エージェント設定の参照先）
 │   ├── hypr/                 # Hyprland設定
 │   ├── kde/                  # KDE設定
 │   ├── mako/                 # mako通知ツール設定
@@ -102,8 +103,9 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、プラグイン等 |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 9種 |
+| Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI / UI / marketplace 設定 |
 
-Skillは3エージェント共通で次の9種を配置しています。
+SkillはCodex・Claude Code・Antigravity CLIの3エージェント共通で次の9種を配置しています。
 
 ```text
 audit  commit-prep  cpp-conventions  github
@@ -135,6 +137,11 @@ front matterを除いた本文を3エージェントで一致させる運用で�
 > これらは `.gitignore` で除外済みで、追跡対象は `GEMINI.md`、
 > `settings.json`、`skills/` のみです。
 > Codex・Claude Codeはファイル／ディレクトリ単位のsymlinkのため、この問題はありません。
+>
+> **Grokも `config.toml` だけのfile symlinkです。**
+> `~/.grok` は実ディレクトリのまま残り、共通契約の正本やSkill 9種の複製は
+> `stow/grok` には置いていません。`auth.json`、`sessions/`、`logs/` などの
+> 実行時データはホーム側に残り、このリポジトリの追跡対象外です。
 
 ### 主要スクリプトの使い方
 
@@ -253,6 +260,7 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 │   ├── foot/                 # foot terminal config
 │   ├── gemini/               # Antigravity CLI config (see: Agent Configuration)
 │   ├── git/                  # Git config
+│   ├── grok/                 # Grok config (see: Agent Configuration)
 │   ├── hypr/                 # Hyprland config
 │   ├── kde/                  # KDE config
 │   ├── mako/                 # mako notification daemon config
@@ -306,8 +314,9 @@ Each agent reads the following files, backed by this repository:
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, plugins |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 9 skills |
+| Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI, UI, and marketplace settings |
 
-All three agents carry the same nine skills:
+Codex, Claude Code, and Antigravity CLI carry the same nine skills:
 
 ```text
 audit  commit-prep  cpp-conventions  github
@@ -343,6 +352,12 @@ The only permitted per-agent delta is the parent-skill reference path in
 > `settings.json` and `skills/` are tracked.
 > Codex and Claude Code symlink individual files and directories, so they
 > are not affected.
+>
+> **Grok is also a file-level symlink of `config.toml` only.**
+> `~/.grok` remains a real directory. This repository does not keep a
+> copy of the shared contract or the nine skills under `stow/grok`.
+> Runtime data such as `auth.json`, `sessions/`, and `logs/` stays in
+> the home directory and is not tracked.
 
 ### Usage of Core Scripts
 
