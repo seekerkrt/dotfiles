@@ -67,6 +67,7 @@ system/secureboot/**/*.key
 system/secureboot/**/*.pem
 
 # Gemini CLI local/private state
+stow/gemini/.gemini/antigravity-cli/presence/
 stow/gemini/.gemini/google_accounts.json
 stow/gemini/.gemini/oauth_creds.json
 stow/gemini/.gemini/installation_id
