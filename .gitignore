@@ -118,3 +118,6 @@ stow/codex/.codex/config.toml
 # Antigravity CLI runtime/update cache
 stow/gemini/.gemini/antigravity-cli/last_check.timestamp
 stow/gemini/.gemini/antigravity-cli/updater/
+
+# Python bytecode cache (hooks が共有モジュールを import すると生成される)
+__pycache__/

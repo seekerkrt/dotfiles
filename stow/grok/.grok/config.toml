@@ -1,13 +1,30 @@
 [cli]
 installer = "npm"
 
+[compat.claude]
+skills = false
+rules = false
+agents = false
+mcps = false
+hooks = false
+
+[compat.cursor]
+skills = false
+rules = false
+agents = false
+mcps = false
+hooks = false
+
+[skills]
+paths = ["~/.codex/skills"]
+
 [marketplace]
 default_skills_installs_purged = true
 official_marketplace_auto_installed = true
 
-  [[marketplace.sources]]
-  name = "xAI Official"
-  git = "https://github.com/xai-org/plugin-marketplace.git"
+[[marketplace.sources]]
+name = "xAI Official"
+git = "https://github.com/xai-org/plugin-marketplace.git"
 
 [ui]
 max_thoughts_width = 120
@@ -16,4 +33,38 @@ yolo = false
 compact_mode = false
 screen_mode = "fullscreen"
 show_timeline = true
-permission_mode = "always-approve"
+# permission_mode = "always-approve"
+permission_mode = "auto"
+
+[permission]
+rules = [
+  { action = "allow", tool = "read" },
+  { action = "allow", tool = "grep" },
+  { action = "allow", tool = "bash", pattern = "git ls-remote*" },
+  { action = "allow", tool = "bash", pattern = "git diff*" },
+  { action = "allow", tool = "bash", pattern = "git add*" },
+  { action = "allow", tool = "bash", pattern = "git commit*" },
+  { action = "allow", tool = "bash", pattern = "git status*" },
+  { action = "allow", tool = "bash", pattern = "git log*" },
+  { action = "allow", tool = "bash", pattern = "gh issue *" },
+  { action = "allow", tool = "bash", pattern = "gh pr *" },
+  { action = "allow", tool = "bash", pattern = "gh repo *" },
+  { action = "allow", tool = "bash", pattern = "gh run *" },
+  { action = "allow", tool = "bash", pattern = "gh release *" },
+  { action = "allow", tool = "bash", pattern = "gh workflow *" },
+  { action = "allow", tool = "bash", pattern = "gh api --method GET*" },
+  { action = "allow", tool = "bash", pattern = "make*" },
+  { action = "allow", tool = "bash", pattern = "env -u MAKEFLAGS*" },
+  { action = "allow", tool = "bash", pattern = "docker ps*" },
+  { action = "allow", tool = "bash", pattern = "docker top*" },
+  { action = "allow", tool = "bash", pattern = "docker container ls*" },
+  { action = "allow", tool = "bash", pattern = "docker images*" },
+  { action = "allow", tool = "bash", pattern = "docker image ls*" },
+  { action = "allow", tool = "bash", pattern = "docker network ls*" },
+  { action = "allow", tool = "bash", pattern = "docker volume ls*" },
+  { action = "allow", tool = "bash", pattern = "docker version*" },
+  { action = "allow", tool = "bash", pattern = "docker info*" },
+  { action = "allow", tool = "bash", pattern = "docker system df*" },
+  { action = "allow", tool = "bash", pattern = "docker inspect*" },
+  { action = "allow", tool = "bash", pattern = "docker logs*" },
+]
