@@ -12,6 +12,10 @@ CODEX_RULES_CLI_IGNORE="^${CODEX_RULES_IGNORE#^/}"
 CODEX_CONFIG_CLI_IGNORE="^${CODEX_CONFIG_IGNORE#^/}"
 CODEX_SKILLS_CLI_IGNORE="^${CODEX_SKILLS_IGNORE#^/}"
 
+# Grok CLIはconfig.tomlを自動で正規化・追記するため、Stow symlinkではなくseed用実ファイルとして扱う
+GROK_CONFIG_IGNORE='^/\.grok/config\.toml$'
+GROK_CONFIG_CLI_IGNORE="^${GROK_CONFIG_IGNORE#^/}"
+
 # remove対象から外したいパッケージ名（必要なら増やす）
 SKIP_PACKAGES="
 "
@@ -33,13 +37,38 @@ stow_remove_one() {
         --ignore="$CODEX_SKILLS_CLI_IGNORE" \
         "$pkg"
       ;;
-    vscode)
+    grok)
+      # config.tomlはlive実ファイルとして残し、それ以外のmanaged symlinkだけを解除する
+      stow -D -d "$STOW_DIR" -t "$TARGET_DIR" \
+        --no-folding \
+        --ignore="$GROK_CONFIG_IGNORE" \
+        --ignore="$GROK_CONFIG_CLI_IGNORE" \
+        "$pkg"
+      remove_grok_config_symlink
+      ;;
+    vscode|gemini|antigravity)
       stow -D -d "$STOW_DIR" -t "$TARGET_DIR" --no-folding "$pkg"
       ;;
     *)
       stow -D -d "$STOW_DIR" -t "$TARGET_DIR" "$pkg"
       ;;
   esac
+}
+
+remove_grok_config_symlink() {
+  src="$STOW_DIR/grok/.grok/config.toml"
+  dst="$TARGET_DIR/.grok/config.toml"
+
+  # 新方式ではconfig.tomlは実ファイルなので何もしない。
+  # 旧Stow方式のmanaged symlinkが残っている場合だけ解除する。
+  if [ -L "$dst" ]; then
+    if [ -e "$src" ] && [ -e "$dst" ] && [ "$src" -ef "$dst" ]; then
+      unlink -- "$dst"
+      echo "[remove] old Grok config symlink: $dst"
+    else
+      echo "[remove] unmanaged Grok config symlink left unchanged: $dst" >&2
+    fi
+  fi
 }
 
 remove_codex_skill_dirs() {

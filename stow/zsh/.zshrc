@@ -78,6 +78,8 @@ alias bl='bat -n --paging=always'
 
 alias eza='eza -F'
 
+alias agy-ide='antigravity-ide'
+
 # alias ccat='command cat'
 # alias nvim='LC_MESSAGES=C nvim'
 # alias emacs="emacs -nw"

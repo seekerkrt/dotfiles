@@ -12,6 +12,10 @@ CODEX_RULES_CLI_IGNORE="^${CODEX_RULES_IGNORE#^/}"
 CODEX_CONFIG_CLI_IGNORE="^${CODEX_CONFIG_IGNORE#^/}"
 CODEX_SKILLS_CLI_IGNORE="^${CODEX_SKILLS_IGNORE#^/}"
 
+# Grok CLIはconfig.tomlを自動で正規化・追記するため、Stow symlinkではなくseed用実ファイルとして扱う
+GROK_CONFIG_IGNORE='^/\.grok/config\.toml$'
+GROK_CONFIG_CLI_IGNORE="^${GROK_CONFIG_IGNORE#^/}"
+
 # stow対象から外したいパッケージ名（必要なら増やす）
 SKIP_PACKAGES="
 "
@@ -31,7 +35,18 @@ stow_one() {
         "$pkg"
       stow_codex_skills
       ;;
-    vscode)
+    grok)
+      # ~/.grok配下にはruntime/stateが生成されるためfoldしない。
+      # config.tomlはGrok自身が書き換えるためStow対象から外し、存在しない時だけseedする。
+      stow -d "$STOW_DIR" -t "$TARGET_DIR" \
+        --no-folding \
+        --ignore="$GROK_CONFIG_IGNORE" \
+        --ignore="$GROK_CONFIG_CLI_IGNORE" \
+        "$pkg"
+      materialize_grok_config
+      ;;
+    vscode|gemini|antigravity)
+      # runtime/stateを同じtree配下に生成するため、package directoryをfoldしない
       stow -d "$STOW_DIR" -t "$TARGET_DIR" --no-folding "$pkg"
       ;;
     *)
@@ -175,6 +190,52 @@ stow_codex_skills() {
     --ignore="$CODEX_CONFIG_IGNORE" \
     --ignore="$CODEX_CONFIG_CLI_IGNORE" \
     codex
+}
+
+materialize_grok_config() {
+  src="$STOW_DIR/grok/.grok/config.toml"
+  grok_dir="$TARGET_DIR/.grok"
+  dst="$grok_dir/config.toml"
+
+  if [ ! -f "$src" ]; then
+    echo "[copy] Grok config source not found: $src" >&2
+    return 1
+  fi
+
+  if [ -L "$grok_dir" ]; then
+    echo "[copy] refusing to use symlinked Grok directory: $grok_dir" >&2
+    echo "[copy] unstow the old grok package first so ~/.grok can become a real directory" >&2
+    return 1
+  fi
+  if [ -e "$grok_dir" ] && [ ! -d "$grok_dir" ]; then
+    echo "[copy] refusing to replace non-directory Grok path: $grok_dir" >&2
+    return 1
+  fi
+  mkdir -p -- "$grok_dir"
+
+  if [ -L "$dst" ]; then
+    if [ -e "$dst" ] && [ "$src" -ef "$dst" ]; then
+      # 旧Stow配置のmanaged symlinkだけを実ファイルへ変換する
+      unlink -- "$dst"
+    else
+      echo "[copy] refusing to replace unmanaged Grok config symlink: $dst" >&2
+      return 1
+    fi
+  elif [ -f "$dst" ]; then
+    if cmp -s -- "$src" "$dst"; then
+      return 0
+    fi
+
+    # Grok自身が正規化・privacy/state追記を行うため、既存live configは上書きしない
+    echo "[copy] Grok live config differs; preserving: $dst" >&2
+    return 0
+  elif [ -e "$dst" ]; then
+    echo "[copy] refusing to replace unexpected Grok config path: $dst" >&2
+    return 1
+  fi
+
+  install -m 0644 -- "$src" "$dst"
+  echo "[copy] Grok config: $dst"
 }
 
 is_skipped() {
