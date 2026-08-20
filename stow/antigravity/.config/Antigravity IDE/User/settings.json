@@ -11,7 +11,6 @@
     "editor.formatOnSave": true,
     "editor.acceptSuggestionOnEnter": "smart",
     "editor.suggestSelection": "first",
-
     "files.encoding": "utf8",
     "files.eol": "\n",
     "files.insertFinalNewline": true,
@@ -28,11 +27,8 @@
         "*.cade": "cpp",
         "*.cadh": "cpp"
     },
-
     "breadcrumbs.enabled": true,
-
     "window.zoomLevel": 1,
-
     "workbench.settings.editor": "json",
     "workbench.iconTheme": "vscode-icons",
     "workbench.colorTheme": "Tokyo Night Storm",
@@ -40,7 +36,6 @@
     "workbench.editorAssociations": {
         "*.lnk": "default"
     },
-
     "terminal.integrated.fontFamily": "JetBrains Mono, Noto Sans Mono CJK JP",
     "terminal.integrated.fontSize": 12,
     "terminal.integrated.lineHeight": 1.0,
@@ -48,7 +43,6 @@
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.cursorStyle": "underline",
     "terminal.integrated.suggest.enabled": false,
-
     "terminal.integrated.defaultProfile.windows": "Zsh",
     "terminal.integrated.profiles.windows": {
         "PowerShell": {
@@ -83,37 +77,23 @@
         "MSYSTEM": "MINGW64",
         "CHERE_INVOKING": "1"
     },
-
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}",
         "--query-driver=/usr/bin/x86_64-elf-g++,/usr/bin/x86_64-elf-gcc,/usr/bin/x86_64-w64-mingw32-g++,/usr/bin/x86_64-w64-mingw32-gcc",
         "--clang-tidy=false"
     ],
-
     "cmake.configureOnOpen": true,
     "makefile.configureOnOpen": true,
-
     "todo-tree.highlights.enabled": true,
     "todo-tree.ripgrep.ripgrep": "/usr/bin/rg",
-
-    "debug.onTaskErrors": "debugAnyway",
-
     "git.useIntegratedAskPass": false,
     "git.ignoreMissingGitWarning": true,
     "git.openRepositoryInParentFolders": "never",
-
     "html.format.endWithNewline": true,
-
     "markdown.preview.breaks": true,
-    "markdownlint.config": {
-        "MD013": false,
-        "MD033": false,
-        "MD041": false
-    },
-
+    "markdownlint.configFile": "${userHome}/.markdownlint.json",
     "pasteImage.path": "${currentFileDir}/images/${currentFileNameWithoutExt}",
     "pasteImage.namePrefix": "img-",
-
     "[cpp]": {
         "editor.formatOnSave": false
     },
