@@ -42,8 +42,8 @@ export BROWSER=google-chrome-stable
 export LANG=ja_JP.UTF-8
 # export LANG=en_US.UTF-8
 
-export PATH="$PATH:$HOME/.local/bin/:$HOME/.cargo/bin:$HOME/.local/npm-global/bin"
-export GEM_HOME=$(ruby -e 'print Gem.user_dir')
+export PATH="$PATH:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.local/npm-global/bin"
+export GEM_HOME="$(ruby -e 'print Gem.user_dir')"
 
 # systemd user service で起動する ssh-agent の socket を参照する。
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
@@ -240,27 +240,32 @@ codex-plan() {
   codex "$@"
 }
 
-codex-api() {
-  CODEX_HOME="$HOME/.codex-api" codex "$@"
-}
+claude-api() {
+  local model="sonnet"
+  local api_key
 
-claude-api-on() {
-  local model="${1:-sonnet}"
+  if (( $# > 0 )) && [[ "$1" != -* ]]; then
+    model="$1"
+    shift
+  fi
 
-  export ANTHROPIC_API_KEY="$(
+  api_key="$(
     gpg --quiet --decrypt "$HOME/secrets/claude-code-api-key.txt.gpg" | tr -d '\r\n'
-  )"
-  export ANTHROPIC_MODEL="$model"
+  )" || {
+    echo "Failed to decrypt Anthropic API key" >&2
+    return 1
+  }
 
-  echo "ANTHROPIC_API_KEY set"
-  echo "ANTHROPIC_MODEL=$ANTHROPIC_MODEL"
+  [[ -n "$api_key" ]] || {
+    echo "Anthropic API key is empty" >&2
+    return 1
+  }
+
+  ANTHROPIC_API_KEY="$api_key" \
+  ANTHROPIC_MODEL="$model" \
+  command claude "$@"
 }
 
-claude-api-off() {
-  unset ANTHROPIC_API_KEY
-  unset ANTHROPIC_MODEL
-  echo "Claude API env unset"
-}
 
 # -----------------------------------------------------------------------------
 # 外部ツール初期化
