@@ -18,6 +18,7 @@ web_search = "cached"
 approvals_reviewer = "user"
 
 service_tier = "default"
+personality = "pragmatic"
 
 [permissions.workspace-handoff]
 description = "Current workspace plus handoff directory"
