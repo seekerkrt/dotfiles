@@ -21,8 +21,8 @@
 ### 概要
 
 このリポジトリは、作者（seekerkrt）の設定ファイルを管理・同期するためのものです。
-GNU Stowによるホームディレクトリへの展開、Secure Boot運用スクリプト、
-パッケージ一覧のバックアップなどを含みます。
+GNU Stowによるホームディレクトリへの展開、自作systemd unit / drop-inの配置、
+Secure Boot運用スクリプト、パッケージ一覧のバックアップなどを含みます。
 
 本リポジトリはGitHubを本家として運用されており、GitLab上の同名リポジトリはバックアップミラーです。主な更新元はGitHubです。
 また、秘密鍵やトークンなどの機密情報は管理対象外となっています。
@@ -33,6 +33,7 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 .
 ├── stow/                     # GNU Stowで展開するユーザー設定
 │   ├── alacritty/            # Alacritty設定
+│   ├── antigravity/          # Antigravity IDE設定
 │   ├── bash/                 # Bash設定
 │   ├── btop/                 # btop設定
 │   ├── cargo/                # Cargo設定
@@ -52,11 +53,11 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 │   ├── hypr/                 # Hyprland設定
 │   ├── kde/                  # KDE設定
 │   ├── mako/                 # mako通知ツール設定
+│   ├── markdownlint/         # markdownlint設定
 │   ├── npm/                  # npm設定
 │   ├── nvim/                 # Neovim設定
 │   ├── scripts/              # 個人用スクリプト
 │   ├── sway/                 # Sway設定
-│   ├── systemd-user/         # systemdユーザーサービス設定
 │   ├── tmux/                 # tmux設定
 │   ├── tmuxp/                # tmuxp設定
 │   ├── vim/                  # Vim設定
@@ -67,12 +68,18 @@ GNU Stowによるホームディレクトリへの展開、Secure Boot運用ス�
 │   ├── yazi/                 # yaziファイラー設定
 │   ├── zsh/                  # Zsh設定
 │   └── zsh-functions/        # Zsh関数
+├── systemd/                  # 自作systemd unit / drop-in（Stow管理対象外）
+│   ├── system/               # → /etc/systemd/system/ へ配置
+│   │   └── clamav-clamonacc.service.d/
+│   │       └── override.conf
+│   └── user/                 # → ~/.config/systemd/user/ へ配置
+│       └── ssh-agent.service
 ├── system/secureboot/        # Secure Boot関連の設定とスクリプト
 ├── pkglist/                  # 明示インストール済みパッケージ一覧
-├── encrypted/                # 暗号化されたバックアップファイル等
 ├── sample/                   # システム設定ファイルのサンプル
 ├── apply-stow.sh             # Stowリンクを作成
 ├── remove-stow.sh            # Stowリンクを削除
+├── setup-systemd-services.sh # systemd unit / drop-inの配置とenable状態の再現
 ├── update-pkglist.sh         # パッケージ一覧を更新
 ├── restore-pkglist.sh        # パッケージ一覧から復元
 ├── backup-ssh-allowlist.sh   # SSH鍵と設定を暗号化バックアップ
@@ -145,6 +152,17 @@ front matterを除いた本文を3エージェントで一致させる運用で�
 
 ### 主要スクリプトの使い方
 
+新規Arch環境での初期構築は、各スクリプトの責務に沿って次の順で実行します。
+
+1. パッケージの復旧: `./restore-pkglist.sh`
+2. $HOME側設定の適用: `./apply-stow.sh`
+3. システム側（Secure Boot）設定の配置: `sudo ./setup-system.sh`
+4. systemd unit / drop-inの配置とenable: `./setup-systemd-services.sh --apply`
+5. 必要に応じてSSH設定の復元: `./restore-ssh-config.sh BACKUP_DIR`
+   （鍵も含める場合は `./restore-ssh-allowlist.sh BACKUP_DIR`）
+
+全部をまとめて実行するbootstrapスクリプトはありません。上記を個別に実行します。
+
 #### 1. ドットファイルの適用・同期
 
 ホームディレクトリ（$HOME）に設定ファイルのシンボリックリンクを展開します。
@@ -156,6 +174,15 @@ front matterを除いた本文を3エージェントで一致させる運用で�
 （`vscode` パッケージ全体と、`codex` パッケージの `.codex` subtreeには
 `--no-folding` が適用されます。Codex Skillは
 `~/.agents/skills/<skill>` のdirectory symlinkとして展開されます。）
+
+> [!IMPORTANT]
+> **systemd unit / drop-in / enable状態はStowの管理対象外です。**
+> これらは `systemd/` と `setup-systemd-services.sh` が管理元です。
+> `apply-stow.sh` / `remove-stow.sh` は旧パッケージ名 `systemd-user` を
+> `SKIP_PACKAGES` として除外しています。パッケージ自体は削除済みで、
+> この指定は誤ってStow管理へ戻さないためのガードとして残しています。
+> Stowが同じパスへsymlinkを張ると、setupスクリプトが配置した実ファイルと
+> conflictするためです。
 
 #### 2. パッケージリストの更新と復元
 
@@ -177,9 +204,12 @@ front matterを除いた本文を3エージェントで一致させる運用で�
 
 #### 3. SSH設定のバックアップと復元
 
-秘密鍵を含むため、リポジトリにコミットしたくない ~/.ssh 以下の重要ファイルを
-別ディレクトリへGPG暗号化して退避します。
-・バックアップ（known_hosts 等は除外）:
+秘密鍵を含むため、リポジトリにコミットしたくない ~/.ssh 以下の重要ファイルを、
+ユーザーが指定した外部ディレクトリ（`BACKUP_DIR`）へGPG暗号化して退避します。
+どちらのスクリプトも `BACKUP_DIR` が必須引数で、リポジトリ内には保存しません。
+
+・バックアップ（`~/.ssh/config`、`id_ed25519`、`id_ed25519.pub` のみ。
+`authorized_keys` / `known_hosts` / `known_hosts.old` は除外）:
 
 ```sh
 ./backup-ssh-allowlist.sh /path/to/secure-backup-dir
@@ -191,19 +221,46 @@ front matterを除いた本文を3エージェントで一致させる運用で�
 ./restore-ssh-allowlist.sh /path/to/secure-backup-dir
 ```
 
-また、`~/.ssh/config` のみを取り扱う簡易的なバックアップ・復元スクリプトも用意されています（暗号化ファイルは `encrypted/ssh-config.tar.gz.gpg` に配置されます）。
+対象ファイルは `BACKUP_DIR/ssh-backup.tar.gz.gpg` です。
+バックアップ側は `BACKUP_DIR` が存在しない場合は中止し、既存バックアップは
+タイムスタンプ付き `.bak` へローテーションしてから置き換えます。
+復元側はアーカイブ内容をallowlistで検証し、`~/.ssh` が存在して空でない場合は
+上書きを拒否します。
+
+また、`~/.ssh/config` のみを取り扱うバックアップ・復元スクリプトも用意されています。
 
 ・SSH設定のみバックアップ:
 
 ```sh
-./backup-ssh-config.sh
+./backup-ssh-config.sh /linuxshare/Backup
 ```
 
 ・SSH設定のみ復元:
 
 ```sh
-./restore-ssh-config.sh
+./restore-ssh-config.sh /linuxshare/Backup
 ```
+
+`/linuxshare/Backup` は例であり固定パスではありません。
+対象ファイルは一般形で `BACKUP_DIR/ssh-config.tar.gz.gpg` です。
+
+バックアップ側の挙動:
+
+- `BACKUP_DIR` は必須引数
+- 指定ディレクトリは事前に存在している必要がある（スクリプトは自動作成しない）
+- 対象は `~/.ssh/config` のみ
+- GPG symmetric encryption（`gpg -c`）で暗号化する
+- 出力先は `BACKUP_DIR/ssh-config.tar.gz.gpg`
+
+復元側の挙動:
+
+- `BACKUP_DIR` は必須引数
+- `BACKUP_DIR/ssh-config.tar.gz.gpg` から復元する
+- 復元先は `~/.ssh/config` のみ
+- アーカイブ内容を検証し、`.ssh/config` 以外を含む場合は中止する
+- 既存の `~/.ssh/config` はタイムスタンプ付き `.bak` へ退避してから上書きする
+- `~/.ssh` を700、`~/.ssh/config` を600へ設定する
+- `~/.ssh` や `~/.ssh/config` がsymlinkの場合は拒否する
 
 #### 4. システム側 Secure Boot 構成の配置
 
@@ -214,6 +271,57 @@ sudo ./setup-system.sh
 これにより、GRUB更新時に自動で署名をやり直す pacman フックや、
 専用のバックアップ・リストアスクリプトが /usr/local/sbin に入ります。
 詳細な復旧手順は system/secureboot/README.md を参照してください。
+
+#### 5. systemd unit / drop-in の配置とenable
+
+`systemd/` 配下の自作unitとdrop-inを配置し、明示管理しているunitの
+永続enable状態を再現します。
+**systemd unit / drop-in / enable状態はGNU Stowではなく、
+`systemd/` と `setup-systemd-services.sh` が管理元です。**
+
+・dry-run（引数なし・既定）:
+
+```sh
+./setup-systemd-services.sh
+```
+
+ファイルシステムもsystemdの状態も変更せず、何が行われるかだけを表示します。
+
+・適用:
+
+```sh
+./setup-systemd-services.sh --apply
+```
+
+自作unit / drop-inを配置し、必要なunitの永続enable状態を再現します。
+処理順は次で固定です。
+
+```text
+custom system / user unit・drop-inの配置
+→ 必要な場合だけdaemon-reload
+→ system unitのenable
+→ user unitのenable
+```
+
+・適用後にinactiveなunitだけ起動:
+
+```sh
+./setup-systemd-services.sh --apply --now
+```
+
+`--now` はinactiveなunitのstartだけを行い、restart / stopはしません。
+
+現在の実装の安全方針:
+
+- パッケージのインストールは行わない
+- disableしない
+- mask / unmaskしない
+- stopしない
+- restartしない
+- masked unitは手動対応としてskipし、勝手に変更しない
+- 存在しないunitはパッケージ未導入の可能性として記録し、中断しない
+- 配置するのはdotfilesが持つ自作unitとdrop-inだけで、
+  パッケージ提供のunit本体はshadowしない
 
 ---
 
@@ -233,8 +341,8 @@ sudo ./setup-system.sh
 ### Overview
 
 This repository manages and syncs the author's (seekerkrt) dotfiles.
-It includes GNU Stow deployment, Secure Boot maintenance scripts,
-and package-list backups.
+It includes GNU Stow deployment, custom systemd unit / drop-in installation,
+Secure Boot maintenance scripts, and package-list backups.
 
 This repository is primarily hosted on GitHub, and the same-named repository on GitLab serves as a backup mirror. GitHub is the primary upstream for updates.
 Additionally, sensitive information such as private keys and tokens is excluded from this repository.
@@ -245,6 +353,7 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 .
 ├── stow/                     # User config deployed by GNU Stow
 │   ├── alacritty/            # Alacritty config
+│   ├── antigravity/          # Antigravity IDE config
 │   ├── bash/                 # Bash config
 │   ├── btop/                 # btop config
 │   ├── cargo/                # Cargo config
@@ -264,11 +373,11 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 │   ├── hypr/                 # Hyprland config
 │   ├── kde/                  # KDE config
 │   ├── mako/                 # mako notification daemon config
+│   ├── markdownlint/         # markdownlint config
 │   ├── npm/                  # npm config
 │   ├── nvim/                 # Neovim config
 │   ├── scripts/              # Local scripts
 │   ├── sway/                 # Sway config
-│   ├── systemd-user/         # systemd user services config
 │   ├── tmux/                 # tmux config
 │   ├── tmuxp/                # tmuxp config
 │   ├── vim/                  # Vim config
@@ -279,12 +388,18 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 │   ├── yazi/                 # yazi terminal file manager config
 │   ├── zsh/                  # Zsh config
 │   └── zsh-functions/        # Zsh functions
+├── systemd/                  # Custom systemd units / drop-ins (not Stow-managed)
+│   ├── system/               # deployed to /etc/systemd/system/
+│   │   └── clamav-clamonacc.service.d/
+│   │       └── override.conf
+│   └── user/                 # deployed to ~/.config/systemd/user/
+│       └── ssh-agent.service
 ├── system/secureboot/        # Secure Boot config and scripts
 ├── pkglist/                  # Explicit package lists
-├── encrypted/                # Encrypted backup storage
 ├── sample/                   # System configuration samples
 ├── apply-stow.sh             # Create Stow links
 ├── remove-stow.sh            # Remove Stow links
+├── setup-systemd-services.sh # Install systemd units and enable state
 ├── update-pkglist.sh         # Update package lists
 ├── restore-pkglist.sh        # Restore packages from lists
 ├── backup-ssh-allowlist.sh   # Back up SSH keys and config with GPG
@@ -361,6 +476,19 @@ The only permitted per-agent delta is the parent-skill reference path in
 
 ### Usage of Core Scripts
 
+On a fresh Arch install, run the scripts in this order, matching their
+respective responsibilities:
+
+1. Restore packages: `./restore-pkglist.sh`
+2. Deploy $HOME config: `./apply-stow.sh`
+3. Install system-side (Secure Boot) config: `sudo ./setup-system.sh`
+4. Install systemd units / drop-ins and enable them:
+   `./setup-systemd-services.sh --apply`
+5. Restore SSH config if needed: `./restore-ssh-config.sh BACKUP_DIR`
+   (or `./restore-ssh-allowlist.sh BACKUP_DIR` to include the keys)
+
+There is no single all-in-one bootstrap script; run the steps individually.
+
 #### 1. Deploy Dotfiles
 
 Creates symlinks from the stow/ directory to your $HOME.
@@ -372,6 +500,15 @@ Creates symlinks from the stow/ directory to your $HOME.
 (The `vscode` package and the `.codex` subtree of the `codex` package use
 `--no-folding`. Codex Skills are deployed as directory symlinks at
 `~/.agents/skills/<skill>`.)
+
+> [!IMPORTANT]
+> **systemd units, drop-ins, and enable state are out of Stow's scope.**
+> They are owned by `systemd/` and `setup-systemd-services.sh`.
+> `apply-stow.sh` and `remove-stow.sh` list the former package name
+> `systemd-user` in `SKIP_PACKAGES`. The package itself is already deleted;
+> the entry remains as a guard against accidentally putting systemd back
+> under Stow, because a Stow symlink at the same path would conflict with
+> the real files installed by the setup script.
 
 #### 2. Package Management
 
@@ -393,8 +530,13 @@ Track and sync installed packages across installations.
 
 #### 3. SSH Configuration Backup and Restore
 
-Securely backs up critical SSH files (including private keys) into a GPG-encrypted archive outside the git history.
-・Backup (excludes known_hosts, etc.):
+Securely backs up critical SSH files (including private keys) into a
+GPG-encrypted archive stored in a user-specified external directory
+(`BACKUP_DIR`), outside the git history. `BACKUP_DIR` is a required argument
+for every script below; nothing is ever written inside this repository.
+
+・Backup (only `~/.ssh/config`, `id_ed25519`, and `id_ed25519.pub`;
+`authorized_keys`, `known_hosts`, and `known_hosts.old` are excluded):
 
 ```sh
 ./backup-ssh-allowlist.sh /path/to/secure-backup-dir
@@ -406,19 +548,47 @@ Securely backs up critical SSH files (including private keys) into a GPG-encrypt
 ./restore-ssh-allowlist.sh /path/to/secure-backup-dir
 ```
 
-Additionally, utility scripts to backup and restore only the `~/.ssh/config` file are available (the encrypted archive is saved in `encrypted/ssh-config.tar.gz.gpg`).
+The archive is `BACKUP_DIR/ssh-backup.tar.gz.gpg`. The backup script aborts if
+`BACKUP_DIR` does not exist, and rotates an existing archive to a timestamped
+`.bak` before replacing it. The restore script validates the archive against
+the same allowlist and refuses to overwrite `~/.ssh` if it exists and is not
+empty.
+
+Additionally, scripts to back up and restore only the `~/.ssh/config` file are
+available.
 
 ・Backup SSH Config only:
 
 ```sh
-./backup-ssh-config.sh
+./backup-ssh-config.sh /linuxshare/Backup
 ```
 
 ・Restore SSH Config only:
 
 ```sh
-./restore-ssh-config.sh
+./restore-ssh-config.sh /linuxshare/Backup
 ```
+
+`/linuxshare/Backup` is only an example, not a fixed path. In general terms the
+archive is `BACKUP_DIR/ssh-config.tar.gz.gpg`.
+
+Backup behavior:
+
+- `BACKUP_DIR` is a required argument
+- The directory must already exist; the script never creates it
+- Only `~/.ssh/config` is included
+- GPG symmetric encryption (`gpg -c`) is used
+- The output is `BACKUP_DIR/ssh-config.tar.gz.gpg`
+
+Restore behavior:
+
+- `BACKUP_DIR` is a required argument
+- Restores from `BACKUP_DIR/ssh-config.tar.gz.gpg`
+- Only `~/.ssh/config` is restored
+- The archive contents are validated; anything other than `.ssh/config` aborts
+- An existing `~/.ssh/config` is moved to a timestamped `.bak` before overwrite
+- `~/.ssh` is set to 700 and `~/.ssh/config` to 600
+- A symlinked `~/.ssh` or `~/.ssh/config` is rejected
 
 #### 4. Secure Boot Setup (System-wide)
 
@@ -429,3 +599,56 @@ sudo ./setup-system.sh
 This deploys tools to /usr/local/sbin and handles automatic sbctl re-signing
 whenever grub updates via a post-transaction pacman hook.
 For recovery details, refer to system/secureboot/README.md.
+
+#### 5. systemd Units and Drop-ins
+
+Installs the custom units and drop-ins under `systemd/` and reproduces the
+persistent enable state of the explicitly managed units.
+**systemd units, drop-ins, and enable state are owned by `systemd/` and
+`setup-systemd-services.sh`, not by GNU Stow.**
+
+・Dry run (no arguments, the default):
+
+```sh
+./setup-systemd-services.sh
+```
+
+It changes neither the filesystem nor any systemd state; it only reports what
+would happen.
+
+・Apply:
+
+```sh
+./setup-systemd-services.sh --apply
+```
+
+Installs the custom units / drop-ins and reproduces the persistent enable state
+of the required units. The order is fixed:
+
+```text
+install custom system / user units and drop-ins
+→ daemon-reload only when unit files actually changed
+→ enable system units
+→ enable user units
+```
+
+・Start inactive units after applying:
+
+```sh
+./setup-systemd-services.sh --apply --now
+```
+
+`--now` only starts units that are currently inactive; it never restarts or
+stops anything.
+
+Safety policy of the current implementation:
+
+- Never installs packages
+- Never disables units
+- Never masks or unmasks units
+- Never stops units
+- Never restarts units
+- Skips masked units for manual handling instead of changing them
+- Records missing units as possibly-uninstalled packages and keeps going
+- Installs only the custom units and drop-ins owned by this repository,
+  never shadowing a package-provided unit file
