@@ -17,7 +17,10 @@ GROK_CONFIG_IGNORE='^/\.grok/config\.toml$'
 GROK_CONFIG_CLI_IGNORE="^${GROK_CONFIG_IGNORE#^/}"
 
 # remove対象から外したいパッケージ名（必要なら増やす）
+# systemd-user: systemd関連はsetup-systemd-services.shが管理する。
+#   packageは削除済みで、この項目は誤ってStow管理へ戻さないためのguardとして残している。
 SKIP_PACKAGES="
+systemd-user
 "
 
 stow_remove_one() {
