@@ -1,0 +1,35 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+tab_width = 4
+trim_trailing_whitespace = true
+
+# GNU makeのrecipeには実TABが必要。
+[Makefile]
+indent_style = tab
+indent_size = tab
+tab_width = 4
+
+[*.mk]
+indent_style = tab
+indent_size = tab
+tab_width = 4
+
+# Markdownでは行末2スペースが明示改行として意味を持つ場合がある。
+[*.md]
+trim_trailing_whitespace = false
+
+# archiveは歴史資料として内容を保存し、自動正規化の対象にしない。
+[docs/archive/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+tab_width = unset
+trim_trailing_whitespace = unset
