@@ -1,3 +1,6 @@
+# Local encrypted backups
+encrypted/
+
 .cache/
 .local/share/
 .local/state/
