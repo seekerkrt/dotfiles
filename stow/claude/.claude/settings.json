@@ -69,5 +69,6 @@
   "language": "Japanese",
   "effortLevel": "xhigh",
   "theme": "dark",
-  "autoCompactEnabled": true
+  "autoCompactEnabled": true,
+  "tui": "fullscreen"
 }
