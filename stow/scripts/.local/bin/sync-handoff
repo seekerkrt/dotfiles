@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SOURCE="$HOME/handoff/"
+DEST="$HOME/PrivateDocs/handoff/"
+
+mkdir -p "$DEST"
+
+echo "==> Syncing handoff archive"
+echo "    source: $SOURCE"
+echo "    dest:   $DEST"
+
+rsync \
+    --archive \
+    --human-readable \
+    --itemize-changes \
+    "$SOURCE" \
+    "$DEST"
+
+echo
+echo "==> Done"
+du -sh "$DEST"
