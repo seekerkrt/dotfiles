@@ -7,6 +7,7 @@ description: GitHub repository、Issue、PR、review、Actions、release、branc
 
 ## 固有の安全境界
 
+- local Gitだけで完結する確認では、不要なGitHub接続を行わない。
 - read-only調査を先に行い、mutationへ自動的に進まない。
 - 相談、確認、review、調査、案の作成をmutation依頼として扱わない。
 - GitHub側へ書き込むのは、repositoryと操作内容が明示されている場合だけとする。

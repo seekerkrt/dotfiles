@@ -27,7 +27,7 @@ description: 実装前調査、責務境界・未使用コード・危険な前�
 8. Evidence付きfindingを作り、Severity、Confidence、最小検証、fix方向を示す。
 9. 必要な場合だけIssue / PR分割候補を提案する。作成はしない。
 
-存在を確認していないtoolやtargetを前提にしない。call pathを最後まで追えない場合は、確認済みの終点と未確認の分岐を示す。
+存在を確認していないtoolやtargetを前提にしない。call pathを最後まで追えない場合は、確認済みの終点と未確認の分岐を示す。GitHub側の調査が必要なら`github` Skillの契約に従い、取得できない情報をlocal Gitの事実で代用しない。
 
 ## Finding contract
 

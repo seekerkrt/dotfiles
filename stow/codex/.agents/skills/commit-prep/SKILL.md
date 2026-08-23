@@ -14,6 +14,7 @@ description: commit前の差分整理、stage対象選定、commit分割相談�
 - 実行していないtest、未確認のIssue完了、未実装の変更をmessageへ書かない。
 - commit実行直前にstage対象とstaged diffを再確認する。
 - repository固有のcommit規約と直近履歴を優先する。
+- 実施済み検証は実行commandと結び付け、pass、fail、warning、partial、environment blocked、not runを分ける。判断は`verify` Skillの契約に従う。
 
 ## Preflight
 
@@ -24,7 +25,7 @@ git diff --cached
 git diff --check
 ```
 
-staged変更があれば必要に応じて`git diff --cached --check`も確認する。untracked fileは対象判断に必要な範囲だけ読む。
+staged変更があれば必要に応じて`git diff --cached --check`も確認する。untracked fileは対象判断に必要な範囲だけ読む。目的が不明なfileや秘密情報らしきfileは開かず、「内容未確認」として候補から外す。
 
 ## Path classification
 
