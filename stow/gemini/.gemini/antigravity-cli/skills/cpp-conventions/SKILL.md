@@ -1,110 +1,150 @@
 ---
 name: cpp-conventions
-description: >-
-  C/C++の実装・編集・reviewで使う共通baseline。project固有規約を優先しつつ、
-  命名、WHY/POLICY/LANDMINE/NOTEコメント、cast、RAII等の判断基準を適用する。
+description: C++コードの生成・編集・review、およびC++から利用するC互換headerやC/C++共有境界で使用し、C++標準、宣言と定義の分離、共通命名、コメント、所有権、C++機能、castの全project共通baselineを適用する。repositoryにdocs/CODING_CONVENTIONS.mdがあれば必ず併読し、build設定とproject規約が本Skillと異なる部分はproject側を優先する。
 ---
 
-# C/C++ 共通規約
+# C++共通規約
 
-## 位置づけ
+## 適用順
 
-このSkillは全project共通のbaselineである。実装やreviewの前に、対象scopeへ
-適用されるrepository指示、近傍コード、`docs/CODING_CONVENTIONS.md`等の
-project固有規約を確認する。矛盾する場合はproject側を優先する。
+1. 作業対象に適用される`GEMINI.md`を読む。
+2. repositoryの`docs/CODING_CONVENTIONS.md`が存在すれば読む。
+3. Makefile、CMake等の実際のbuild設定からcompiler、C++標準、例外、RTTI、warningを確認する。
+4. project側に明示がない部分へ本Skillの共通baselineを適用する。
 
-純粋なCではC++固有の機能・cast規則を適用せず、命名とコメント等の共通項目だけを
-使う。C固有の方針はproject規約と近傍コードへ合わせる。
+現在のcompile条件は実際のbuild設定を事実として扱い、project固有の意図はproject規約を正とする。両者が食い違う場合は片方を推測で正しいものとして扱わず、不整合を報告する。コード、docs、build設定の修正は今回のscopeに含まれる場合だけ行う。
 
-次はprojectごとに方針が分かれるため、このSkillだけで決めない。
+本SkillはC++を主対象とする。C互換headerやC/C++共有ABI境界では適用可能な項目だけを使い、純粋なCコードの命名、cast、配置はproject規約と周辺コードを優先する。
 
-- 例外の可否と失敗伝播
-- hosted / freestandingと標準libraryの利用範囲
-- function・method命名
-- header / sourceの分割方針
-- `reinterpret_cast`の許容範囲と閉じ込め先
+## C++標準
 
-## 実装前の確認
+- C++20を共通baselineとする。
+- repositoryのbuild設定またはproject規約が別の標準を明示する場合は、project側を優先する。
+- 作業目的に含まれないC++標準の引き上げ・引き下げを混ぜない。
+- C++20より新しい機能やcompiler拡張を、対応するcompiler設定の確認なしに導入しない。
 
-1. build target、language standard、compiler optionを確認する。
-2. 近傍の命名、ownership、error処理、comment粒度を確認する。
-3. public contract、ABI、hardware・OS・protocol制約を確認する。
-4. 今回の変更が局所の足場か、他codeが依存する契約かを分ける。
+## 宣言と定義
 
-## 命名
+- 非自明なclass、複数箇所から利用する型、公開interfaceは、原則として宣言を`.hpp`、定義を`.cpp`へ分離する。
+- headerには公開契約と必要な宣言を置き、実装詳細と重い依存は可能な限り`.cpp`へ閉じ込める。
+- template、`constexpr`、`inline`、trivialな定義、C互換ABI header等、header側に定義が必要なものは例外とする。
+- 既存の単一file構成を、分離自体を目的として一括変更しない。
+- compatibility契約のないinclude forwardingだけのheaderや、責務を持たない共通headerを増やさない。
+- project規約が分離を必須化、緩和、または別配置を指定する場合は、その差分を優先する。
 
-- type、class、struct、`enum class`はPascalCase。
-- class memberは`_`接尾辞を付ける。必要なものだけpublicにする。
-- struct memberは接尾辞なしとし、単純なdata集約として扱う。
-- namespaceは原則小文字。
-- constantとmacroはUPPER_SNAKE_CASE。magic numberは意味の残る
-  `const`または`constexpr`へ寄せる。
-- local variableとargumentはsnake_case。
-- global variableは極力避ける。必要なら`g_`接頭辞を付け、翻訳単位内へ閉じる。
-- function内`static`は原則避ける。必要なら`s_`接頭辞を付け、lifetimeと副作用が
-  分かる名前にする。
-- 翻訳単位限定のfunction、variable、constant、helper typeは無名namespaceへ閉じる。
-- boolは`is_`、`has_`、`should_`、`can_`、`needs_`等、真偽の意味が読める名前を
-  優先する。
+## 共通命名
+
+- 型、class、struct、`enum class`はPascalCaseを基本とする。
+- namespaceは小文字を基本とする。
+- local変数と関数引数はsnake_caseを基本とする。
+- class memberは`_`接尾辞、単純なdata aggregateのstruct memberは接尾辞なしを基本とする。
+- classの状態は`private` / `protected`を基本とし、単純なdata aggregateだけをpublic member中心で扱う。意味のないaccessorを形式的に増やさない。
+- 定数とmacroはUPPER_SNAKE_CASEを基本とし、magic numberは意味が残る`constexpr`等へ寄せる。
+- global stateは避ける。必要なら翻訳単位へ閉じ、project規約に従って寿命と副作用が分かる名前を付ける。
+- project規約に別指定がなければ、必要なglobal変数は`g_`、function-local staticは`s_`を付ける。どちらも導入理由、寿命、再入性への影響を確認する。
+- translation unit限定の関数、変数、定数、補助型は無名namespaceへ閉じることを基本とする。
+- boolは`is_`、`has_`、`should_`、`can_`、`needs_`等、真偽の意味が読める名前を優先する。
 - `tmp`、`ret`、`val`、`obj`等の曖昧な名前は、短い局所処理以外で避ける。
+
+public / internal関数、enum value、file名等の命名がprojectごとに異なる場合は、project規約と周辺コードへ従う。
 
 ## コメント
 
-コードを見れば分かるWHATの逐語説明ではなく、後から意図と制約を復元できる
-コメントを残す。
+コードを見れば分かるWHATの逐語説明は量産しない。同時に、コードだけでは復元できない設計意図、判断理由、契約、地雷をコメントなしのまま埋没させない。この両方を満たすことを目標とする。
 
-- WHY: なぜこの実装、順序、構造なのか。
-- POLICY: 継続して守る契約や方針は何か。
-- LANDMINE: 移動、削除、共通化で壊れる条件は何か。
-- NOTE: 暫定事情、補足、将来の整理観点は何か。
+次の情報を優先して残す。
 
-特に次へ短い意図コメントを置く。
+- `WHY`: なぜこの実装、構造、分岐、順序、algorithmを選んでいるのか。特に次の場合は重要とする。
+  - 一見もっと簡単に書けそうなのに、あえて現在の形にしている。
+  - alternativeを採用できない理由がある。
+  - correctness、safety、compatibility上の理由がある。
+  - 将来のmaintainerが善意で簡略化すると壊れる可能性がある。
+- `CONTRACT`: caller / callee間の事前条件、事後条件、保証、不変条件。
+  - functionへ入る時点で成立しているべき条件と、成功時に保証される状態。
+  - ownership、lifetime、state transition、thread safety。
+  - 外部resourceとの関係、identity / ordering / provenance等の維持条件。
+- `POLICY`: projectとして選択した挙動と判断基準。
+  - 失敗時にcontinueするか停止するか、fail-open / fail-closedの選択。
+  - fallbackを許可する条件、ambiguityの扱い、user-visible behavior。
+  - 処理そのものだけでなく、そのbehaviorをproject policyとして採用する理由。
+- `LANDMINE`: 一見不要、冗長、簡略化可能に見えるが、変えると壊れる箇所。
+  - 呼び出し順序、checkを後段へ移動できない理由、cleanupより前に必要なrelease。
+  - guard削除で生じるrace、TOCTOU、double free等。
+  - filesystem、ABI、protocol、OS挙動への依存、compatibility workaround。
+- `NOTE`: 暫定事情、補足、将来の整理観点。補助的な情報として使い、`WHY` / `CONTRACT` / `POLICY` / `LANDMINE`より優先しない。
 
-- 一見不自然な順序、待機、retry、特殊case
-- hardware、OS、protocol、external API都合に引かれる処理
-- dependency order、initialization order、call orderに意味がある箇所
-- state、flag、ownership、lifetimeがcodeだけでは読みにくい箇所
-- 一時対応か恒久contractか分かりにくい箇所
+概念上の優先度は`WHY ≧ CONTRACT ≧ POLICY > LANDMINE > NOTE >>> WHAT`とする。これはコメント数のquotaではなく、限られたコメントで何を残すかの順位である。
 
-file先頭の責務・前提・地雷コメントや、責務境界を示す見出しコメントは使ってよい。
-コメントをimplementationの代わりにはしない。
+file headerや区切りコメントは、責務境界と編集時のlandmarkとして必要な場合に使う。コメントをimplementationの代わりにしない。
 
-## C++機能
+### コメントを検討する箇所
 
-積極的に使う。
+次のような非自明な処理では、コードだけで意図が十分に伝わっているかを確認する。
 
-- RAII: lock、後始末、状態復元。失敗時のcleanupをdestructorへ寄せる。
-- `enum class`: 種別や状態を型安全に表す。
-- `constexpr`と`static_assert`: compile-timeの定数と前提を検証する。
-- ownershipとlifetimeが明確なmove semantics、`unique_ptr`相当の表現。
-- 意図が明快でzero-cost寄りの薄いtemplate。
+- public / internal interface、非自明なguard、fallback、意図的に無視するerror、fail-open / fail-closedの判断。
+- 意味のある処理順序、ownership、lifetime、resource releaseの順序。
+- thread safetyとsynchronization、state machineとstate transition。
+- filesystem semantics、OS固有挙動、外部commandとの契約、protocol、ABI。
+- hardware挙動、外部仕様、compatibility workaround。
+- security boundary、data-loss防止、magic threshold、sentinel value、非自明なperformance tradeoff。
+- 一見不要に見える追加check、一見簡略化できそうだが簡略化してはいけない処理。
 
-慎重に使う。
+該当しただけで機械的にコメントを書く必要はない。ただし、WHATはコードから分かるのに`WHY` / `POLICY` / `CONTRACT` / `LANDMINE`がコードだけからは分からない状態であれば、必要なコメントを残す。これは推奨ではなく実作業上の規律として扱う。
 
-- inheritanceと`virtual`: 差し替え可能な抽象が必要な場合だけ。composition、
-  責務分離、function分割を先に検討する。
-- operator overload: domain上自然で、挙動を誤解しない場合だけ。
+### 宣言と定義でのコメント配置
 
-避ける。
+- 宣言側には、interfaceとして必要な`CONTRACT`を置く。
+- 定義側には、implementation固有の`WHY` / `POLICY` / `LANDMINE`を置く。
+- 同じ説明を宣言と定義の両方へ複製せず、その場所で必要な情報だけを置く。
 
-- RTTIや`dynamic_cast`前提の設計
-- 重いtemplate metaprogramming
-- 処理を追いにくいgeneric wrapper
-- 既存処理を薄く包むだけの互換function
-- 「便利そう」だけを理由にしたglobal state
+### コメント量
+
+- 「1 functionにつき1コメント」「N行ごとにコメント」「全branchにコメント」のような数値quotaは設けない。
+- コメント数を増やすこと自体を目的にしない。
+- 一方で、「コードが読めるからコメント不要」を理由に設計意図まで省略しない。
+- 目標は、WHATコメントを抑えつつ、design intentのコメントを必要な箇所へ確実に残すことである。
+
+## C++機能と所有権
+
+- RAIIでlock、resource、temporary state、cleanupをscopeへ束ねる。
+- `enum class`で状態・種別を型安全に表現する。
+- `constexpr`と`static_assert`で定数とcompile-time invariantを表現する。
+- C++内の単なる定数は`constexpr`等を使い、`#define`は条件compile、C / asm共有、token操作等、preprocessorである必要がある用途へ限定する。
+- 所有者、borrow、寿命、move後の状態をinterfaceと型から読めるようにする。
+- owning pointerには`unique_ptr`相当の単一所有表現を優先し、生pointerを暗黙のownerにしない。
+- 継承と`virtual`は差し替え可能な抽象が必要な場合に限り、合成や責務分割を先に検討する。
+- RTTI、`dynamic_cast`、例外の可否はproject規約とbuild設定を確認する。許可されていても、具体型へ戻さないと成立しない設計や不明瞭な制御フローを常用しない。
+- templateは型安全や重複削減の効果が明確な薄い用途に留め、追跡しにくいmetaprogrammingを増やさない。
+- operator overloadはdomain上自然で、挙動を誤解しない場合だけ使う。
+- 別名を増やすだけのforwarding functionや薄いcompatibility wrapperは、移行契約や利用者が明確な場合だけ作る。
 
 ## cast
 
-- C-style castは使わない。
-- 意味のある変換には`static_cast`を使う。
-- `const_cast`は必要性と安全条件を説明できる場合だけ使う。
-- `dynamic_cast`は常用しない。
-- `reinterpret_cast`はproject規約に従い、必要ならlow-level境界へ閉じ込める。
+- C++コードではC-style castを使わない。
+- 通常の値変換、enumと整数、前提を確認済みの継承階層変換には`static_cast`を使う。具体型へのdowncastは、その前提をinterfaceで表せないか先に確認する。
+- `const_cast`は外す必要と安全性を説明できる境界だけで使う。
+- `dynamic_cast`はRTTIが許可され、runtime型判定が設計上必要な場合だけ使う。
+- `reinterpret_cast`の可否と閉じ込め先はproject規約へ従う。明示がなければ新規導入せず、hardware、ABI、生memory等の境界を先に特定する。
 
-## 変更とreview
+## Project側で決める事項
 
-- 近傍のstyle、責務分割、error処理へ合わせる。
-- 大規模整形、広範囲rename、unrelated cleanupを機能変更へ混ぜない。
-- public contractを変える場合は、caller、test、docs、migration影響を確認する。
-- reviewでは「何が問題か」「なぜ問題か」「どう直すか」を分ける。
-- 差分をreview可能な論理単位に保つ。
+本Skillでは次を断定しない。
+
+- freestanding / hosted
+- 例外とRTTIの可否
+- 標準libraryの利用範囲
+- public / internal関数の命名
+- `reinterpret_cast`を許可する層
+- directory構成とABI headerの配置
+- `.hpp` / `.cpp`分離を必須化する範囲
+- formatter、compiler、warning policy
+
+## 差分の作り方
+
+- 変更対象の周辺で、命名、責務、error処理、comment粒度、include順を確認する。
+- 実装前に、公開契約、ABI、hardware / OS / protocol制約への影響範囲を確認する。
+- project全体の整形、広範囲rename、unrelated cleanupを機能変更へ混ぜない。
+- 既存違反を、この作業と無関係に一括修正しない。
+- 新しい公開契約を作る場合は、project docsとtestへ反映する必要性を確認する。
+- 実装完了後、変更した非自明な処理について、`WHY` / `POLICY` / `CONTRACT` / `LANDMINE`がコードだけに埋没していないかを確認し、必要なコメントを補う。この確認は不要なWHATコメントを追加するためではなく、将来失われると困る設計情報だけを補完するために行う。
+- reviewでは、何が問題か、なぜ問題か、どう直すかを分けて示す。
