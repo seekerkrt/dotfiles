@@ -1,8 +1,6 @@
 ---
 name: verify
-description: >-
-  非自明な変更後にdiffと既存契約を確認し、repository固有の最小build・testから
-  runtime検証まで段階的に実行して、結果と未実施項目を分類する。
+description: 非自明な変更後、docsと実装の同期確認、またはbuild / test / lint / runtime検証依頼で使用し、対象diffとrepository固有commandを段階的に確認してpass、fail、warning、partial、未実施、環境制約を区別して報告する。
 ---
 
 # Verification

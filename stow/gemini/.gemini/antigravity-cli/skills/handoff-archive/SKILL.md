@@ -1,6 +1,6 @@
 ---
 name: handoff-archive
-description: repository外に保存された選別済みagent handoffについて、ユーザーがrepositoryへの保存、archive、収蔵を明示し、対象file、scope、repositoryが確定している場合だけdocs/handoffs配下へ安全にコピーする。通常handoff生成やinline出力には使用しない。
+description: ユーザーが選別済みの外部handoffをrepositoryへ保存、archive、収蔵、またはdocs/handoffsへcopyすると明示し、source fileをexact pathまたは一意な候補として特定でき、scopeとtarget repositoryが確定している場合に使用する。source検証、sensitive content preflight、衝突防止、byte-identical copy、SHA比較を行い、stage / commit / pushはしない。
 ---
 
 # Handoff archive

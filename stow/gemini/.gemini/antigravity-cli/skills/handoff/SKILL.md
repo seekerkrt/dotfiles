@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: 非自明な開発作業や調査について、ユーザーが永続的なhandoff、引き継ぎメモ、次スレ用の保存を求めた場合に、repository外へ日時付きMarkdownを作成する。inline、本文だけ、保存不要、repository archiveが明示された場合には使用しない。
+description: 非自明な開発、repository調査、検証、Issue / PR、debug、設計reviewの結果について、通常のhandoffまたは引き継ぎメモを明示的に求められた場合に使用し、後続会話が再開できる事実ベースの日本語Markdownを既定ではrepository外の~/handoffへ永続保存する。inline / 本文だけ / 保存不要はhandoff-inline、repository収蔵はhandoff-archiveへroutingする。
 ---
 
 # Handoff基本契約
