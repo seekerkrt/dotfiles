@@ -77,6 +77,8 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 ├── system/secureboot/        # Secure Boot関連の設定とスクリプト
 ├── pkglist/                  # 明示インストール済みパッケージ一覧
 ├── sample/                   # システム設定ファイルのサンプル
+├── docs/                     # 補助ドキュメント
+│   └── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLIの導入経路と更新方法
 ├── apply-stow.sh             # Stowリンクを作成
 ├── remove-stow.sh            # Stowリンクを削除
 ├── setup-systemd-services.sh # systemd unit / drop-inの配置とenable状態の再現
@@ -149,6 +151,29 @@ front matterを除いた本文を3エージェントで一致させる運用で�
 > `~/.grok` は実ディレクトリのまま残り、共通契約の正本やSkill 9種の複製は
 > `stow/grok` には置いていません。`auth.json`、`sessions/`、`logs/` などの
 > 実行時データはホーム側に残り、このリポジトリの追跡対象外です。
+
+### AI CLIの導入経路と一括更新
+
+各CLIの導入経路、現在の配置、更新コマンドは
+`docs/AI-CODINGAGENTS-INSTALLATIONS.md` を正本とします。
+
+| CLI | 導入経路 | Command |
+| --- | --- | --- |
+| Codex | npm global | `codex` |
+| Claude Code | 公式native installer | `claude` |
+| Grok | npm global | `grok` |
+| Antigravity CLI | 公式installer + dotfiles管理のwrapper | `agy` |
+
+4種をまとめて更新するスクリプトは `stow/scripts/.local/bin/update-ai-cli.sh` です。
+Stow展開後は `~/.local/bin/update-ai-cli.sh` として実行できます。
+
+```sh
+update-ai-cli.sh
+```
+
+CLIごとにPATH上の実体と更新前後のversionを表示し、`<command> update` を
+`codex` → `claude` → `grok` → `agy` の順で実行します。
+PATHに無いCLIはSKIP扱いで中断せず、1つでも失敗した場合は終了コード1を返します。
 
 ### 主要スクリプトの使い方
 
@@ -344,8 +369,11 @@ This repository manages and syncs the author's (seekerkrt) dotfiles.
 It includes GNU Stow deployment, custom systemd unit / drop-in installation,
 Secure Boot maintenance scripts, and package-list backups.
 
-This repository is primarily hosted on GitHub, and the same-named repository on GitLab serves as a backup mirror. GitHub is the primary upstream for updates.
-Additionally, sensitive information such as private keys and tokens is excluded from this repository.
+This repository is primarily hosted on GitHub, and the same-named repository
+on GitLab serves as a backup mirror. GitHub is the primary upstream for
+updates.
+Additionally, sensitive information such as private keys and tokens is
+excluded from this repository.
 
 ### Repository Structure
 
@@ -397,6 +425,8 @@ Additionally, sensitive information such as private keys and tokens is excluded 
 ├── system/secureboot/        # Secure Boot config and scripts
 ├── pkglist/                  # Explicit package lists
 ├── sample/                   # System configuration samples
+├── docs/                     # Supplementary documentation
+│   └── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLI install paths and updates
 ├── apply-stow.sh             # Create Stow links
 ├── remove-stow.sh            # Remove Stow links
 ├── setup-systemd-services.sh # Install systemd units and enable state
@@ -473,6 +503,30 @@ The only permitted per-agent delta is the parent-skill reference path in
 > copy of the shared contract or the nine skills under `stow/grok`.
 > Runtime data such as `auth.json`, `sessions/`, and `logs/` stays in
 > the home directory and is not tracked.
+
+### AI CLI Installation and Bulk Update
+
+`docs/AI-CODINGAGENTS-INSTALLATIONS.md` is the source of truth for how each
+CLI is installed, where it currently lives, and how it is updated.
+
+| CLI | Install path | Command |
+| --- | --- | --- |
+| Codex | npm global | `codex` |
+| Claude Code | Official native installer | `claude` |
+| Grok | npm global | `grok` |
+| Antigravity CLI | Official installer + wrapper in this repo | `agy` |
+
+`stow/scripts/.local/bin/update-ai-cli.sh` updates all four at once. After Stow
+deployment it is available as `~/.local/bin/update-ai-cli.sh`.
+
+```sh
+update-ai-cli.sh
+```
+
+For each CLI it prints the resolved path and the version before and after, then
+runs `<command> update` in the order `codex` → `claude` → `grok` → `agy`.
+A CLI missing from PATH is skipped without aborting the run; the script exits
+with 1 if any update failed.
 
 ### Usage of Core Scripts
 

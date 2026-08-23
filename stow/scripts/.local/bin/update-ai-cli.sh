@@ -51,6 +51,7 @@ printf '%s\n' '=== AI CLI updater ==='
 
 update_cli "Codex CLI"       codex
 update_cli "Claude Code"     claude
+update_cli "Grok CLI"        grok
 update_cli "Antigravity CLI" agy
 
 printf '\n=== done ===\n'
