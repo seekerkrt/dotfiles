@@ -44,3 +44,6 @@ SpaceBeforeParens: Never
 SpacesBeforeTrailingComments: 0
 SpacesInCStyleCastParentheses: false
 SpacesInSquareBrackets: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: 1
