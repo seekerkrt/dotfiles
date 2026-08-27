@@ -42,9 +42,10 @@ export BROWSER=google-chrome-stable
 export LANG=ja_JP.UTF-8
 # export LANG=en_US.UTF-8
 
+# Custom PATH
 export PATH="$PATH:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.local/npm-global/bin"
-export GEM_HOME="$(ruby -e 'print Gem.user_dir')"
-
+# RubyGems user executables
+export PATH="$(ruby -e 'require "rubygems"; print Gem.user_dir')/bin:$PATH"
 # systemd user service で起動する ssh-agent の socket を参照する。
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 

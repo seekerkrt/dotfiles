@@ -124,6 +124,17 @@
     "github.copilot.enable": {
         "*": true
     },
+    "[ruby]": {
+        "editor.defaultFormatter": "Shopify.ruby-lsp",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false
+    },
+    "rubyLsp.formatter": "auto",
+    "rubyLsp.rubyVersionManager": {
+        "identifier": "none"
+    },
     "github.copilot.nextEditSuggestions.enabled": true,
     "chat.useAgentsMdFile": true,
     "chat.useClaudeMdFile": false,
@@ -147,5 +158,7 @@
     "kilo-code.new.autocomplete.provider": "kilo",
     "kilo-code.new.language": "ja",
     "kilo-code.new.languageCommitMessage": "ja",
-    "kilo-code.new.agentWorkStyle": "unset"
+    "kilo-code.new.agentWorkStyle": "unset",
+    "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
+    "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose"
 }
