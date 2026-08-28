@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# restore-pkglist.sh
+# setup-pkglist.sh
 # dotfiles ルートで実行する前提
 #
 # 使い方:
-#   ./restore-pkglist.sh
-#   ./restore-pkglist.sh --official-only
-#   ./restore-pkglist.sh --foreign-only
-#   ./restore-pkglist.sh --dry-run
+#   ./setup-pkglist.sh
+#   ./setup-pkglist.sh --official-only
+#   ./setup-pkglist.sh --foreign-only
+#   ./setup-pkglist.sh --dry-run
 #
 # 前提:
 #   pkglist/official.txt ... pacman -Qqen で作成
@@ -25,21 +25,21 @@ RESTORE_FOREIGN=1
 DRY_RUN=0
 
 log() {
-    printf '[restore-pkglist] %s\n' "$*"
+    printf '[setup-pkglist] %s\n' "$*"
 }
 
 die() {
-    printf '[restore-pkglist] ERROR: %s\n' "$*" >&2
+    printf '[setup-pkglist] ERROR: %s\n' "$*" >&2
     exit 1
 }
 
 usage() {
     cat <<'EOF'
 使い方:
-  ./restore-pkglist.sh
-  ./restore-pkglist.sh --official-only
-  ./restore-pkglist.sh --foreign-only
-  ./restore-pkglist.sh --dry-run
+  ./setup-pkglist.sh
+  ./setup-pkglist.sh --official-only
+  ./setup-pkglist.sh --foreign-only
+  ./setup-pkglist.sh --dry-run
 EOF
 }
 

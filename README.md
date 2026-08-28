@@ -43,6 +43,8 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 │   ├── claude/               # Claude Code設定（→ エージェント設定の参照先）
 │   ├── codex/                # Codex設定（→ エージェント設定の参照先）
 │   ├── conky/                # Conky設定
+│   ├── copilot/              # GitHub Copilot指示
+│   ├── editorconfig/         # EditorConfig設定
 │   ├── emacs/                # Emacs設定
 │   ├── env/                  # 環境変数設定
 │   ├── fonts/                # フォント設定
@@ -76,14 +78,17 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 │       └── ssh-agent.service
 ├── system/secureboot/        # Secure Boot関連の設定とスクリプト
 ├── pkglist/                  # 明示インストール済みパッケージ一覧
+├── vscode/                   # VS Code拡張一覧（Stow管理対象外）
 ├── sample/                   # システム設定ファイルのサンプル
 ├── docs/                     # 補助ドキュメント
 │   └── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLIの導入経路と更新方法
 ├── apply-stow.sh             # Stowリンクを作成
 ├── remove-stow.sh            # Stowリンクを削除
 ├── setup-systemd-services.sh # systemd unit / drop-inの配置とenable状態の再現
-├── update-pkglist.sh         # パッケージ一覧を更新
-├── restore-pkglist.sh        # パッケージ一覧から復元
+├── save-pkglist.sh           # パッケージ一覧を保存
+├── setup-pkglist.sh          # パッケージ一覧から導入
+├── save-vscode-extensions-list.sh  # VS Code拡張一覧を保存
+├── setup-vscode-extensions-list.sh # VS Code拡張一覧から導入
 ├── backup-ssh-allowlist.sh   # SSH鍵と設定を暗号化バックアップ
 ├── restore-ssh-allowlist.sh  # 暗号化したSSH鍵と設定を復元
 ├── backup-ssh-config.sh      # SSH設定のみを暗号化バックアップ
@@ -112,7 +117,9 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、プラグイン等 |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 9種 |
-| Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI / UI / marketplace 設定 |
+| Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Codex正本へのsymlink |
+| Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI / UI / marketplace 設定（未配置時seed） |
+| GitHub Copilot | `stow/copilot/.copilot/instructions/global.instructions.md` | `~/.copilot/instructions/global.instructions.md` | Codex正本への参照 |
 
 SkillはCodex・Claude Code・Antigravity CLIの3エージェント共通で次の9種を配置しています。
 
@@ -140,17 +147,18 @@ front matterを除いた本文を3エージェントで一致させる運用で�
 `handoff-inline` の親Skill参照パスだけがエージェント固有差分として許容されます。
 
 > [!WARNING]
-> **`~/.gemini` はディレクトリごとsymlinkされています。**
-> このためAntigravity CLIの実行時データ（`history.jsonl`、`log/`、
-> `conversations/`、`brain/` 等）もこのリポジトリ配下へ書き込まれます。
-> これらは `.gitignore` で除外済みで、追跡対象は `GEMINI.md`、
-> `settings.json`、`skills/` のみです。
-> Codex・Claude Codeはファイル／ディレクトリ単位のsymlinkのため、この問題はありません。
+> **`gemini` パッケージは `--no-folding` です。**
+> `~/.gemini` は実ディレクトリのまま残り、追跡対象（`GEMINI.md`、
+> `settings.json`、`skills/`）だけがfile symlinkになります。
+> `history.jsonl`、`log/`、`conversations/`、`brain/` などの実行時データは
+> ホーム側へ書き込まれます。古いfold配置向けの除外が `.gitignore` に残っています。
 >
-> **Grokも `config.toml` だけのfile symlinkです。**
-> `~/.grok` は実ディレクトリのまま残り、共通契約の正本やSkill 9種の複製は
-> `stow/grok` には置いていません。`auth.json`、`sessions/`、`logs/` などの
-> 実行時データはホーム側に残り、このリポジトリの追跡対象外です。
+> **Grokの `config.toml` はfile symlinkではなく、未配置時だけcopyするseedです。**
+> 既存のlive configはGrok自身が書き換えるため上書きしません。
+> `~/.grok` は実ディレクトリのまま残り、`AGENTS.md` だけがfile symlinkです。
+> Skill 9種の複製は `stow/grok` には置いていません。
+> `auth.json`、`sessions/`、`logs/` などの実行時データはホーム側に残り、
+> このリポジトリの追跡対象外です。
 
 ### AI CLIの導入経路と一括更新
 
@@ -179,12 +187,13 @@ PATHに無いCLIはSKIP扱いで中断せず、1つでも失敗した場合は�
 
 新規Arch環境での初期構築は、各スクリプトの責務に沿って次の順で実行します。
 
-1. パッケージの復旧: `./restore-pkglist.sh`
+1. パッケージの導入: `./setup-pkglist.sh`
 2. $HOME側設定の適用: `./apply-stow.sh`
 3. システム側（Secure Boot）設定の配置: `sudo ./setup-system.sh`
 4. systemd unit / drop-inの配置とenable: `./setup-systemd-services.sh --apply`
 5. 必要に応じてSSH設定の復元: `./restore-ssh-config.sh BACKUP_DIR`
    （鍵も含める場合は `./restore-ssh-allowlist.sh BACKUP_DIR`）
+6. 必要に応じてVS Code拡張の導入: `./setup-vscode-extensions-list.sh`
 
 全部をまとめて実行するbootstrapスクリプトはありません。上記を個別に実行します。
 
@@ -196,9 +205,10 @@ PATHに無いCLIはSKIP扱いで中断せず、1つでも失敗した場合は�
 ./apply-stow.sh
 ```
 
-（`vscode` パッケージ全体と、`codex` パッケージの `.codex` subtreeには
-`--no-folding` が適用されます。Codex Skillは
-`~/.agents/skills/<skill>` のdirectory symlinkとして展開されます。）
+（`vscode` / `gemini` / `antigravity` / `grok` パッケージ全体と、
+`codex` パッケージの `.codex` subtreeには `--no-folding` が適用されます。
+Codex Skillは `~/.agents/skills/<skill>` のdirectory symlinkとして展開されます。
+Grokの `config.toml` はStow対象外で、未配置時だけ実ファイルとしてseedされます。）
 
 > [!IMPORTANT]
 > **systemd unit / drop-in / enable状態はStowの管理対象外です。**
@@ -209,23 +219,40 @@ PATHに無いCLIはSKIP扱いで中断せず、1つでも失敗した場合は�
 > Stowが同じパスへsymlinkを張ると、setupスクリプトが配置した実ファイルと
 > conflictするためです。
 
-#### 2. パッケージリストの更新と復元
+#### 2. パッケージリストとVS Code拡張一覧の保存と導入
 
 普段インストールしているパッケージの一覧を管理します。
-・リストの更新（現在の状態を保存）:
+・リストの保存（現在の状態を保存）:
 
 ```sh
-./update-pkglist.sh
+./save-pkglist.sh
 ```
 
-・パッケージの復元（クリーンインストール時など）:
+・パッケージの導入（クリーンインストール時など）:
 
 ```sh
-./restore-pkglist.sh
+./setup-pkglist.sh
 ```
 
 （自動的に公式パッケージは pacman、AURパッケージは yay または paru を検出して
 --needed でインストールします）
+
+VS Code拡張も同様に一覧で管理します。
+・拡張一覧の保存:
+
+```sh
+./save-vscode-extensions-list.sh
+```
+
+・拡張の導入:
+
+```sh
+./setup-vscode-extensions-list.sh
+```
+
+保存先は `$DOTFILES/vscode/extensions-list.txt` です。
+`$DOTFILES` が未設定のときは `$HOME/dotfiles` を使います。
+導入側は既に入っている拡張をスキップします。
 
 #### 3. SSH設定のバックアップと復元
 
@@ -391,6 +418,8 @@ excluded from this repository.
 │   ├── claude/               # Claude Code config (see: Agent Configuration)
 │   ├── codex/                # Codex config (see: Agent Configuration)
 │   ├── conky/                # Conky config
+│   ├── copilot/              # GitHub Copilot instructions
+│   ├── editorconfig/         # EditorConfig
 │   ├── emacs/                # Emacs config
 │   ├── env/                  # Environment variables config
 │   ├── fonts/                # Fonts config
@@ -424,14 +453,17 @@ excluded from this repository.
 │       └── ssh-agent.service
 ├── system/secureboot/        # Secure Boot config and scripts
 ├── pkglist/                  # Explicit package lists
+├── vscode/                   # VS Code extension list (not Stow-managed)
 ├── sample/                   # System configuration samples
 ├── docs/                     # Supplementary documentation
 │   └── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLI install paths and updates
 ├── apply-stow.sh             # Create Stow links
 ├── remove-stow.sh            # Remove Stow links
 ├── setup-systemd-services.sh # Install systemd units and enable state
-├── update-pkglist.sh         # Update package lists
-├── restore-pkglist.sh        # Restore packages from lists
+├── save-pkglist.sh           # Save package lists
+├── setup-pkglist.sh          # Install packages from lists
+├── save-vscode-extensions-list.sh  # Save VS Code extension list
+├── setup-vscode-extensions-list.sh # Install VS Code extensions from list
 ├── backup-ssh-allowlist.sh   # Back up SSH keys and config with GPG
 ├── restore-ssh-allowlist.sh  # Restore SSH keys and config from GPG
 ├── backup-ssh-config.sh      # Back up only SSH config with GPG
@@ -459,7 +491,9 @@ Each agent reads the following files, backed by this repository:
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, plugins |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 9 skills |
-| Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI, UI, and marketplace settings |
+| Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Symlink to the Codex source |
+| Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI, UI, and marketplace settings (seed if missing) |
+| GitHub Copilot | `stow/copilot/.copilot/instructions/global.instructions.md` | `~/.copilot/instructions/global.instructions.md` | Points to the Codex source |
 
 Codex, Claude Code, and Antigravity CLI carry the same nine skills:
 
@@ -490,19 +524,19 @@ The only permitted per-agent delta is the parent-skill reference path in
 `handoff-inline`.
 
 > [!WARNING]
-> **`~/.gemini` is symlinked as a whole directory.**
-> As a result, Antigravity CLI runtime data (`history.jsonl`, `log/`,
-> `conversations/`, `brain/`, ...) is written inside this repository.
-> Those paths are excluded via `.gitignore`; only `GEMINI.md`,
-> `settings.json` and `skills/` are tracked.
-> Codex and Claude Code symlink individual files and directories, so they
-> are not affected.
+> **The `gemini` package uses `--no-folding`.**
+> `~/.gemini` remains a real directory; only tracked files (`GEMINI.md`,
+> `settings.json`, and `skills/`) are file symlinks.
+> Runtime data such as `history.jsonl`, `log/`, `conversations/`, and
+> `brain/` is written on the home side. `.gitignore` still has exclusions
+> left over from the older folded layout.
 >
-> **Grok is also a file-level symlink of `config.toml` only.**
-> `~/.grok` remains a real directory. This repository does not keep a
-> copy of the shared contract or the nine skills under `stow/grok`.
-> Runtime data such as `auth.json`, `sessions/`, and `logs/` stays in
-> the home directory and is not tracked.
+> **Grok's `config.toml` is a seed copy, not a Stow symlink.**
+> If a live config already exists, it is left alone because Grok rewrites
+> it. `~/.grok` remains a real directory; only `AGENTS.md` is a file
+> symlink. This repository does not keep a copy of the nine skills under
+> `stow/grok`. Runtime data such as `auth.json`, `sessions/`, and `logs/`
+> stays in the home directory and is not tracked.
 
 ### AI CLI Installation and Bulk Update
 
@@ -533,13 +567,14 @@ with 1 if any update failed.
 On a fresh Arch install, run the scripts in this order, matching their
 respective responsibilities:
 
-1. Restore packages: `./restore-pkglist.sh`
+1. Install packages from lists: `./setup-pkglist.sh`
 2. Deploy $HOME config: `./apply-stow.sh`
 3. Install system-side (Secure Boot) config: `sudo ./setup-system.sh`
 4. Install systemd units / drop-ins and enable them:
    `./setup-systemd-services.sh --apply`
 5. Restore SSH config if needed: `./restore-ssh-config.sh BACKUP_DIR`
    (or `./restore-ssh-allowlist.sh BACKUP_DIR` to include the keys)
+6. Install VS Code extensions if needed: `./setup-vscode-extensions-list.sh`
 
 There is no single all-in-one bootstrap script; run the steps individually.
 
@@ -551,9 +586,11 @@ Creates symlinks from the stow/ directory to your $HOME.
 ./apply-stow.sh
 ```
 
-(The `vscode` package and the `.codex` subtree of the `codex` package use
-`--no-folding`. Codex Skills are deployed as directory symlinks at
-`~/.agents/skills/<skill>`.)
+(The `vscode`, `gemini`, `antigravity`, and `grok` packages, and the
+`.codex` subtree of the `codex` package, use `--no-folding`. Codex Skills
+are deployed as directory symlinks at `~/.agents/skills/<skill>`.
+Grok's `config.toml` is excluded from Stow and seeded as a real file only
+when it is missing.)
 
 > [!IMPORTANT]
 > **systemd units, drop-ins, and enable state are out of Stow's scope.**
@@ -564,23 +601,39 @@ Creates symlinks from the stow/ directory to your $HOME.
 > under Stow, because a Stow symlink at the same path would conflict with
 > the real files installed by the setup script.
 
-#### 2. Package Management
+#### 2. Package Lists and VS Code Extensions
 
 Track and sync installed packages across installations.
-・To Save Current Packages:
+・To save current packages:
 
 ```sh
-./update-pkglist.sh
+./save-pkglist.sh
 ```
 
-・To Restore Packages:
+・To install packages from the lists:
 
 ```sh
-./restore-pkglist.sh
+./setup-pkglist.sh
 ```
 
 （Automatically detects yay or paru for foreign/AUR packages and applies
 --needed）
+
+VS Code extensions are managed the same way.
+・To save the extension list:
+
+```sh
+./save-vscode-extensions-list.sh
+```
+
+・To install extensions from the list:
+
+```sh
+./setup-vscode-extensions-list.sh
+```
+
+The list is `$DOTFILES/vscode/extensions-list.txt`. If `$DOTFILES` is
+unset, `$HOME/dotfiles` is used. Already-installed extensions are skipped.
 
 #### 3. SSH Configuration Backup and Restore
 

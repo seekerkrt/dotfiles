@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# update-pkglist.sh
+# save-pkglist.sh
 # dotfiles ルートで実行する前提
 #
 # 出力:
@@ -15,7 +15,7 @@ OFFICIAL_LIST="${PKGLIST_DIR}/official.txt"
 FOREIGN_LIST="${PKGLIST_DIR}/foreign.txt"
 
 log() {
-    printf '[update-pkglist] %s\n' "$*"
+    printf '[save-pkglist] %s\n' "$*"
 }
 
 mkdir -p "$PKGLIST_DIR"
