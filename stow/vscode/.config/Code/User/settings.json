@@ -135,6 +135,12 @@
     "rubyLsp.rubyVersionManager": {
         "identifier": "none"
     },
+    "[shellscript]": {
+        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode",
+        "editor.formatOnSave": true
+    },
+    "shellcheck.enable": true,
+    "shellcheck.run": "onType",
     "github.copilot.nextEditSuggestions.enabled": true,
     "chat.useAgentsMdFile": true,
     "chat.useClaudeMdFile": false,
