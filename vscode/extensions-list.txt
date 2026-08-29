@@ -18,8 +18,11 @@ ms-vscode.cpptools-themes
 ms-vscode.makefile-tools
 mushan.vscode-paste-image
 openai.chatgpt
+rust-lang.rust-analyzer
 shopify.ruby-lsp
 sumneko.lua
+tamasfe.even-better-toml
 timonwong.shellcheck
+vadimcn.vscode-lldb
 vscode-icons-team.vscode-icons
 yzhang.markdown-all-in-one

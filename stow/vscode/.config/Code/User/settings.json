@@ -141,6 +141,15 @@
     },
     "shellcheck.enable": true,
     "shellcheck.run": "onType",
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "editor.formatOnSave": true
+    },
+    "rust-analyzer.check.command": "clippy",
+    "[toml]": {
+        "editor.defaultFormatter": "tamasfe.even-better-toml",
+        "editor.formatOnSave": true
+    },
     "github.copilot.nextEditSuggestions.enabled": true,
     "chat.useAgentsMdFile": true,
     "chat.useClaudeMdFile": false,
