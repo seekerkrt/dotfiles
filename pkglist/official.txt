@@ -165,6 +165,7 @@ npm
 ntfs-3g
 ntfsprogs
 nvidia-open-dkms
+nvme-cli
 obs-studio
 obs-studio-plugin-browser
 obsidian
@@ -209,12 +210,15 @@ qqc2-breeze-style
 rclone
 rsync
 ruby
+ruby-bundler
+ruby-stdlib
 rust-src
 sbctl
 sccache
 sd
 sddm-kcm
 shellcheck
+shfmt
 sl
 slurp
 spectacle
@@ -248,6 +252,7 @@ vulkan-intel
 vulkan-mesa-layers
 vulkan-swrast
 vulkan-virtio
+wev
 wget
 wine
 wine-gecko

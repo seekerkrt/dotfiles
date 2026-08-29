@@ -1,3 +1,4 @@
+dotfiles-doctor
 downgrade
 game-devices-udev
 google-chrome
@@ -7,10 +8,10 @@ moguet
 nkf
 proton-ge-custom-bin
 rtl8761b-firmware
+slack-desktop
 tree-sitter-cli-git
 tree-sitter-cpp
 ttf-myricam
-ttf-noto-sans-mono-cjk-vf
 ttf-plemoljp-bin
 ttf-udev-gothic
 ventoy-bin
