@@ -71,6 +71,7 @@ github-cli
 glab
 gnome-keyring
 go
+gopls
 gparted
 gptfdisk
 grim
