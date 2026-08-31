@@ -26,6 +26,7 @@ clamav
 clamtk
 clang
 cli11
+cloc
 cmake
 cmatrix
 cppcheck
@@ -285,6 +286,7 @@ xorg-xset
 xorg-xwayland
 xorg-xwininfo
 yazi
+zig
 zip
 zoxide
 zsh
