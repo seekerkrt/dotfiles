@@ -128,6 +128,16 @@
     "github.copilot.enable": {
         "*": true
     },
+    // Python
+    "python.defaultInterpreterPath": "/usr/bin/python",
+    "python.analysis.typeCheckingMode": "basic",
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false
+    },
     // Ruby
     "[ruby]": {
         "editor.defaultFormatter": "Shopify.ruby-lsp",

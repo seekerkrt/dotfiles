@@ -213,6 +213,7 @@ rsync
 ruby
 ruby-bundler
 ruby-stdlib
+ruff
 rust-src
 sbctl
 sccache
