@@ -10,11 +10,11 @@ echo "==> Syncing handoff archive"
 echo "    source: $SOURCE"
 echo "    dest:   $DEST"
 echo "    types:  *.md, *.txt"
-
 rsync \
     --archive \
     --human-readable \
     --itemize-changes \
+    --max-size=2M \
     --include='*/' \
     --include='*.md' \
     --include='*.txt' \
