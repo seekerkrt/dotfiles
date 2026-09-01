@@ -9,11 +9,16 @@ mkdir -p "$DEST"
 echo "==> Syncing handoff archive"
 echo "    source: $SOURCE"
 echo "    dest:   $DEST"
+echo "    types:  *.md, *.txt"
 
 rsync \
     --archive \
     --human-readable \
     --itemize-changes \
+    --include='*/' \
+    --include='*.md' \
+    --include='*.txt' \
+    --exclude='*' \
     "$SOURCE" \
     "$DEST"
 
