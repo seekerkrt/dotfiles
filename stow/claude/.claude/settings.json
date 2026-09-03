@@ -42,7 +42,7 @@
       "~/handoff"
     ]
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -68,7 +68,7 @@
   },
   "language": "Japanese",
   "effortLevel": "xhigh",
+  "tui": "fullscreen",
   "theme": "dark",
-  "autoCompactEnabled": true,
-  "tui": "fullscreen"
+  "autoCompactEnabled": true
 }
