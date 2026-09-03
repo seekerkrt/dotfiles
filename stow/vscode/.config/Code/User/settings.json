@@ -189,6 +189,7 @@
         "editor.formatOnSave": true
     },
     // GitHub Copilot
+    "chat.commandCenter.enabled": true,
     "github.copilot.nextEditSuggestions.enabled": true,
     "chat.useAgentsMdFile": true,
     "chat.useClaudeMdFile": false,
@@ -203,16 +204,8 @@
         ".claude/skills": false,
         "~/.claude/skills": false
     },
-    "terminal.integrated.commandsToSkipShell": [
-        "kilo-code.new.agentManagerOpen",
-        "kilo-code.new.agentManager.showTerminal",
-        "kilo-code.new.agentManager.previousTerminal",
-        "kilo-code.new.agentManager.nextTerminal"
-    ],
-    "kilo-code.new.autocomplete.provider": "kilo",
-    "kilo-code.new.language": "ja",
-    "kilo-code.new.languageCommitMessage": "ja",
     // Docker
     "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
-    "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose"
+    "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
+    "chat.agent.sandbox.enabled": "on"
 }
