@@ -12,6 +12,7 @@
 	autocrlf = input
 	fileMode = false
 	pager = cat
+	quotePath = false
 
 [init]
 	defaultBranch = main
