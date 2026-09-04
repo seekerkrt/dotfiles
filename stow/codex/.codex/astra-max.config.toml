@@ -1,0 +1,7 @@
+# ~/.codex/astra-max.config.toml
+# Inherits approval, sandbox, web-search, and verbosity defaults
+# from ~/.codex/config.toml.
+
+model = "gpt-6-astra"
+model_reasoning_effort = "max"
+service_tier = "default"
