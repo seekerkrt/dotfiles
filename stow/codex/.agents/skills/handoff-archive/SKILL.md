@@ -7,7 +7,7 @@ description: ユーザーが選別済みの外部handoffをrepositoryへ保存�
 
 ## 責務
 
-選別済みの外部handoffを、明示依頼に基づいて次の経路で収蔵する。
+選別済みの外部handoff snapshotを、明示依頼に基づいて次の経路で内容不変のまま収蔵する。
 
 ```text
 ~/handoff/<repo>/<scope>/<filename>.md
@@ -16,6 +16,11 @@ description: ユーザーが選別済みの外部handoffをrepositoryへ保存�
 ```
 
 通常handoff生成、inline出力、archive候補の相談、自動archive、publishは扱わない。sourceを編集、rename、移動、削除しない。destinationを上書きしない。
+
+対象snapshotごとの最新の明確な出力指定を確認し、「保存不要」へ訂正されていればcopyしない。
+同じsnapshotに対する最新のwrite / no-write指定が同時に有効で実質的に矛盾する場合は、copy前に確認する。
+別のinline出力や新規保存も要求された場合、このSkillは選別済みsnapshotの収蔵だけを担当する。
+一般的な「handoffをrepositoryへ保存」だけで新規生成をarchiveと扱わず、sourceの選別・特定を必要とする。
 
 ## Source selection
 

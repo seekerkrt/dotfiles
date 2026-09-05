@@ -17,7 +17,10 @@ archive metadata: 原則不要
 長さ: 再開に必要な情報を保てる範囲で短く
 ```
 
-通常handoff、永続保存、repository archive、PR body運用には使わない。output指定が競合する場合は、明示的なarchive、明示的なinline、通常handoffの順でroutingする。
+本Skillはinline成果物を担当し、file / directoryを書かない。
+別成果物として永続snapshot保存や選別済みsnapshotの収蔵も要求された場合は、
+それぞれhandoff / handoff-archiveの契約で併せて扱う。
+成果物ごとの最新指定・訂正・実質的な矛盾は、親SkillのOutput modeに従って解決する。
 
 ## Inline delta
 
@@ -26,7 +29,8 @@ archive metadata: 原則不要
 - file一覧、command全文、Structure before / afterは再開に必要な場合だけ含める。
 - external handoff path、suggested archive path、archive statusは、ユーザーが必要としない限り省く。
 - handoffを作るためだけに新しい実装、広範な調査、高costな検証を始めない。
-- file、directory、clipboard、background task、Git / GitHub mutationを行わない。
+- inline成果物の生成ではfile、directory、clipboard、background task、
+  Git / GitHub mutationを行わない。
 
 ## 既定template
 

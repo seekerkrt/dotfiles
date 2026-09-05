@@ -92,7 +92,16 @@ Follow-up / release audit:
 
 ## Verification
 
-原則として次の順で検証する。repository契約と変更scopeに不要な段階は、理由を付けて`not run`とする。
+次の候補から、repository必須check、変更内容・影響範囲・risk、ユーザー要求に対応する検証を選ぶ。
+選択した検証と必要なartifact保存が完了した時点を基本的な終了点とする。
+成功後の追加・反復検証は、新しい変更、新たに発生したfailure、現在未解決のfailure、
+修正後の確認に必要なfocused rerun、未解決のrisk / ambiguity、
+repository contractまたはユーザーによる追加検証要求がある場合に行う。
+必要なfocused rerunでfailureの解消を確認した後に、追加変更・未解決failure・未解決risk / ambiguity、
+repository contract・ユーザーの追加要求がなく、選択した検証と必要なartifact保存が完了していれば終了する。
+過去のfailure記録だけを追加・反復の理由にしない。終了判定とrunごとの結果は分け、
+過去にfailしたrunの結果は`fail`のまま保持する。
+必要・要求された未実施検証は理由付きの`not run`とし、明らかな対象外項目を毎回列挙しない。
 
 ```text
 1. 対象diffの静的確認

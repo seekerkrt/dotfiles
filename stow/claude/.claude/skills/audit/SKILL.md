@@ -5,6 +5,9 @@ description: 実装前調査、責務境界・未使用コード・危険な前�
 
 # Read-only audit
 
+成果物は、問い・調査scopeに対するevidence / counter-evidence / unknownsと診断・findingである。
+監査だけの依頼はこの成果物を返して終了し、verify-diffやcommit-prepへ固定順で進まない。
+
 ## 固有契約
 
 - 監査中はfileを編集せず、stage、commit、push、外部mutationを行わない。
@@ -16,6 +19,8 @@ description: 実装前調査、責務境界・未使用コード・危険な前�
 ユーザーが修正まで依頼している場合も、編集前の監査phaseだけにこの契約を適用し、監査結果と実装結果を混同しない。
 
 ## Workflow
+
+同一作業内で得たread-only情報は対象と鮮度を確認して再利用し、以下の確認で不足する範囲だけ取得する。
 
 1. repository、branch、対象directory / file / feature / symbol、依頼された問い、non-goalを確定する。
 2. `git status --short --branch`で既存変更を確認する。

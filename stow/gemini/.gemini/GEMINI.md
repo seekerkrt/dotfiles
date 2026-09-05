@@ -49,24 +49,43 @@ repositoryの文書が別のsource of truthや優先順位を指定している�
 
 ### Routing
 
-- `audit`: 実装前監査、read-only調査、責務境界、未使用判定、docs / 実装整合、Issue化前調査。
+ユーザー依頼と必要な成果物に応じてSkillを選び、audit → verify → commit-prepの固定pipelineにはしない。
+同一作業内のread-only情報は、対象と鮮度が十分なら再利用し、不足・変化がある範囲だけ再取得する。
+commit直前のstage対象・staged diff等、時点依存の状態はその時点で再確認する。
+
+- `audit`: 問い・調査scopeに対するread-only監査。根拠・反証・未確認を整理し、診断・findingを返す。
 - `cpp-conventions`: C++の生成、編集、review、およびC++から利用するC互換headerや共有ABI境界。repositoryの`docs/CODING_CONVENTIONS.md`とbuild設定も追加で読む。
 - `issue-slice`: GitHub Issueまたは明示されたPR単位のscope固定と、最小実装から検証までの統括。
-- `verify`: 非自明な変更後、または検証依頼。長い出力と作業artifactの保存規則もここを正とする。
-- `commit-prep`: commit前の差分分類、stage候補、commit粒度、message案。
+- `verify`: acceptance criteriaに対する検証選択・実行結果・環境・artifact・未完了状態を扱う。
+  pass / fail / partial等の判定と、長い出力・作業artifactの保存規則を正とする。
+- `commit-prep`: 論理的なcommit単位、staged / unstaged / untrackedの分類、stage候補、message案。
+  既存verification evidenceの対象・鮮度を確認し、不足時だけverifyへ戻す。
 - `github`: GitHub repository、Issue、PR、Actions、release、branch、tag、APIの調査または操作。GitHubの認証境界もここを正とする。
 - `handoff`: 通常のhandoffまたは引き継ぎメモを明示的に求められた場合の永続handoff。
 - `handoff-inline`: inline、本文だけ、保存不要、file不要が明示されたhandoff。
-- `handoff-archive`: 選別済みhandoffをrepositoryへ収蔵する明示依頼。通常handoff生成とは分ける。
+- `handoff-archive`: 選別済みの外部handoff snapshotを内容不変でrepositoryへ収蔵する明示依頼。
 
 ## Antigravity CLI固有差分
 
 - Antigravity CLIのpermission、approval、workspace境界は、この文書へ追加される実行境界として扱う。許可された操作も依頼scopeの承認とはみなさず、承認要求を別command、別tool、設定変更で回避しない。許可されなければ未実施として、対象と影響を示して報告する。
 - artifactやlogのagent名には`agy`を使う。
 
-## 迷ったときのデフォルト
+## 不明点への対応と停止条件
 
-- まず調査する。
-- まだ編集しない。
-- 根拠と未確認点を示す。
-- 最小の安全な次の一手を1つ提案する。
+明示された実装・修正依頼では、確定したscopeと権限の範囲でread-only調査 → 実装 → 妥当な検証まで進める。
+通常の技術的不明点はrepository、code、docs等を調査して解決し、作業を継続する。
+既存authorityから判断できる実装詳細を、不要にユーザー判断へ戻さない。
+「監査だけ」「調査だけ」「変更しないで」等の依頼はread-onlyで結果を返し、編集やmutationへ拡張しない。
+
+ユーザー判断なしでは安全または正当に継続できない場合は、その判断に依存する編集・mutationの前で停止する。
+
+- 依頼scopeを確定できない。
+- 必要な権限またはmutation許可がない・確認できない。
+- 採用すべきauthority / contractの競合を、調査だけでは解決できない。
+- 実質的な設計・仕様の候補を、repository authorityや既存決定から一意に選べない。
+- 選択によってユーザー意図、互換性、scope、外部副作用等が実質的に変わり、既存の判断・許可では決められない。
+
+停止理由、未完了事項、ユーザー判断が必要な論点を示す。
+実行可能な候補について主要な利点・欠点・risk・影響範囲を簡潔に比較し、推奨案を1つとその理由を示す。
+判断に必要な未確認事項も明示したうえでユーザー判断を求める。
+実質的な候補が1つしかない場合は、形式のために架空・不合理・過剰な代替案を作らない。

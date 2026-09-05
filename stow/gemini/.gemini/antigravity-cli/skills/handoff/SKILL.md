@@ -32,16 +32,19 @@ handoff Skillの既定契約
 - 「短く」: 必須情報を落とさず圧縮する。
 - 「設計判断を詳しく」: Decisionと理由・棄却案を拡張する。
 - 「実機確認中心」: Validationを実機の機種、条件、観測、未確認中心に再構成する。
-- 「次スレに貼る本文だけ」: `handoff-inline`へ切り替える。
+- 「次スレに貼る本文だけ」: 対象本文を`handoff-inline`で扱う。
 - 「残作業をIssue単位で」: RemainingをIssue候補、scope、acceptanceへ整理する。
 
 ## Output mode
 
-- 通常handoffまたは引き継ぎメモを明示的に求められた場合: repository外へ永続fileを作る。
-- inline、本文だけ、保存不要、file不要: `../handoff-inline/SKILL.md`に従う。
-- repositoryへ保存、archive、収蔵、`docs/handoffs`へcopy: `../handoff-archive/SKILL.md`に従う。
+- 通常handoffまたは引き継ぎメモの新規保存: repository外へ新しいhistorical snapshotを作る。
+- inline、本文だけ、保存不要、file不要: file / directoryを書かず、`../handoff-inline/SKILL.md`に従う。
+- 選別済みの外部handoff snapshotを内容不変でrepositoryへ収蔵: `../handoff-archive/SKILL.md`に従う。
 
-明示的なarchive、明示的なinline、通常handoffの順でoutput指定を解決する。通常handoffからrepository archiveへ自動的に進まない。
+対象成果物ごとに最新の明確なユーザー指定を適用する。「保存不要」へ訂正された成果物には書き込まない。
+inline本文と別途保存用snapshot等、異なる成果物への両立可能な指定はそれぞれ扱い、片方を捨てない。
+出力モードの選択では、同じ成果物に対する最新のwrite / no-write指定が同時に有効で実質的に矛盾する場合だけ、
+write前にユーザー判断を求める。通常handoffからrepository archiveへ自動的に進まない。
 
 ## Authority
 
@@ -226,7 +229,7 @@ Suggested pathは提案だけであり、通常handoffではrepository内に作�
 
 ## PR bodyとの関係
 
-- 通常handoffまたは引き継ぎメモを明示的に求められた場合は、PR bodyの有無にかかわらず既定の永続fileを作る。
+- 最新の出力指定が通常保存である成果物は、PR bodyの有無にかかわらず既定の永続fileを作る。
 - PR bodyはhandoffのEvidenceや再利用元として参照できるが、自動的な代替にはしない。
 - ユーザーが「PR bodyだけ」「外部handoff fileは不要」と明示した場合だけ、PR bodyを代替出力として扱える。
 - PR bodyの作成・更新はGitHub mutationであるため、対象と操作内容の明示依頼を確認し、`github` Skillに従う。

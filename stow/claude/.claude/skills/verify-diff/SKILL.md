@@ -5,6 +5,10 @@ description: Claude Codeで非自明な変更後、docsと実装の同期確認�
 
 # Verification
 
+成果物は、acceptance criteriaに対する検証選択、実行結果、環境、artifact・未完了状態と結果分類である。
+診断・findingが主成果物の依頼はaudit、commit単位・stage候補・message整理の依頼はcommit-prepへroutingする。
+依頼と必要な成果物に応じて選択し、固定順には起動しない。
+
 ## 固有契約
 
 - 実行したcommandと観測した結果だけを根拠にする。
@@ -16,7 +20,7 @@ description: Claude Codeで非自明な変更後、docsと実装の同期確認�
 
 ## Preflight
 
-最初に確認する。
+次の状態を確認する。同一作業内のread-only情報は、対象と鮮度が十分なら再利用し、不足・変化がある範囲だけ取得する。
 
 ```bash
 git status --short --branch
@@ -38,17 +42,29 @@ command、実行directory、dependency、targetの意味を確認する。見つ
 
 ## Workflow
 
-1. 変更scopeと影響する契約を把握する。
+1. acceptance criteria、repository必須check、変更内容・影響範囲・risk、ユーザー要求から必要な検証を選ぶ。
 2. diff、構文、参照、設定、docs、同期関係を静的に確認する。
 3. 対象変更に対応する`git diff --check`を実行する。working treeなら通常diff、staged変更なら`--cached`、commit済み変更なら明示されたbase / headまたはcommit rangeを使う。
-4. repositoryが定める最小のvalidator、build、test、lintを実行する。実装途中はfocused validationを優先し、変更のたびにfull suiteを反復しない。
-5. public API、共通library、build設定、serialization等へ影響する場合だけ、必要なbroader suiteへ広げる。full testはslice完成時またはcommit-prep前を基本とし、失敗修正後はまず失敗targetをfocused rerunしてから、最後にfull suiteを1回実行する。
-6. release前または明示された最終監査では、repository契約に従ってclean build、full test、release-checkを実行する。
+4. 選択したvalidator、build、test、lintを実行する。実装途中は必要なfocused validationを優先する。
+5. public API、共通library、build設定、serialization等への影響とriskに応じてbroader suiteを選ぶ。
+   失敗修正後はまず該当targetをfocused rerunし、変更・残るrisk・要求に応じて追加検証の範囲を決める。
+6. release前も同じ選択基準を使い、repositoryやユーザーが要求するfull suite等を省略しない。
 7. runtime固有の変更なら、利用可能な環境と依頼scopeを確認してruntime検証する。
 8. 結果、未実施理由、環境制約、残るriskを記録する。
 9. 最後に対象diffと`git status --short --branch`を再確認する。
 
 docs-only変更では、repositoryの契約が要求しないbuildやruntime検証を形式的に実行しない。参照path、同期、front matter、Markdown構造等、変更内容に直接対応する静的検証を選ぶ。
+
+選択した検証と必要なartifact保存が完了した時点を、verificationの基本的な終了点とする。
+未実施・失敗・保存未完了は各結果分類で報告し、成功扱いしない。
+成功後の追加・反復検証は、新しい変更、新たに発生したfailure、現在未解決のfailure、
+修正後の確認に必要なfocused rerun、未解決のrisk / ambiguity、
+repository contractまたはユーザーによる追加検証要求がある場合に行う。
+必要なfocused rerunでfailureの解消を確認した後に、追加変更・未解決failure・未解決risk / ambiguity、
+repository contract・ユーザーの追加要求がなく、選択した検証と必要なartifact保存が完了していれば終了する。
+過去のfailure記録だけを追加・反復の理由にしない。終了判定とrunごとの結果は分け、
+過去にfailしたrunの結果は`fail`のまま保持する。
+変更の大小だけで検証範囲を固定せず、理由のないfull suiteの追加・再実行をしない。
 
 ## GNU Make
 
@@ -84,7 +100,7 @@ runtime検証では環境を具体的に記録する。
 - `fail`: commandまたは期待条件が失敗した。
 - `warning`: 成功したが警告や将来riskが残る。
 - `partial`: 一部だけ確認でき、検証全体は完了していない。
-- `not run`: 未実施。理由を付ける。
+- `not run`: 必要または要求されたが未実施の検証。理由を付ける。明らかに対象外の項目を毎回列挙する用途にはしない。
 - `environment blocked`: dependency、権限、sandbox、network、hardware等で実行できない。
 - `flaky / inconclusive`: 再現が安定せず結論を確定できない。
 
