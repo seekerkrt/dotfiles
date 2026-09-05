@@ -1,7 +1,7 @@
 # ~/.codex/config.toml
 # Proプラン向け・常用構成
 #
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_context_window = 1000000
 model_auto_compact_token_limit = 900000
 
@@ -45,6 +45,7 @@ theme = "solarized-dark"
 [tui.model_availability_nux]
 "gpt-5.5" = 4
 "gpt-5.6-sol" = 4
+gpt-6-astra = 4
 
 [notice]
 hide_full_access_warning = true
@@ -57,5 +58,4 @@ url = "https://developers.openai.com/mcp"
 
 [features]
 prevent_idle_sleep = true
-
 
