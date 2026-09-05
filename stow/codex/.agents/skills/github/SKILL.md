@@ -106,13 +106,13 @@ git branch --all
 
 ## `gh api`
 
-read-onlyではmethodを明示する。
+RESTのread-onlyではmethodを明示する。
 
 ```bash
 gh api --method GET <endpoint>
 ```
 
-`-f` / `-F`を使ってもGETを省略しない。次はmutationとして扱う。
+RESTでは`-f` / `-F`を使ってもGETを省略しない。次はmutationとして扱う。
 
 ```text
 --method POST
@@ -120,8 +120,14 @@ gh api --method GET <endpoint>
 --method PATCH
 --method DELETE
 --input
-GraphQL mutation
 ```
+
+GraphQLではHTTP methodや`--input`の有無だけで分類せず、送信する内容と実行対象のoperationを確認する。
+`--input`を使う場合は入力本文も確認し、複数operationがある場合は`operationName`による選択も確認する。
+
+- 内容を確認できたGraphQL query: POSTや`--input`を使う場合もread-onlyとして扱える。
+- GraphQL mutation: external mutationとして、既存の明示依頼・確認契約とMutation gateを適用する。
+- operationの内容または実行対象を確認できない場合: 実行せず停止し、未確認点を報告する。
 
 mutation前にendpoint、method、repository、resource、変更内容、単体 / 一括を確認する。pagination、loop、`xargs`、複数ID mutationでは対象一覧と件数を先に出す。
 
@@ -135,7 +141,7 @@ mutation前にendpoint、method、repository、resource、変更内容、単体 
 - release / asset / tag / branchのcreate / edit / upload / delete / push
 - repositoryのcreate / rename / archive / transfer / visibility / default branch変更
 - secret / variable / environment / key / collaborator / team / permission / ruleset / branch protection変更
-- APIのPOST / PUT / PATCH / DELETE、GraphQL mutation
+- REST APIのPOST / PUT / PATCH / DELETE、GraphQL mutation
 
 対象と操作が依頼に含まれるか確認し、現在状態をread-onlyで取得してから実行する。
 

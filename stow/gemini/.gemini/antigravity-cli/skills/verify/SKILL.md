@@ -102,26 +102,32 @@ runtime検証では環境を具体的に記録する。
 <YYYYMMDD-HHMMSS>-agy-<short-purpose>.<log|txt|diff>
 ```
 
+検証commandの実行と、観測済み結果の保存は別操作にする。
+承認済みcommandは承認された形のまま単独実行し、保存のために`if`、`tee`、
+リダイレクト、変数代入、終了コード処理を結合しない。shell wrapperで別commandへ変換しない。
+
 次は、repositoryの正式な検証commandとして`make test`を確認できた場合の実行例である。`make test`を全repositoryへ固定するものではない。実際の利用時は、repository固有の指示、docs、build設定で確認した正式な検証commandへ置き換える。
 
 ```bash
-mkdir -p ~/handoff/<repo>/<scope>
-timestamp=$(date +%Y%m%d-%H%M%S)
-log=~/handoff/<repo>/<scope>/"${timestamp}-agy-<purpose>.log"
-
 # 例: GNU Make repositoryでparallel safetyを確認済み、正式な検証targetが `test` の場合
-if env -u MAKEFLAGS -u MFLAGS make -j8 --output-sync=target test >"$log" 2>&1; then
-    echo "PASS: $log"
-else
-    status=$?
-    echo "FAIL ($status): $log"
-    tail -n 120 "$log"
-    exit "$status"
-fi
+env -u MAKEFLAGS -u MFLAGS make -j8 --output-sync=target test
 ```
 
-- failure時だけroot cause判断に必要な箇所を表示し、exit statusとlog pathを報告する。
-- success時はpass、log path、期待条件の要点だけを報告する。raw logをterminal会話やfinal responseへ貼らない。
+実行後は次の順で記録する。
+
+1. 実行toolが返したstdout / stderrとexit statusを確認する。
+   実行command、directory、日時、観測結果を対応付け、未取得・切り詰めも明記する。
+2. 取得済み出力またはtoolが生成したlogを、検証commandとは別の保存操作で上記pathへ保存する。
+   command・観測結果・保存先・取得元（実行IDや元log path等）の対応を記録し、保存内容を確認する。
+3. commandの形を変えずに必要な出力を取得・保存できない場合は、未保存または一部保存と理由を明記する。
+   結果分類とは別にartifact / logの保存状態を記録する。
+   確認済みのcommand failureまたは期待条件違反は、保存の成否にかかわらず必ず`fail`を保持する。
+   確認済みのfailureがなく、必要な出力取得・保存だけが未完了の場合に限り`partial`とする。
+   観測結果の要約だけを保存した場合はraw log保存済みと扱わない。
+
+- failure時だけroot cause判断に必要な箇所を表示し、exit statusと保存状態を報告する。
+- success時は結果分類、保存済みlog pathまたは未保存理由、期待条件の要点だけを報告する。
+  raw logをterminal会話やfinal responseへ貼らない。
 - raw log保存を通常handoff生成と混同せず、`handoff` Skillを自動起動しない。
 - raw logをrepositoryへ追加、stage、commitしない。
 

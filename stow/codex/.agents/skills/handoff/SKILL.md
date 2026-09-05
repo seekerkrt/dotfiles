@@ -45,13 +45,16 @@ handoff Skillの既定契約
 
 ## Authority
 
-情報が競合する場合は原則として次を優先する。
+現状の観測と意図・仕様は分けて根拠を確認する。
 
-1. 現在のsource codeと実際のbuild設定
-2. 採用済みIssue / PR上の決定
-3. 正式なarchitecture / decision document
-4. repositoryへ収蔵されたhandoff
-5. repository外の未収蔵handoff
+- 現状の観測: 現在のsource code、実際のbuild設定、runtime evidence。
+  観測条件と未確認範囲を記録する。
+- 意図・仕様: repositoryが指定するdecision authorityに従い、採用済みの決定（Issue / PR等）や
+  正式な仕様書 / architecture / decision documentを確認する。
+  未採用のproposalを採用済み仕様と扱わない。
+
+両者が食い違う場合は、現在実装と採用済み仕様の内容・根拠・不一致を両方残す。
+codeまたはdocsを一律に優先して片方を消さない。
 
 handoff内のbranch、commit SHA、line番号、caller一覧、validation、推奨、推測は作成時点のsnapshotである。agentの推奨とユーザーが採用した判断を分ける。
 
