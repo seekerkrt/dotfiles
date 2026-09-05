@@ -5,7 +5,7 @@ model = "gpt-6-astra"
 model_context_window = 1000000
 model_auto_compact_token_limit = 900000
 
-model_reasoning_effort = "max"
+model_reasoning_effort = "xhigh"
 
 model_verbosity = "medium"
 
@@ -58,4 +58,5 @@ url = "https://developers.openai.com/mcp"
 
 [features]
 prevent_idle_sleep = true
+
 
