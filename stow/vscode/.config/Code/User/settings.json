@@ -177,7 +177,7 @@
     // Zig
     "zig.path": "zig",
     "zig.formattingProvider": "extension",
-    "zig.zls.enabled": "off",
+    "zig.zls.enabled": "on",
     "[zig]": {
         "editor.defaultFormatter": "ziglang.vscode-zig",
         "editor.formatOnSave": true,
