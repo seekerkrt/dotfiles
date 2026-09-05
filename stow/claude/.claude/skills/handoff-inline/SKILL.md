@@ -7,7 +7,9 @@ description: 非自明な作業のhandoffについて、ユーザーがhandoff-i
 
 ## 基本契約
 
-最初に`${CLAUDE_SKILL_DIR}/../handoff/SKILL.md`を読み、そのauthority、事実性、必須情報、ユーザー追加指定overlayを適用する。本Skillは共通契約を再定義せず、output modeだけを次のように上書きする。
+`${CLAUDE_SKILL_DIR}/../handoff/references/common.md`
+のauthority、事実性、必須情報、ユーザー追加指定overlayを適用する。
+共通contractに次のinline固有contractを加える。inlineのみの依頼では通常保存のSKILL.mdは読まない。
 
 ```text
 保存先: 最終応答本文だけ
@@ -20,7 +22,9 @@ archive metadata: 原則不要
 本Skillはinline成果物を担当し、file / directoryを書かない。
 別成果物として永続snapshot保存や選別済みsnapshotの収蔵も要求された場合は、
 それぞれhandoff / handoff-archiveの契約で併せて扱う。
-成果物ごとの最新指定・訂正・実質的な矛盾は、親SkillのOutput modeに従って解決する。
+対象成果物ごとに最新の明確なユーザー指定を適用し、「保存不要」へ訂正された成果物には書き込まない。
+出力モードの選択では、同じ成果物への最新のwrite / no-write指定が同時に有効で実質的に矛盾する場合だけ、
+write前にユーザー判断を求める。
 
 ## Inline delta
 

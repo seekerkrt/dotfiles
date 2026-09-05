@@ -50,59 +50,30 @@ public / internal関数、enum value、file名等の命名がprojectごとに異
 
 ## コメント
 
-コードを見れば分かるWHATの逐語説明は量産しない。同時に、コードだけでは復元できない設計意図、判断理由、契約、地雷をコメントなしのまま埋没させない。この両方を満たすことを目標とする。
+コードを見れば分かるWHATの逐語説明は量産せず、function数・行数・branch数等によるコメントquotaは設けない。
+実装完了時に変更した非自明な処理を確認し、コードだけでは復元できない次の情報は必要な箇所へコメントとして残す。
 
-次の情報を優先して残す。
+- 設計理由・policy: 実装、構造、algorithm、分岐、処理順序の選択とalternativeを採用できない理由。
+  correctness / safety / compatibility、fallbackや意図的に無視するerror、
+  fail-open / fail-closed、user-visible behavior等の判断根拠を含む。
+- contract: caller / calleeの事前・事後条件、保証・invariant、ownership / lifetime、
+  identity / ordering / provenance、state transition、thread safetyと
+  外部resourceの維持条件。
+- 危険な簡略化: guard・check・releaseの順序を変えられない理由、race / TOCTOU / double freeの回避、
+  filesystem / OS / hardware / ABI / protocol依存、compatibility workaround等。
+- 非自明な値・tradeoff: magic threshold、sentinel value、security boundary、data-loss防止、
+  performance上の意図。暫定事情や将来の整理観点は、必要な補足として残す。
 
-- `WHY`: なぜこの実装、構造、分岐、順序、algorithmを選んでいるのか。特に次の場合は重要とする。
-  - 一見もっと簡単に書けそうなのに、あえて現在の形にしている。
-  - alternativeを採用できない理由がある。
-  - correctness、safety、compatibility上の理由がある。
-  - 将来のmaintainerが善意で簡略化すると壊れる可能性がある。
-- `CONTRACT`: caller / callee間の事前条件、事後条件、保証、不変条件。
-  - functionへ入る時点で成立しているべき条件と、成功時に保証される状態。
-  - ownership、lifetime、state transition、thread safety。
-  - 外部resourceとの関係、identity / ordering / provenance等の維持条件。
-- `POLICY`: projectとして選択した挙動と判断基準。
-  - 失敗時にcontinueするか停止するか、fail-open / fail-closedの選択。
-  - fallbackを許可する条件、ambiguityの扱い、user-visible behavior。
-  - 処理そのものだけでなく、そのbehaviorをproject policyとして採用する理由。
-- `LANDMINE`: 一見不要、冗長、簡略化可能に見えるが、変えると壊れる箇所。
-  - 呼び出し順序、checkを後段へ移動できない理由、cleanupより前に必要なrelease。
-  - guard削除で生じるrace、TOCTOU、double free等。
-  - filesystem、ABI、protocol、OS挙動への依存、compatibility workaround。
-- `NOTE`: 暫定事情、補足、将来の整理観点。補助的な情報として使い、`WHY` / `CONTRACT` / `POLICY` / `LANDMINE`より優先しない。
+該当項目があるだけで機械的にコメントを増やさない。一方、「コードが読める」を理由に設計意図まで省略しない。
 
-概念上の優先度は`WHY ≧ CONTRACT ≧ POLICY > LANDMINE > NOTE >>> WHAT`とする。これはコメント数のquotaではなく、限られたコメントで何を残すかの順位である。
+### 宣言と定義での配置
 
-file headerや区切りコメントは、責務境界と編集時のlandmarkとして必要な場合に使う。コメントをimplementationの代わりにしない。
+- 宣言側にはinterfaceとして必要なcontractを置く。
+- 定義側にはimplementation固有の設計理由・policy・危険な簡略化の注意を置く。
+- 同じ説明を両方へ複製せず、その場所で必要な情報だけを置く。
 
-### コメントを検討する箇所
-
-次のような非自明な処理では、コードだけで意図が十分に伝わっているかを確認する。
-
-- public / internal interface、非自明なguard、fallback、意図的に無視するerror、fail-open / fail-closedの判断。
-- 意味のある処理順序、ownership、lifetime、resource releaseの順序。
-- thread safetyとsynchronization、state machineとstate transition。
-- filesystem semantics、OS固有挙動、外部commandとの契約、protocol、ABI。
-- hardware挙動、外部仕様、compatibility workaround。
-- security boundary、data-loss防止、magic threshold、sentinel value、非自明なperformance tradeoff。
-- 一見不要に見える追加check、一見簡略化できそうだが簡略化してはいけない処理。
-
-該当しただけで機械的にコメントを書く必要はない。ただし、WHATはコードから分かるのに`WHY` / `POLICY` / `CONTRACT` / `LANDMINE`がコードだけからは分からない状態であれば、必要なコメントを残す。これは推奨ではなく実作業上の規律として扱う。
-
-### 宣言と定義でのコメント配置
-
-- 宣言側には、interfaceとして必要な`CONTRACT`を置く。
-- 定義側には、implementation固有の`WHY` / `POLICY` / `LANDMINE`を置く。
-- 同じ説明を宣言と定義の両方へ複製せず、その場所で必要な情報だけを置く。
-
-### コメント量
-
-- 「1 functionにつき1コメント」「N行ごとにコメント」「全branchにコメント」のような数値quotaは設けない。
-- コメント数を増やすこと自体を目的にしない。
-- 一方で、「コードが読めるからコメント不要」を理由に設計意図まで省略しない。
-- 目標は、WHATコメントを抑えつつ、design intentのコメントを必要な箇所へ確実に残すことである。
+file headerや区切りコメントは、責務境界と編集時のlandmarkとして必要な場合に使う。
+コメントをimplementationの代わりにしない。
 
 ## C++機能と所有権
 
@@ -146,5 +117,4 @@ file headerや区切りコメントは、責務境界と編集時のlandmarkと�
 - project全体の整形、広範囲rename、unrelated cleanupを機能変更へ混ぜない。
 - 既存違反を、この作業と無関係に一括修正しない。
 - 新しい公開契約を作る場合は、project docsとtestへ反映する必要性を確認する。
-- 実装完了後、変更した非自明な処理について、`WHY` / `POLICY` / `CONTRACT` / `LANDMINE`がコードだけに埋没していないかを確認し、必要なコメントを補う。この確認は不要なWHATコメントを追加するためではなく、将来失われると困る設計情報だけを補完するために行う。
 - reviewでは、何が問題か、なぜ問題か、どう直すかを分けて示す。

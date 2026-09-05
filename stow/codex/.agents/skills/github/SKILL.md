@@ -5,6 +5,9 @@ description: GitHub repository、Issue、PR、review、Actions、release、branc
 
 # GitHub workflow
 
+CLIのcommand例・引数を確認する必要があるときだけ、[command reference](references/commands.md)を読む。
+安全境界と操作の判断は本Skillを正とする。
+
 ## 固有の安全境界
 
 - local Gitだけで完結する確認では、不要なGitHub接続を行わない。
@@ -34,20 +37,14 @@ token、credential、cookie、秘密鍵、keyring、credential store、認証用
 
 ## Target resolution
 
-local repositoryを使う場合は次を確認する。
-
-```bash
-git status --short --branch
-git rev-parse --show-toplevel
-git branch --show-current
-git remote
-git branch -vv
-git rev-parse HEAD
-```
+ユーザー指定や同一作業内の新鮮なcontextでrepository / resourceが一意なら、その対象を使う。
+read-only照会のためだけにlocal Gitの固定preflightを強制しない。
+対象が曖昧な場合だけ不足するrepository / ref / resource情報をread-onlyで確認する。
+local repositoryとの対応が必要なら、root、branch、HEAD、remote名 / upstream等から必要な項目を確認する。
 
 生のremote URLは、credential入りURLを表示し得るため、target解決だけを目的に出力しない。GitHub上のrepository名は、ユーザー指定またはread-onlyの`gh repo view` / connectorで確認する。利用できなければ推測せず未確認とする。
 
-必要ならupstreamと直近commitも確認する。対象は次の順で解決する。
+対象が曖昧な場合は、次の順で候補を確認する。
 
 1. ユーザーが明示したrepository / URL / Issue / PR / run / ref
 2. current repositoryとremote
@@ -60,24 +57,9 @@ git rev-parse HEAD
 
 ### Repository / Issue
 
-```bash
-gh repo view OWNER/REPO --json nameWithOwner,defaultBranchRef,isPrivate,url
-gh issue list --repo OWNER/REPO --state open
-gh issue view <number> --repo OWNER/REPO --comments
-gh issue view <number> --repo OWNER/REPO --json title,body,state,labels,assignees,comments,url
-```
-
 Issueではtitle、body、state、labels、comments、関連Issue / PR、close理由を確認する。「実装済み」は必要に応じてPR、commit、local codeで裏付ける。
 
 ### Pull Request / review
-
-```bash
-gh pr list --repo OWNER/REPO --state open
-gh pr view <number> --repo OWNER/REPO --comments
-gh pr view <number> --repo OWNER/REPO --json title,body,state,baseRefName,headRefName,mergeable,statusCheckRollup,url
-gh pr diff <number> --repo OWNER/REPO
-gh pr checks <number> --repo OWNER/REPO
-```
 
 base / head、state、changed files、diff、top-level conversation、inline comment、review submission、requested changes、resolved / unresolved、checksを区別する。review itemは修正必須、回答必要、提案、修正済み、stale、判定保留へ分ける。
 
@@ -85,24 +67,7 @@ base / head、state、changed files、diff、top-level conversation、inline com
 
 ### Actions
 
-```bash
-gh workflow list --repo OWNER/REPO
-gh run list --repo OWNER/REPO
-gh run view <run-id> --repo OWNER/REPO
-gh run view <run-id> --repo OWNER/REPO --log-failed
-```
-
 失敗run、job、step、最初のroot cause候補、後続の連鎖errorを分ける。log未確認で原因を断定しない。
-
-### Release / ref
-
-```bash
-gh release list --repo OWNER/REPO
-gh release view <tag> --repo OWNER/REPO
-git tag --list
-git show <tag>
-git branch --all
-```
 
 ## `gh api`
 
@@ -143,7 +108,7 @@ mutation前にendpoint、method、repository、resource、変更内容、単体 
 - secret / variable / environment / key / collaborator / team / permission / ruleset / branch protection変更
 - REST APIのPOST / PUT / PATCH / DELETE、GraphQL mutation
 
-対象と操作が依頼に含まれるか確認し、現在状態をread-onlyで取得してから実行する。
+対象と操作が依頼に含まれるか確認し、実行直前にrepository / resourceと現在状態をread-onlyで再確認する。
 
 ## Operation-specific checks
 
@@ -156,12 +121,6 @@ mutation前にendpoint、method、repository、resource、変更内容、単体 
 ### PR mutation
 
 create前にcurrent branch、upstream、push状態、base / head、commit範囲、diff、検証、関連Issue、draft要否を確認する。
-
-```bash
-git log --oneline <base>..HEAD
-git diff --stat <base>...HEAD
-git diff --check <base>...HEAD
-```
 
 未push branchをpush済みと仮定しない。PR bodyにはscope / non-scope、主要変更、実施した検証、未実施、risk、関連Issueを事実に合わせて書く。
 

@@ -7,9 +7,11 @@ description: GitHub Issueまたは明示されたPR単位の実装scopeを、rep
 
 ## 目的と停止点
 
-GitHub Issueまたは明示されたPRのうち、現在のPRとして成立する1つの実装sliceを、repositoryの既存契約へ接続して完了させる。Issue全体と現在のPR単位を区別し、最小実装、focused verification、必要なbroader verificationまで進め、commit前で停止する。
+GitHub Issueまたは明示されたPRのうち、現在のPRとして成立する1つの実装sliceを、repositoryの既存契約へ接続して完了させる。
+Issue全体と現在のPR単位を区別し、最小実装と必要なverificationの完了を確認して、commit前で停止する。
 
-本Skillは既存Skillの本文を置き換えない。各段階で必要になる直前に該当Skillを全文読み、その固有契約へroutingする。
+本Skillは既存Skillの契約を置き換えず、必要な成果物に応じてroutingする。
+Skill本文・referenceの読取りは共通指示に従い、確認済みで不変の内容を機械的に再読しない。
 
 ## Authorityとpreflight
 
@@ -26,7 +28,9 @@ GitHub Issueまたは明示されたPRのうち、現在のPRとして成立す�
 9. build / test / CIの正式な入口
 10. 既存consumerと近傍test
 
-Issue、PR、decision、関連履歴のGitHub確認が必要なら、最初に`~/.agents/skills/github/SKILL.md`を全文読み、read-onlyとmutationの境界に従う。存在を確認していないpath、command、Issue、PR、branch、decisionを推測で補わない。
+Issue、PR、decision、関連履歴のGitHub確認が必要なら、
+`~/.agents/skills/github/SKILL.md`の契約に従う。
+存在を確認していないpath、command、Issue、PR、branch、decisionを推測で補わない。
 
 Issueやdecision authorityを参照できない場合も、確認できた情報だけで安全に固定できるsliceがあるか判断する。確認済みscopeと未確認部分を分け、成立条件が確定しない場合は実装を開始せずblockerとして報告する。
 
@@ -68,18 +72,26 @@ Follow-up / release audit:
 2. required、accepted supporting changes、explicit non-scope、follow-up / release auditを固定する。
 3. 既存構造、public contract、consumer、tests、build surfaceを調査する。
 4. required scopeを成立させる最小変更を実装する。
-5. 対象diffを静的確認し、focused verificationを実行する。
-6. 影響範囲とrepository契約が要求する場合だけbroader verificationへ広げる。
+5. acceptance criteria、impact / risk、repository・ユーザー要求を`verify`へ渡し、
+   必要な検証を行う。
+6. その結果・未完了事項・必要なartifactを確認し、sliceの成立条件を満たすか判断する。
 7. commit前のworking treeとIssue残scopeを確認して報告する。
 
 段階ごとのroutingは次とする。
 
-- 実装前の独立監査、read-only調査、Issue化前調査が依頼された場合は、編集せず`~/.agents/skills/audit/SKILL.md`を全文読んで`audit`へroutingする。調査だけの依頼を実装へ拡張しない。
-- C++、C++から利用するC互換header、共有ABI境界を生成・編集・reviewする直前に、`~/.agents/skills/cpp-conventions/SKILL.md`を全文読む。repositoryの`docs/CODING_CONVENTIONS.md`があれば併読し、実際のcompiler設定も確認する。
-- 実装後の検証へ入る直前に`~/.agents/skills/verify/SKILL.md`を全文読み、結果分類と出力契約を含めて適用する。
-- commit準備を求められた場合だけ`~/.agents/skills/commit-prep/SKILL.md`を全文読み、`commit-prep`へroutingする。
+- 実装前の独立監査、read-only調査、Issue化前調査が依頼された場合は、
+  `~/.agents/skills/audit/SKILL.md`を適用する。
+  調査だけの依頼を編集や実装へ拡張しない。
+- C++、C++から利用するC互換header、共有ABI境界の生成・編集・reviewには
+  `~/.agents/skills/cpp-conventions/SKILL.md`を適用する。
+  repositoryの`docs/CODING_CONVENTIONS.md`があれば併読し、実際のcompiler設定も確認する。
+- 実装後の検証には`~/.agents/skills/verify/SKILL.md`を適用する。
+- commit準備を求められた場合だけ
+  `~/.agents/skills/commit-prep/SKILL.md`を適用する。
 - GitHubの調査・操作は`github`へroutingする。外部mutationは明示された対象と操作だけに限定する。
-- 通常handoffまたは引き継ぎメモを明示的に求められた場合だけ`~/.agents/skills/handoff/SKILL.md`を全文読み、`handoff`へroutingする。raw log保存だけでは起動しない。
+- 通常handoffまたは引き継ぎメモを明示的に求められた場合だけ
+  `~/.agents/skills/handoff/SKILL.md`を適用する。
+  raw log保存だけでは起動しない。
 
 ## 実装契約
 
@@ -92,58 +104,13 @@ Follow-up / release audit:
 
 ## Verification
 
-次の候補から、repository必須check、変更内容・影響範囲・risk、ユーザー要求に対応する検証を選ぶ。
-選択した検証と必要なartifact保存が完了した時点を基本的な終了点とする。
-成功後の追加・反復検証は、新しい変更、新たに発生したfailure、現在未解決のfailure、
-修正後の確認に必要なfocused rerun、未解決のrisk / ambiguity、
-repository contractまたはユーザーによる追加検証要求がある場合に行う。
-必要なfocused rerunでfailureの解消を確認した後に、追加変更・未解決failure・未解決risk / ambiguity、
-repository contract・ユーザーの追加要求がなく、選択した検証と必要なartifact保存が完了していれば終了する。
-過去のfailure記録だけを追加・反復の理由にしない。終了判定とrunごとの結果は分け、
-過去にfailしたrunの結果は`fail`のまま保持する。
-必要・要求された未実施検証は理由付きの`not run`とし、明らかな対象外項目を毎回列挙しない。
+詳細workflowのownerは`~/.agents/skills/verify/SKILL.md`とする。
+本Skillはdecision authorityから定めたacceptance criteria、
+scope / non-scope、impact / risk、repository・ユーザー要求を検証の入力として保持する。
+検証選択・実行・結果分類・環境・artifact保存・完了条件は`verify`へ委ね、ここでは再定義しない。
 
-```text
-1. 対象diffの静的確認
-2. git diff --check
-3. focused test / validator
-4. clean build
-5. broader test
-6. release-check
-7. 必要な場合だけClang、sanitizer、static analysis、runtime
-```
-
-repository固有commandを推測しない。実行していない検証を成功扱いせず、build、test、runtime、VM、実機を相互に読み替えない。
-
-## 長い出力と作業artifact
-
-長い、または長くなる可能性が高いfull test、release-check、compiler full output、sanitizer、static analysis、large search、full working-tree / PR diff、audit raw output、package build、runtime / VM等の出力は次へ保存する。
-
-```text
-~/handoff/<repo>/<scope>/
-```
-
-`<scope>`は次の順で決める。
-
-```text
-Issueあり: issue-<number>
-PRのみ: pr-<number>
-特定テーマ: topic-<short-kebab-slug>
-その他: general
-```
-
-filenameは次とする。
-
-```text
-<YYYYMMDD-HHMMSS>-codex-<short-purpose>.<log|txt|diff>
-```
-
-- `latest.*`や固定名を作らず、既存artifactをrename、移動、削除しない。
-- stdout / stderrとexit statusを失わない形で保存する。
-- failure時は保存pathとroot causeに関係する行だけを報告する。
-- success時はpass、保存path、重要な要点だけを報告する。raw logをterminal会話やfinal responseへ貼らない。
-- raw log保存は通常handoff生成とは別物であり、`handoff` Skillを自動起動しない。
-- raw logをrepositoryへ追加、stage、commitしない。
+本Skillは`verify`の結果と必要な検証・artifactの完了を確認し、未完了事項や残るriskを報告する。
+実装済みという理由だけでsliceを完了扱いせず、成立条件とIssue全体の残scopeを確認する。
 
 ## Gitと外部mutationの停止境界
 
@@ -178,16 +145,16 @@ Changed:
 - <file / contract>
 
 Validation:
-- <command>: pass / fail / partial / environment blocked
-- long output: <path>
+- <verifyの結果・必要な検証の完了状況>
+- artifact: <verifyの保存先>
 
 Findings:
 - blocker:
 - follow-up:
 - release audit:
 
-Not run:
-- <check>: <reason>
+Incomplete:
+- <検証の未完了事項と理由>
 
 Git state:
 - staged / unstaged / untracked:

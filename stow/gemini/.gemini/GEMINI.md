@@ -42,9 +42,13 @@ repositoryの文書が別のsource of truthや優先順位を指定している�
 
 ## Skillの選択と読み取り
 
-- ユーザーがSkillを指定した場合、または作業がSkillの`description`に一致する場合は、そのSkillを使用する。
-- 複数Skillが必要なら、作業順に1つずつ`SKILL.md`を最後まで読み、必要になる前にまとめ読みしない。読み取りが省略された場合は範囲を分けてEOFまで確認する。
-- Skillが参照する追加fileは、現在の作業に必要なものだけ読む。
+- taskと必要な成果物から適用Skillを選び、ユーザー指定や`description`に対応する必要なSkillを使う。
+  不要なSkillを一括loadしない。
+- 選択したSkillは使用前に`SKILL.md`本文を全文把握する。metadataだけで使用しない。
+  出力が省略された場合は、未読範囲を分けてEOFまで確認する。
+- 現在必要なSkillの独立した読取りを、機械的な逐次順序へ固定しない。
+- 同一作業内で全文確認済みかつ内容が不変のSkillは、理由なく再取得しない。未読・変更部分は使用前に確認する。
+- supporting referenceは必要になった時に読む。参照先を一括loadしない。
 - 一般契約はこの文書、作業固有の詳細は各Skillを正とする。Skillとrepository側の規約や実際のbuild設定が異なる場合は、両方を確認したうえでproject側の明示的な差分を優先する。
 
 ### Routing

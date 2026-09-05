@@ -142,9 +142,19 @@ handoff  handoff-inline  handoff-archive  issue-slice  verify
 repositoryへ追加せず`~/handoff/<repo>/<scope>/`へtimestamp付きfilenameで保存します。
 最終報告にはraw logを貼らず、pass / fail、保存path、重要な要点だけを記載します。
 
-handoff系3種（`handoff` / `handoff-inline` / `handoff-archive`）は、
-front matterを除いた本文を3エージェントで一致させる運用です。
-`handoff-inline` の親Skill参照パスだけがエージェント固有差分として許容されます。
+handoff系3種（`handoff` / `handoff-inline` / `handoff-archive`）の本文と、
+`handoff/references/common.md`を3エージェントで一致させる運用です。
+SKILL.mdのfront matterと、`handoff-inline`の共通reference参照パスはエージェント固有差分として許容します。
+
+verificationの詳細workflowは`verify`（Claude Codeでは`verify-diff`）を正とし、
+`issue-slice`はacceptance criteria・impact / riskを渡して必要な検証の完了を確認します。
+`handoff`と`handoff-inline`は共通referenceを使い、inlineは通常保存のSKILL.mdを読む必要がありません。
+`github/references/commands.md`はCLI例が必要な場合だけ参照し、安全境界は`github/SKILL.md`に残します。
+
+supporting referenceは各Skill directory内に置き、同じStow treeで配布します。
+CodexのSkill directory symlinkとClaudeの既存fold配置ではsource内の追加fileが参照可能になります。
+Geminiの`--no-folding`配置では、新規reference追加後にStowを再適用してfile symlinkを作成します。
+参照pathはsource側だけでなく、配置先からの解決も確認します。
 
 > [!WARNING]
 > **`gemini` パッケージは `--no-folding` です。**
@@ -518,10 +528,24 @@ outside the repository under `~/handoff/<repo>/<scope>/` with timestamped
 filenames. Final responses report pass / fail, the saved path, and key points
 instead of embedding raw logs.
 
-The three handoff skills (`handoff` / `handoff-inline` / `handoff-archive`)
-are kept body-identical across all three agents, front matter excluded.
-The only permitted per-agent delta is the parent-skill reference path in
-`handoff-inline`.
+The bodies of the three handoff skills (`handoff` / `handoff-inline` /
+`handoff-archive`) and `handoff/references/common.md` are kept identical
+across all three agents. SKILL.md front matter and the common-reference
+path in `handoff-inline` are permitted per-agent differences.
+
+`verify` (`verify-diff` on Claude Code) owns the detailed verification
+workflow. `issue-slice` supplies acceptance criteria and impact / risk,
+then checks that the required verification is complete.
+`handoff` and `handoff-inline` use the common reference; inline does not
+need to read the normal-save SKILL.md.
+`github/references/commands.md` is read only when CLI examples are needed;
+safety boundaries remain in `github/SKILL.md`.
+
+Supporting references live inside each skill directory and are deployed
+through the same Stow tree. Codex skill directory symlinks and the current
+Claude folded layout expose new source files directly. Gemini's
+`--no-folding` layout needs Stow reapplied to create links for new references.
+Check reference resolution from the deployed paths as well as the sources.
 
 > [!WARNING]
 > **The `gemini` package uses `--no-folding`.**
