@@ -58,7 +58,7 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 │   ├── markdownlint/         # markdownlint設定
 │   ├── npm/                  # npm設定
 │   ├── nvim/                 # Neovim設定
-│   ├── scripts/              # 個人用スクリプト
+│   ├── scripts/              # 個人用スクリプト（agy / update-ai-cli.sh / sync-handoff など）
 │   ├── sway/                 # Sway設定
 │   ├── tmux/                 # tmux設定
 │   ├── tmuxp/                # tmuxp設定
@@ -82,6 +82,11 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 ├── sample/                   # システム設定ファイルのサンプル
 ├── docs/                     # 補助ドキュメント
 │   └── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLIの導入経路と更新方法
+├── github/                   # GitHub rulesetテンプレート（手動適用、Stow対象外）
+│   └── rulesets/
+│       ├── protect-main.json
+│       ├── protect-main-develop.json
+│       └── dotfiles-protect-main.json
 ├── apply-stow.sh             # Stowリンクを作成
 ├── remove-stow.sh            # Stowリンクを削除
 ├── setup-systemd-services.sh # systemd unit / drop-inの配置とenable状態の再現
@@ -95,6 +100,18 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 ├── restore-ssh-config.sh     # 暗号化したSSH設定のみを復元
 └── setup-system.sh           # システム側設定を配置
 ```
+
+### GitHub rulesetテンプレート
+
+`github/rulesets/` は GitHub の branch ruleset を手動適用するための JSON テンプレートです。
+Stow 対象外で、リポジトリへ自動適用するスクリプトはありません。
+`bypass_actors` は作者アカウント向けなので、他リポジトリへ流用する場合は書き換えてください。
+
+| ファイル | 対象branch | 内容 |
+| --- | --- | --- |
+| `protect-main.json` | `main` | 削除禁止、non-fast-forward禁止、PR必須（承認0、未解決スレッドのresolve必須） |
+| `protect-main-develop.json` | `main` と `develop` | 同上 |
+| `dotfiles-protect-main.json` | `main` | 削除禁止のみ（ruleset名 `private-protect-main`） |
 
 ### コーディングエージェント設定の参照先
 
@@ -110,13 +127,19 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 | エージェント | リポジトリ内の実体 | 実際の参照先 | 内容 |
 | --- | --- | --- | --- |
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **共通契約の正本** |
-| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 9種 |
-| Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | モデル別プロファイル |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 9種（directory symlink） |
+| Codex | `stow/codex/.codex/config.toml` | `~/.codex/config.toml` | 常用デフォルト |
+| Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | モデル別プロファイル（astra / luna / sol / terra / spark / safe） |
+| Codex | `stow/codex/.codex/config.toml.example` | `~/.codex/config.toml.example` | 最小構成の例 |
+| Codex | `stow/codex/.codex/rules/` | `~/.codex/rules/` | prefix_rule（実ファイルcopy。現在は `default.rules`） |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Codex正本のimport＋固有差分 |
 | Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 9種 |
-| Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、プラグイン等 |
+| Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、hooks、プラグイン等 |
+| Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | Codex rulesをBash PreToolUseへ流用するゲート |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 9種 |
+| Antigravity CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI設定 |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/settings.json` | `~/.gemini/antigravity-cli/settings.json` | Antigravity CLI設定 |
 | Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Codex正本へのsymlink |
 | Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI / UI / marketplace 設定（未配置時seed） |
 | GitHub Copilot | `stow/copilot/.copilot/instructions/global.instructions.md` | `~/.copilot/instructions/global.instructions.md` | Codex正本への参照 |
@@ -141,6 +164,8 @@ handoff  handoff-inline  handoff-archive  issue-slice  verify
 長いtest、build、release-check、compiler、runtime、diff等の作業logは、
 repositoryへ追加せず`~/handoff/<repo>/<scope>/`へtimestamp付きfilenameで保存します。
 最終報告にはraw logを貼らず、pass / fail、保存path、重要な要点だけを記載します。
+`~/handoff` を `~/PrivateDocs/handoff/` へ `*.md` / `*.txt` だけ同期するスクリプトは
+`stow/scripts/.local/bin/sync-handoff` です（Stow展開後は `sync-handoff`）。
 
 handoff系3種（`handoff` / `handoff-inline` / `handoff-archive`）の本文と、
 `handoff/references/common.md`を3エージェントで一致させる運用です。
@@ -159,7 +184,7 @@ Geminiの`--no-folding`配置では、新規reference追加後にStowを再適�
 > [!WARNING]
 > **`gemini` パッケージは `--no-folding` です。**
 > `~/.gemini` は実ディレクトリのまま残り、追跡対象（`GEMINI.md`、
-> `settings.json`、`skills/`）だけがfile symlinkになります。
+> `settings.json`、`antigravity-cli/settings.json`、`skills/`）だけがfile symlinkになります。
 > `history.jsonl`、`log/`、`conversations/`、`brain/` などの実行時データは
 > ホーム側へ書き込まれます。古いfold配置向けの除外が `.gitignore` に残っています。
 >
@@ -218,6 +243,10 @@ PATHに無いCLIはSKIP扱いで中断せず、1つでも失敗した場合は�
 （`vscode` / `gemini` / `antigravity` / `grok` パッケージ全体と、
 `codex` パッケージの `.codex` subtreeには `--no-folding` が適用されます。
 Codex Skillは `~/.agents/skills/<skill>` のdirectory symlinkとして展開されます。
+Codexの `~/.codex/rules/*.rules` はStow symlinkではなく、
+`apply-stow.sh` がリポジトリ側を実ファイルとしてcopyします（既存fileは上書き）。
+`remove-stow.sh` は、リポジトリ側と内容が一致するcopyだけを削除し、
+配置後に変更されたrulesは残します。
 Grokの `config.toml` はStow対象外で、未配置時だけ実ファイルとしてseedされます。）
 
 > [!IMPORTANT]
@@ -443,7 +472,7 @@ excluded from this repository.
 │   ├── markdownlint/         # markdownlint config
 │   ├── npm/                  # npm config
 │   ├── nvim/                 # Neovim config
-│   ├── scripts/              # Local scripts
+│   ├── scripts/              # Local scripts (agy, update-ai-cli.sh, sync-handoff, …)
 │   ├── sway/                 # Sway config
 │   ├── tmux/                 # tmux config
 │   ├── tmuxp/                # tmuxp config
@@ -467,6 +496,11 @@ excluded from this repository.
 ├── sample/                   # System configuration samples
 ├── docs/                     # Supplementary documentation
 │   └── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLI install paths and updates
+├── github/                   # GitHub ruleset templates (manual apply, not Stow-managed)
+│   └── rulesets/
+│       ├── protect-main.json
+│       ├── protect-main-develop.json
+│       └── dotfiles-protect-main.json
 ├── apply-stow.sh             # Create Stow links
 ├── remove-stow.sh            # Remove Stow links
 ├── setup-systemd-services.sh # Install systemd units and enable state
@@ -481,6 +515,19 @@ excluded from this repository.
 └── setup-system.sh           # Install system-side config
 ```
 
+### GitHub Ruleset Templates
+
+`github/rulesets/` holds JSON templates for GitHub branch rulesets.
+They are not Stow-managed, and this repository has no script that applies
+them automatically. `bypass_actors` is scoped to the author's account;
+rewrite it before reusing a template on another repository.
+
+| File | Target branches | Contents |
+| --- | --- | --- |
+| `protect-main.json` | `main` | No deletion, no non-fast-forward, PR required (0 approvals, unresolved threads must be resolved) |
+| `protect-main-develop.json` | `main` and `develop` | Same as above |
+| `dotfiles-protect-main.json` | `main` | Deletion blocked only (ruleset name `private-protect-main`) |
+
 ### Agent Configuration
 
 > [!IMPORTANT]
@@ -494,13 +541,19 @@ Each agent reads the following files, backed by this repository:
 | Agent | Source in this repo | Resolved path | Contents |
 | --- | --- | --- | --- |
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **Canonical shared contract** |
-| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | 9 skills |
-| Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | Per-model profiles |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | 9 skills (directory symlinks) |
+| Codex | `stow/codex/.codex/config.toml` | `~/.codex/config.toml` | Default config |
+| Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | Per-model profiles (astra / luna / sol / terra / spark / safe) |
+| Codex | `stow/codex/.codex/config.toml.example` | `~/.codex/config.toml.example` | Minimal example config |
+| Codex | `stow/codex/.codex/rules/` | `~/.codex/rules/` | prefix_rule files (copied as real files; currently `default.rules`) |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Imports the Codex source + deltas |
 | Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 9 skills |
-| Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, plugins |
+| Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, hooks, plugins |
+| Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | Gate that reuses Codex rules on Bash PreToolUse |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 9 skills |
+| Antigravity CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI settings |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/settings.json` | `~/.gemini/antigravity-cli/settings.json` | Antigravity CLI settings |
 | Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Symlink to the Codex source |
 | Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI, UI, and marketplace settings (seed if missing) |
 | GitHub Copilot | `stow/copilot/.copilot/instructions/global.instructions.md` | `~/.copilot/instructions/global.instructions.md` | Points to the Codex source |
@@ -527,6 +580,8 @@ Long test, build, release-check, compiler, runtime, and diff logs are kept
 outside the repository under `~/handoff/<repo>/<scope>/` with timestamped
 filenames. Final responses report pass / fail, the saved path, and key points
 instead of embedding raw logs.
+`stow/scripts/.local/bin/sync-handoff` copies `*.md` and `*.txt` from
+`~/handoff` to `~/PrivateDocs/handoff/` (available as `sync-handoff` after Stow).
 
 The bodies of the three handoff skills (`handoff` / `handoff-inline` /
 `handoff-archive`) and `handoff/references/common.md` are kept identical
@@ -550,7 +605,8 @@ Check reference resolution from the deployed paths as well as the sources.
 > [!WARNING]
 > **The `gemini` package uses `--no-folding`.**
 > `~/.gemini` remains a real directory; only tracked files (`GEMINI.md`,
-> `settings.json`, and `skills/`) are file symlinks.
+> `settings.json`, `antigravity-cli/settings.json`, and `skills/`) are file
+> symlinks.
 > Runtime data such as `history.jsonl`, `log/`, `conversations/`, and
 > `brain/` is written on the home side. `.gitignore` still has exclusions
 > left over from the older folded layout.
@@ -613,6 +669,10 @@ Creates symlinks from the stow/ directory to your $HOME.
 (The `vscode`, `gemini`, `antigravity`, and `grok` packages, and the
 `.codex` subtree of the `codex` package, use `--no-folding`. Codex Skills
 are deployed as directory symlinks at `~/.agents/skills/<skill>`.
+`~/.codex/rules/*.rules` are not Stow symlinks; `apply-stow.sh` copies them
+from the repository as real files and overwrites existing copies.
+`remove-stow.sh` deletes a copied rule only when it still matches the
+repository source, and leaves rules that were edited after deployment.
 Grok's `config.toml` is excluded from Stow and seeded as a real file only
 when it is missing.)
 
