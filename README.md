@@ -81,7 +81,8 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 ├── vscode/                   # VS Code拡張一覧（Stow管理対象外）
 ├── sample/                   # システム設定ファイルのサンプル
 ├── docs/                     # 補助ドキュメント
-│   └── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLIの導入経路と更新方法
+│   ├── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLIの導入経路と更新方法
+│   └── steam-shared-library.md           # Windows / LinuxのSteamライブラリ共有セットアップ方法
 ├── github/                   # GitHub rulesetテンプレート（手動適用、Stow対象外）
 │   └── rulesets/
 │       ├── protect-main.json
@@ -217,6 +218,11 @@ update-ai-cli.sh
 CLIごとにPATH上の実体と更新前後のversionを表示し、`<command> update` を
 `codex` → `claude` → `grok` → `agy` の順で実行します。
 PATHに無いCLIはSKIP扱いで中断せず、1つでも失敗した場合は終了コード1を返します。
+
+### Steam共有ライブラリ
+
+Windows / Linux の Steam ライブラリ共有セットアップ方法は
+`docs/steam-shared-library.md` を正本とします。
 
 ### 主要スクリプトの使い方
 
@@ -495,7 +501,8 @@ excluded from this repository.
 ├── vscode/                   # VS Code extension list (not Stow-managed)
 ├── sample/                   # System configuration samples
 ├── docs/                     # Supplementary documentation
-│   └── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLI install paths and updates
+│   ├── AI-CODINGAGENTS-INSTALLATIONS.md  # AI CLI install paths and updates
+│   └── steam-shared-library.md           # Windows / Linux shared Steam library setup
 ├── github/                   # GitHub ruleset templates (manual apply, not Stow-managed)
 │   └── rulesets/
 │       ├── protect-main.json
@@ -641,6 +648,11 @@ For each CLI it prints the resolved path and the version before and after, then
 runs `<command> update` in the order `codex` → `claude` → `grok` → `agy`.
 A CLI missing from PATH is skipped without aborting the run; the script exits
 with 1 if any update failed.
+
+### Shared Steam Library
+
+`docs/steam-shared-library.md` is the source of truth for the Windows / Linux
+shared Steam library setup.
 
 ### Usage of Core Scripts
 
