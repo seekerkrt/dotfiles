@@ -139,7 +139,7 @@ HISTFILE=~/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
 
-setopt bang_hist            # ! による履歴展開を使う
+#setopt bang_hist            # ! による履歴展開を使う
 setopt extended_history     # 実行時刻と所要時間を保存する
 setopt share_history        # 他の zsh と履歴を共有する
 setopt hist_reduce_blanks   # 余分な空白を削って保存する
