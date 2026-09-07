@@ -3,5 +3,5 @@
 # from ~/.codex/config.toml.
 
 model = "gpt-6-astra"
-model_reasoning_effort = "midium"
+model_reasoning_effort = "medium"
 service_tier = "default"
