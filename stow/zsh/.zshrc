@@ -76,28 +76,21 @@ alias egrep="egrep --color=auto"
 alias bat='bat --paging=auto'
 alias b='bat -n --paging=never'
 alias bl='bat -n --paging=always'
-
 alias eza='eza -F'
-
 alias agy-ide='antigravity-ide'
-
-# alias ccat='command cat'
 # alias nvim='LC_MESSAGES=C nvim'
-# alias emacs="emacs -nw"
+ alias emacs="emacs -nw"
 # alias google-chrome-stable="google-chrome-stable --force-dark-mode"
 # alias code="code --enable-features=UseOzonePlatform --ozone-platform=wayland"
 
 # -----------------------------------------------------------------------------
 # Pager / 色
 # -----------------------------------------------------------------------------
-
 export PAGER=less
 export OUTPUT_CHARSET=utf-8
 export LESSOPEN='| /usr/bin/src-hilite-lesspipe.sh %s'
-export LESS='-R '
-
 # export LESSOPEN="| /usr/bin/source-highlight-esc.sh %s"
-
+export LESS='-R '
 export LESS_TERMCAP_me=$(printf '\e[0m')
 export LESS_TERMCAP_se=$(printf '\e[0m')
 export LESS_TERMCAP_ue=$(printf '\e[0m')
