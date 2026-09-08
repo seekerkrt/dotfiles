@@ -6,7 +6,7 @@ switch-to-activity-d55de5ad-9c50-45fa-bdd0-255c51f3be82=none,none,アクティ�
 Switch keyboard layout to 日本語=none,none,キーボードレイアウト 日本語 に切り替え
 Switch to Last-Used Keyboard Layout=Meta+Alt+L,Meta+Alt+L,最後に使用したキーボードレイアウトに切り替え
 Switch to Next Keyboard Layout=Meta+Alt+K,Meta+Alt+K,次のキーボードレイアウトに切り替え
-_k_friendly_name=Keyboard Layout Switcher
+_k_friendly_name=キーボードレイアウトの切り替え
 
 [amarok]
 _k_friendly_name=Amarok
@@ -88,7 +88,7 @@ KrohnkiteIncrease=none,none,Krohnkite: Increase
 KrohnkiteMonocleLayout=none,none,Krohnkite: Monocle Layout
 KrohnkiteNextLayout=Meta+\\\\,none,Krohnkite: Next Layout
 KrohnkitePreviousLayout=none,none,Krohnkite: Previous Layout
-KrohnkiteQuarterLayout=none,none,Krohnkite: Quarter Layout
+KrohnkiteQuarterLayout=Meta+$,none,Krohnkite: Quarter Layout
 KrohnkiteRotate=Meta+R,none,Krohnkite: Rotate
 KrohnkiteRotatePart=Meta+Shift+R,none,Krohnkite: Rotate Part
 KrohnkiteSetMaster=Meta+Ctrl+Return,none,Krohnkite: Set master
