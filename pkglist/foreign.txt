@@ -1,5 +1,6 @@
 dotfiles-doctor
 downgrade
+emacs-rust-mode
 game-devices-udev
 google-chrome
 leaf-markdown-viewer-bin

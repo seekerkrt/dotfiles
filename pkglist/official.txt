@@ -50,6 +50,8 @@ efibootmgr
 elisa
 emacs-lua-mode
 emacs-nox
+emacs-python-mode
+evtest
 exfatprogs
 fastfetch
 fatresize
@@ -93,6 +95,7 @@ kdeconnect
 kdecoration
 kdeplasma-addons
 kdf
+kdialog
 kdiff3
 keepassxc
 kfind
@@ -182,6 +185,7 @@ otf-ipaexfont
 otf-ipafont
 otf-ipamjfont
 pacman-contrib
+pandoc-cli
 partitionmanager
 pavucontrol
 piper
@@ -204,6 +208,7 @@ plocate
 plymouth-kcm
 polkit-kde-agent
 powerdevil
+prettier
 pyright
 python-pipx
 python-pynvim
@@ -213,8 +218,10 @@ rclone
 rsync
 ruby
 ruby-bundler
+ruby-lsp
 ruby-stdlib
 ruff
+rust-analyzer
 rust-src
 sbctl
 sccache
@@ -228,8 +235,10 @@ spectacle
 steam
 stow
 strace
+stylua
 sweeper
 systemsettings
+taplo-cli
 terminator
 time
 tldr
@@ -241,6 +250,7 @@ ttf-jetbrains-mono
 ttf-jetbrains-mono-nerd
 ufw
 unrar
+unrtf
 vim
 virt-manager
 virt-viewer
@@ -290,6 +300,7 @@ xorg-xwininfo
 yazi
 zig
 zip
+zls
 zoxide
 zsh
 zsh-completions

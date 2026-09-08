@@ -17,7 +17,7 @@
 --   - Treesitter + Native LSP + nvim-cmp
 --   - Theme: runtime switchable (monokai / onedark / tokyonight / vscode)
 --   - Terminal transparency is managed by terminal app (Terminator opacity)
---   - clang-format: always force ~/.clang-format
+--   - clang-format: prefer project-local .clang-format / _clang-format, fallback to ~/.clang-format
 --   - Telescope: builtin direct call (avoid extension confusion)
 -- =============================================================================
 
@@ -92,6 +92,12 @@ vim.keymap.set("i", "<C-x>", "<Nop>", { noremap = true, silent = true })
 
 -- 検索ハイライト消し
 vim.keymap.set("n", "<Esc><Esc>", "<cmd>nohlsearch<CR>", { silent = true })
+
+-- バッファ全体をフォーマット
+vim.keymap.set("n", "<leader>f", "<cmd>Format<CR>", {
+    silent = true,
+    desc = "Format buffer",
+})
 
 -- =============================================================================
 -- 4) diagnostics
@@ -255,10 +261,18 @@ end, {
 })
 
 -- よく使うテーマをキーで直指定
-vim.keymap.set("n", "<leader>tm", function() ApplyTheme("monokai") end, { silent = true, desc = "Theme: monokai" })
-vim.keymap.set("n", "<leader>to", function() ApplyTheme("onedark") end, { silent = true, desc = "Theme: onedark" })
-vim.keymap.set("n", "<leader>tt", function() ApplyTheme("tokyonight") end, { silent = true, desc = "Theme: tokyonight" })
-vim.keymap.set("n", "<leader>tv", function() ApplyTheme("vscode") end, { silent = true, desc = "Theme: vscode" })
+vim.keymap.set("n", "<leader>tm", function()
+    ApplyTheme("monokai")
+end, { silent = true, desc = "Theme: monokai" })
+vim.keymap.set("n", "<leader>to", function()
+    ApplyTheme("onedark")
+end, { silent = true, desc = "Theme: onedark" })
+vim.keymap.set("n", "<leader>tt", function()
+    ApplyTheme("tokyonight")
+end, { silent = true, desc = "Theme: tokyonight" })
+vim.keymap.set("n", "<leader>tv", function()
+    ApplyTheme("vscode")
+end, { silent = true, desc = "Theme: vscode" })
 
 -- 巡回トグル
 vim.keymap.set("n", "<leader>tn", function()
@@ -297,7 +311,87 @@ vim.opt.rtp:prepend(lazypath)
 -- =============================================================================
 
 require("lazy").setup({
-    { "hrsh7th/cmp-nvim-lsp",   lazy = false },
+    { "hrsh7th/cmp-nvim-lsp", lazy = false },
+
+    {
+        "stevearc/conform.nvim",
+        lazy = false,
+        config = function()
+            local conform = require("conform")
+
+            conform.setup({
+                formatters_by_ft = {
+                    c = { "clang_format" },
+                    cpp = { "clang_format" },
+                    objc = { "clang_format" },
+                    objcpp = { "clang_format" },
+
+                    rust = { "rustfmt" },
+                    zig = { "zigfmt" },
+                    ruby = { "rubocop" },
+                    python = { "ruff_format" },
+                    go = { "gofmt" },
+
+                    sh = { "shfmt" },
+                    bash = { "shfmt" },
+
+                    lua = { "stylua" },
+                    toml = { "taplo" },
+
+                    markdown = { "prettier" },
+                    ["markdown.mdx"] = { "prettier" },
+
+                    json = { "prettier" },
+                    jsonc = { "prettier" },
+                    yaml = { "prettier" },
+
+                    javascript = { "prettier" },
+                    javascriptreact = { "prettier" },
+                    typescript = { "prettier" },
+                    typescriptreact = { "prettier" },
+
+                    html = { "prettier" },
+                    css = { "prettier" },
+                    scss = { "prettier" },
+                },
+
+                default_format_opts = {
+                    lsp_format = "fallback",
+                },
+
+                formatters = {
+                    clang_format = {
+                        prepend_args = function(_, ctx)
+                            local filename = ctx.filename or ""
+                            local start_dir = vim.fn.getcwd()
+
+                            if filename ~= "" then
+                                start_dir = vim.fs.dirname(filename) or start_dir
+                            end
+
+                            local config = vim.fs.find({ ".clang-format", "_clang-format" }, {
+                                path = start_dir,
+                                upward = true,
+                            })[1]
+
+                            if not config then
+                                local fallback = vim.fn.expand("~/.clang-format")
+                                if vim.fn.filereadable(fallback) == 1 then
+                                    config = fallback
+                                end
+                            end
+
+                            if config then
+                                return { "--style=file:" .. config }
+                            end
+
+                            return {}
+                        end,
+                    },
+                },
+            })
+        end,
+    },
 
     {
         "tanvirtin/monokai.nvim",
@@ -404,6 +498,36 @@ require("lazy").setup({
             -- mainブランチでは configs モジュールが無いので、このAPIを使う
             require("nvim-treesitter").setup({})
 
+            -- parser を確保（既にあれば no-op）
+            require("nvim-treesitter").install({
+                -- C/C++ family
+                "c",
+                "cpp",
+
+                -- language-lab / main languages
+                "rust",
+                "zig",
+                "ruby",
+                "python",
+                "java",
+
+                -- Go family
+                "go",
+                "gomod",
+                "gosum",
+                "gotmpl",
+                "gowork",
+
+                -- config / scripting
+                "lua",
+                "bash",
+                "toml",
+                "json",
+                "jsonc",
+                "yaml",
+                "markdown",
+                "markdown_inline",
+            })
             -- ensure parse→start (stability)
             vim.api.nvim_create_autocmd("FileType", {
                 group = vim.api.nvim_create_augroup("ts_autostart", { clear = true }),
@@ -540,17 +664,6 @@ pcall(function()
     capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 end)
 
--- clang-format: always use ~/.clang-format
-local function clang_format_buffer()
-    local view = vim.fn.winsaveview()
-
-    local cf = vim.fn.expand("~/.clang-format")
-    local cmd = "clang-format --style=file:" .. vim.fn.shellescape(cf)
-    vim.cmd("silent keepjumps keeppatterns %!" .. cmd)
-
-    vim.fn.winrestview(view)
-end
-
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
         local bufnr = args.buf
@@ -573,34 +686,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end)
         end
 
-        if client.server_capabilities
-            and client.server_capabilities.semanticTokensProvider then
+        if client.server_capabilities and client.server_capabilities.semanticTokensProvider then
             pcall(function()
-             vim.lsp.semantic_tokens.enable(true, {
+                vim.lsp.semantic_tokens.enable(true, {
                     bufnr = bufnr,
                     client_id = client.id,
                 })
             end)
         end
-
-        if client.name == "clangd" then
-            vim.keymap.set("n", "<leader>f", clang_format_buffer, opts)
-        else
-            vim.keymap.set("n", "<leader>f", function()
-                vim.lsp.buf.format({ async = true })
-            end, opts)
-        end
     end,
 })
 
 vim.api.nvim_create_user_command("Format", function()
-    local ft = vim.bo.filetype
-    if ft == "c" or ft == "cpp" or ft == "objc" or ft == "objcpp" then
-        clang_format_buffer()
-        return
-    end
-    vim.lsp.buf.format({ async = true })
-end, {})
+    require("conform").format({
+        async = true,
+        lsp_format = "fallback",
+    })
+end, {
+    desc = "Format current buffer",
+})
 
 vim.lsp.config["clangd"] = {
     cmd = { "clangd", "--background-index", "--clang-tidy", "--header-insertion=never" },
@@ -648,4 +752,17 @@ vim.lsp.config["bashls"] = {
     root_markers = { ".git" },
 }
 
-vim.lsp.enable({ "clangd", "lua_ls", "pyright", "bashls" })
+vim.lsp.config["gopls"] = {
+    cmd = { "gopls" },
+    capabilities = capabilities,
+    filetypes = { "go", "gomod", "gowork", "gotmpl" },
+    root_markers = { "go.work", "go.mod", ".git" },
+}
+
+vim.lsp.enable({
+    "clangd",
+    "lua_ls",
+    "pyright",
+    "bashls",
+    "gopls",
+})
