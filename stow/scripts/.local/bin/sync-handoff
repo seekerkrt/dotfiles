@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SOURCE="$HOME/handoff/"
-DEST="$HOME/PrivateDocs/handoff/"
+DEST="$HOME/private-docs/handoff/"
 
 mkdir -p "$DEST"
 
