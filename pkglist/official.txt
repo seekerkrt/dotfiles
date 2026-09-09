@@ -53,6 +53,7 @@ emacs-nox
 emacs-python-mode
 evtest
 exfatprogs
+eza
 fastfetch
 fatresize
 fcitx5
