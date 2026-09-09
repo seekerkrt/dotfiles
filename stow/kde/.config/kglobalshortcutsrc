@@ -6,7 +6,7 @@ switch-to-activity-d55de5ad-9c50-45fa-bdd0-255c51f3be82=none,none,アクティ�
 Switch keyboard layout to 日本語=none,none,キーボードレイアウト 日本語 に切り替え
 Switch to Last-Used Keyboard Layout=Meta+Alt+L,Meta+Alt+L,最後に使用したキーボードレイアウトに切り替え
 Switch to Next Keyboard Layout=Meta+Alt+K,Meta+Alt+K,次のキーボードレイアウトに切り替え
-_k_friendly_name=キーボードレイアウトの切り替え
+_k_friendly_name=Keyboard Layout Switcher
 
 [amarok]
 _k_friendly_name=Amarok
@@ -350,6 +350,8 @@ switch to previous activity=none,none,前のアクティビティに切り替え
 toggle do not disturb=none,none,マナーモードをオン/オフ
 
 [services][org.kde.spectacle.desktop]
+CurrentMonitorScreenShot=none
+OpenWithoutScreenshot=none
 RecordRegion=none
 RecordWindow=none
 
