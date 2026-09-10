@@ -95,7 +95,7 @@ Suggested pathは提案だけであり、通常handoffではrepository内に作�
 
 ## 既定template
 
-~~~markdown
+````markdown
 # ChatGPT handoff: <repo> / <task>
 
 ## Current state
@@ -161,7 +161,7 @@ Suggested pathは提案だけであり、通常handoffではrepository内に作�
 - git add:
 - commit:
 - push:
-~~~
+````
 
 構造変更が再開に重要な場合だけStructure before / afterを追加する。Issue単位指定等がある場合は、overlayに合わせてsectionを置換・拡張する。
 
