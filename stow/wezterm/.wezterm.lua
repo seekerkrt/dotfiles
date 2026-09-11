@@ -2,7 +2,7 @@
 --  WezTerm用設定ファイル
 --
 
-local wezterm = require 'wezterm'
+local wezterm = require("wezterm")
 local config = {}
 
 local function Set(key, value)
@@ -10,11 +10,11 @@ local function Set(key, value)
 end
 
 -- === toggles（ここだけ触ればOK）===
-local EXPERIMENT_WEBGPU = true         -- falseでOpenGL
+local EXPERIMENT_WEBGPU = true -- falseでOpenGL
 local EXPERIMENT_LIGHT_FREETYPE = true -- falseで無効
-local EXPERIMENT_DARK_BG = true        -- falseでMonokai背景そのまま
+local EXPERIMENT_DARK_BG = true -- falseでMonokai背景そのまま
 local EXPERIMENT_BG_GRADIENT = false
-local TRANSPARENT = false    --  true=0.70 / false=0.88
+local TRANSPARENT = false --  true=0.70 / false=0.88
 
 -- config.emable_wayland = false
 
@@ -45,7 +45,6 @@ end
 -- Font
 -- =============================================================================
 
-
 config.font = wezterm.font_with_fallback({
     { family = "MyricaM M", weight = "Book" },
 
@@ -61,7 +60,6 @@ config.font = wezterm.font_with_fallback({
     "Noto Color Emoji",
     "JetBrains Mono",
 })
-
 
 config.font_size = 12.0
 config.line_height = 1.00
@@ -124,35 +122,52 @@ config.selection_word_boundary = " \t\n{}[]()\"'`,;:="
 -- Clipboard / Mouse
 -- =============================================================================
 config.mouse_bindings = {
-  -- 左ボタンで選択→指を離した瞬間に Clipboard へコピー（= copy-on-select 相当）
-  {
-    event = { Up = { streak = 1, button = "Left" } },
-    mods = "NONE",
-    action = wezterm.action.CompleteSelectionOrOpenLinkAtMouseCursor "Clipboard",
-    -- デフォルトは PrimarySelection なので、それを Clipboard に変えるのが肝
-  },
+    -- 左ボタンで選択→指を離した瞬間に Clipboard へコピー（= copy-on-select 相当）
+    {
+        event = { Up = { streak = 1, button = "Left" } },
+        mods = "NONE",
+        action = wezterm.action.CompleteSelectionOrOpenLinkAtMouseCursor("Clipboard"),
+        -- デフォルトは PrimarySelection なので、それを Clipboard に変えるのが肝
+    },
 
-  -- 右クリックで貼り付け（Clipboard）
-  {
-    event = { Down = { streak = 1, button = "Right" } },
-    mods = "NONE",
-    action = wezterm.action.PasteFrom "Clipboard",
-  },
+    -- 右クリックで貼り付け（Clipboard）
+    {
+        event = { Down = { streak = 1, button = "Right" } },
+        mods = "NONE",
+        action = wezterm.action.PasteFrom("Clipboard"),
+    },
 }
 
 -- =============================================================================
 -- Keys
 -- =============================================================================
 config.keys = {
-    { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo "Clipboard" },
-    { key = "V", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom "Clipboard" },
+    { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo("Clipboard") },
+    { key = "V", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom("Clipboard") },
     { key = "R", mods = "CTRL|SHIFT", action = wezterm.action.ReloadConfiguration },
-    { key = "e", mods = "ALT", action = wezterm.action.SplitVertical { domain = "CurrentPaneDomain" } },
-    { key = "o", mods = "ALT", action = wezterm.action.SplitHorizontal { domain = "CurrentPaneDomain" } },
-    { key = "h", mods = "ALT", action = wezterm.action.ActivatePaneDirection "Left" },
-    { key = "l", mods = "ALT", action = wezterm.action.ActivatePaneDirection "Right" },
-    { key = "k", mods = "ALT", action = wezterm.action.ActivatePaneDirection "Up" },
-    { key = "j", mods = "ALT", action = wezterm.action.ActivatePaneDirection "Down" },
+    { key = "e", mods = "ALT", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+    { key = "o", mods = "ALT", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+    { key = "h", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Left") },
+    { key = "l", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Right") },
+    { key = "k", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Up") },
+    { key = "j", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Down") },
+    {
+        key = "K",
+        mods = "CTRL|SHIFT",
+        action = wezterm.action_callback(function(window, _pane)
+            local overrides = window:get_config_overrides() or {}
+
+            if overrides.window_background_opacity == 1.0 then
+                -- overrideを外して通常の半透明設定へ戻す
+                overrides.window_background_opacity = nil
+            else
+                -- 完全不透明
+                overrides.window_background_opacity = 1.0
+            end
+
+            window:set_config_overrides(overrides)
+        end),
+    },
 }
 
 for i = 1, 8 do
