@@ -855,3 +855,9 @@ Safety policy of the current implementation:
 - Records missing units as possibly-uninstalled packages and keeps going
 - Installs only the custom units and drop-ins owned by this repository,
   never shadowing a package-provided unit file
+
+---
+
+## License
+
+This repository is licensed under the [MIT License](LICENSE), except where otherwise noted.
