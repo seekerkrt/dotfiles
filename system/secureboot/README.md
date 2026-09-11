@@ -58,9 +58,9 @@ system/secureboot/
 
 ---
 
-# 通常運用
+## 通常運用
 
-## Secure Boot状態の確認
+### Secure Boot状態の確認
 
 ```bash
 sudo sbctl status
@@ -73,7 +73,7 @@ Setup Mode:   Disabled
 Secure Boot:  Enabled
 ```
 
-## 署名状態の確認
+### 署名状態の確認
 
 ```bash
 sudo sbctl verify
@@ -83,9 +83,9 @@ sudo sbctl verify
 
 ---
 
-# パッケージ更新時の自動署名
+## パッケージ更新時の自動署名
 
-## カーネル更新
+### カーネル更新
 
 カーネル更新時は、mkinitcpioのsbctlポストフックが自動署名する。
 
@@ -98,7 +98,7 @@ sudo sbctl verify
 
 通常は追加操作不要。
 
-## GRUB更新
+### GRUB更新
 
 `grub` パッケージ更新時は、独自pacmanフックが次を自動実行する。
 
@@ -127,7 +127,7 @@ sudo /usr/local/sbin/secureboot-refresh-grub
 
 ---
 
-# dotfilesからシステム設定を配置する
+## dotfilesからシステム設定を配置する
 
 ```bash
 cd ~/dotfiles
@@ -145,7 +145,7 @@ Secure Boot秘密鍵の復元・UEFIへの鍵登録・Secure Boot有効化は自
 
 ---
 
-# Secure Boot状態のバックアップ
+## Secure Boot状態のバックアップ
 
 バックアップには秘密鍵が含まれるため、公開Gitや共有クラウドへ置かないこと。
 
@@ -175,9 +175,9 @@ sudo sha256sum -c /linuxshare/SecureBoot/sbctl-state-*.tar.gz.sha256
 
 ---
 
-# 新規インストール・復旧時
+## 新規インストール・復旧時
 
-## 1. dotfilesを配置
+### 1. dotfilesを配置
 
 ```bash
 git clone <dotfiles-repository>
@@ -187,7 +187,7 @@ cd dotfiles
 ./setup-system.sh
 ```
 
-## 2. sbctl状態を復元
+### 2. sbctl状態を復元
 
 ```bash
 sudo secureboot-restore \
@@ -211,11 +211,11 @@ sudo sbctl verify
 
 ---
 
-# UEFIへ鍵を再登録する場合
+## UEFIへ鍵を再登録する場合
 
 UEFI設定の初期化やマザーボード交換などで鍵が消えた場合のみ実施する。
 
-## 1. UEFIでPlatform Keyだけを削除
+### 1. UEFIでPlatform Keyだけを削除
 
 UEFI設定で次を実行する。
 
@@ -244,7 +244,7 @@ Setup Mode:   Enabled
 Secure Boot:  Disabled
 ```
 
-## 2. 自前鍵・Microsoft鍵・ファームウェア内蔵鍵を登録
+### 2. 自前鍵・Microsoft鍵・ファームウェア内蔵鍵を登録
 
 ```bash
 sudo sbctl enroll-keys \
@@ -278,7 +278,7 @@ Setup Mode:   Disabled
 Secure Boot:  Disabled
 ```
 
-## 3. UEFIでSecure Bootを有効化
+### 3. UEFIでSecure Bootを有効化
 
 ASUS UEFIでは概ね次の設定を使用する。
 
@@ -306,20 +306,20 @@ Secure Boot:  Enabled
 
 ---
 
-# 動作確認
+## 動作確認
 
-## Arch起動確認
+### Arch起動確認
 
 ```bash
 sudo sbctl status
 sudo sbctl verify
 ```
 
-## Windows起動確認
+### Windows起動確認
 
 GRUBメニューからWindows Boot Managerを選択し、Windowsが起動することを確認する。
 
-## 自動署名確認
+### 自動署名確認
 
 カーネル側:
 
@@ -337,9 +337,9 @@ sudo sbctl verify
 
 ---
 
-# 緊急時
+## 緊急時
 
-## Secure Boot有効後にArchが起動しない
+### Secure Boot有効後にArchが起動しない
 
 1. UEFI設定でSecure Bootを一時無効化する
 2. 既存のGRUBまたはVentoy USBから起動する
@@ -351,7 +351,7 @@ sudo sbctl verify
 sudo /usr/local/sbin/secureboot-refresh-grub
 ```
 
-## GRUB更新に失敗した
+### GRUB更新に失敗した
 
 `secureboot-refresh-grub` は、処理失敗時に直前の署名済みGRUBを自動復元する。
 
@@ -361,7 +361,7 @@ sudo /usr/local/sbin/secureboot-refresh-grub
 /var/lib/secureboot-backups/
 ```
 
-## 秘密鍵を失った
+### 秘密鍵を失った
 
 保存済みバックアップから復元する。
 
@@ -374,7 +374,7 @@ sudo secureboot-restore \
 
 ---
 
-# 注意事項
+## 注意事項
 
 * Secure Boot秘密鍵をdotfilesリポジトリへ入れない
 * `Install Default Keys` や `Restore Factory Keys` を安易に実行しない
@@ -382,4 +382,3 @@ sudo secureboot-restore \
 * Secure Boot設定変更前にVentoyなどの復旧USBを準備する
 * WindowsでBitLockerを使用している場合、回復キーを事前に確保する
 * マザーボード交換時はUEFI鍵の再登録が必要
-

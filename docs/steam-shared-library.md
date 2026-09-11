@@ -508,7 +508,7 @@ df -h /
 
 ---
 
-# `/etc/fstab` 関連部分
+## `/etc/fstab` 関連部分
 
 テンプレート:
 
@@ -523,7 +523,7 @@ UUID=<shared-ntfs-uuid>  <shared-mount>  ntfs3  rw,uid=<uid>,gid=<gid>,dmask=022
 
 ---
 
-# 設計意図
+## 設計意図
 
 Steam の Windows ゲーム本体は数十〜数百 GB になることが多いため、Windows と Arch で二重に保持しない。
 
@@ -552,4 +552,3 @@ Linux runtime
 * Windows 専用ゲームを無理に共有する必要がない
 
 という構成になる。
-
