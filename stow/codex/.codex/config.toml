@@ -48,6 +48,7 @@ gpt-6-astra = 4
 
 [notice]
 hide_full_access_warning = true
+hide_rate_limit_model_nudge = true
 
 [notice.model_migrations]
 "gpt-5.4" = "gpt-5.5"
@@ -57,4 +58,3 @@ url = "https://developers.openai.com/mcp"
 
 [features]
 prevent_idle_sleep = true
-
