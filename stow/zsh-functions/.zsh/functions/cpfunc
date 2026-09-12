@@ -1,30 +1,30 @@
-cpfunc () {
-	emulate -L zsh
-	setopt localoptions pipefail no_aliases
+cpfunc() {
+    emulate -L zsh
+    setopt localoptions pipefail no_aliases
 
-	local nl=$'\n'
-	local separator="----------------------------------------"
+    local nl=$'\n'
+    local separator="----------------------------------------"
 
-	local to_clip=1
-	local to_stdout=0
-	local match_index=1
-	local line_range=""  # "start:end"
+    local to_clip=1
+    local to_stdout=0
+    local match_index=1
+    local line_range="" # "start:end"
 
-	while [[ "$1" == -* ]]; do
-		case "$1" in
-			(-p|--print)   to_stdout=1 ;;
-			(-b|--both)    to_stdout=1 ;;
-			(-n|--no-clip) to_clip=0 ;;
-			(-m|--match)
-				shift
-				match_index="${1:-1}"
-				;;
-			(-L|--lines)
-				shift
-				line_range="${1:-}"
-				;;
-			(-h|--help)
-				cat <<'USAGE'
+    while [[ "$1" == -* ]]; do
+        case "$1" in
+        -p | --print) to_stdout=1 ;;
+        -b | --both) to_stdout=1 ;;
+        -n | --no-clip) to_clip=0 ;;
+        -m | --match)
+            shift
+            match_index="${1:-1}"
+            ;;
+        -L | --lines)
+            shift
+            line_range="${1:-}"
+            ;;
+        -h | --help)
+            cat <<'USAGE'
 cpfunc [options] <name> [file]
 cpfunc [options] -L start:end <file>
 
@@ -37,129 +37,134 @@ Options:
   -m, --match N     複数ヒットしたとき N番目(1-based)を使う
   -L, --lines A:B   行範囲で抜く（関数抽出じゃなくて純粋にA〜B行）
 USAGE
-				return 0
-				;;
-			(*) break ;;
-		esac
-		shift
-	done
+            return 0
+            ;;
+        *) break ;;
+        esac
+        shift
+    done
 
-	# wl-copy check
-	if (( to_clip )) && ! command -v wl-copy >/dev/null 2>&1; then
-		echo "cpfunc: wl-copy not found. Install wl-clipboard or use -p/-n." >&2
-		return 1
-	fi
+    # wl-copy check
+    if ((to_clip)) && ! command -v wl-copy >/dev/null 2>&1; then
+        echo "cpfunc: wl-copy not found. Install wl-clipboard or use -p/-n." >&2
+        return 1
+    fi
 
-	local branch=""
-	branch="$(git branch --show-current 2>/dev/null)"
+    local branch=""
+    branch="$(git branch --show-current 2>/dev/null)"
 
-	local output=""
-	[[ -n "$branch" ]] && output+="Current Branch: $branch${nl}"
-	output+="${separator}${nl}${nl}"
+    local output=""
+    [[ -n "$branch" ]] && output+="Current Branch: $branch${nl}"
+    output+="${separator}${nl}${nl}"
 
-	# ------------------------------------------------------------
-	# Mode: line range
-	# ------------------------------------------------------------
-	if [[ -n "$line_range" ]]; then
-		local file="$1"
-		if [[ -z "$file" || ! -f "$file" ]]; then
-			echo "cpfunc: -L requires an existing <file>." >&2
-			return 1
-		fi
+    # ------------------------------------------------------------
+    # Mode: line range
+    # ------------------------------------------------------------
+    if [[ -n "$line_range" ]]; then
+        local file="$1"
+        if [[ -z "$file" || ! -f "$file" ]]; then
+            echo "cpfunc: -L requires an existing <file>." >&2
+            return 1
+        fi
 
-		local a="${line_range%%:*}"
-		local b="${line_range##*:}"
-		if [[ -z "$a" || -z "$b" || "$a" == "$line_range" ]]; then
-			echo "cpfunc: -L format is start:end (e.g. -L 120:200)" >&2
-			return 1
-		fi
+        local a="${line_range%%:*}"
+        local b="${line_range##*:}"
+        if [[ -z "$a" || -z "$b" || "$a" == "$line_range" ]]; then
+            echo "cpfunc: -L format is start:end (e.g. -L 120:200)" >&2
+            return 1
+        fi
 
-		output+="File: $file${nl}"
-		output+="${separator}${nl}"
+        output+="File: $file${nl}"
+        output+="${separator}${nl}"
 
-		local snippet
-		snippet="$(sed -n "${a},${b}p" "$file")" || return 1
-		output+="${snippet}${nl}"
-		output+="${separator}${nl}${nl}"
+        local snippet
+        snippet="$(sed -n "${a},${b}p" "$file")" || return 1
+        output+="${snippet}${nl}"
+        output+="${separator}${nl}${nl}"
 
-		if (( to_stdout && to_clip )); then
-			print -rn -- "$output" | tee >(wl-copy >/dev/null)
-		elif (( to_stdout )); then
-			print -rn -- "$output"
-		elif (( to_clip )); then
-			print -rn -- "$output" | wl-copy
-		fi
-		return 0
-	fi
+        if ((to_stdout && to_clip)); then
+            print -rn -- "$output" | tee >(wl-copy >/dev/null)
+        elif ((to_stdout)); then
+            print -rn -- "$output"
+        elif ((to_clip)); then
+            print -rn -- "$output" | wl-copy
+        fi
+        return 0
+    fi
 
-	# ------------------------------------------------------------
-	# Mode: function/block extract by name
-	# ------------------------------------------------------------
-	local name="$1"
-	local file="$2"
+    # ------------------------------------------------------------
+    # Mode: function/block extract by name
+    # ------------------------------------------------------------
+    local name="$1"
+    local file="$2"
 
-	if [[ -z "$name" ]]; then
-		echo "cpfunc: missing <name>. Use -h for help." >&2
-		return 1
-	fi
+    if [[ -z "$name" ]]; then
+        echo "cpfunc: missing <name>. Use -h for help." >&2
+        return 1
+    fi
 
-	# escape name for regex safely
-	local esc
-	esc="$(python3 - <<'PY' "$name"
+    # escape name for regex safely
+    local esc
+    esc="$(
+        python3 - "$name" <<'PY'
 import re,sys
 print(re.escape(sys.argv[1]))
 PY
-)" || return 1
+    )" || return 1
 
-	local re="${esc}[[:space:]]*\\("
+    local re="${esc}[[:space:]]*\\("
 
-	local -a matches
-	if [[ -n "$file" ]]; then
-		if [[ ! -f "$file" ]]; then
-			echo "cpfunc: file not found: $file" >&2
-			return 1
-		fi
+    local -a matches
+    if [[ -n "$file" ]]; then
+        if [[ ! -f "$file" ]]; then
+            echo "cpfunc: file not found: $file" >&2
+            return 1
+        fi
 
-		# ★重要: 単一ファイルでも常に file:line:... 形式にする
-		matches=("${(@f)$(rg -n --with-filename --no-heading -S "$re" "$file" 2>/dev/null \
-			| rg -v ':\d+:\s*(//|/\*)' \
-			| rg -v ':\d+:\s*(if|for|while|switch|catch)\b' || true)}")
-		(( ${#matches} == 0 )) && matches=("${(@f)$(rg -n --with-filename --no-heading -S "$re" "$file" 2>/dev/null || true)}")
-	else
-		matches=("${(@f)$(rg -n --with-filename --no-heading -S --hidden --no-ignore-vcs --glob '*.{c,cc,cpp,cxx,h,hh,hpp,hxx}' "$re" src include 2>/dev/null \
-			| rg -v ':\d+:\s*(//|/\*)' \
-			| rg -v ':\d+:\s*(if|for|while|switch|catch)\b' || true)}")
-		(( ${#matches} == 0 )) && matches=("${(@f)$(rg -n --with-filename --no-heading -S --hidden --no-ignore-vcs --glob '*.{c,cc,cpp,cxx,h,hh,hpp,hxx}' "$re" src include 2>/dev/null || true)}")
-	fi
+        # ★重要: 単一ファイルでも常に file:line:... 形式にする
+        matches=("${(@f)$(rg -n --with-filename --no-heading -S "$re" "$file" 2>/dev/null |
+            rg -v ':\d+:\s*(//|/\*)' |
+            rg -v ':\d+:\s*(if|for|while|switch|catch)\b' || true)}")
+        ((${#matches} == 0)) && matches=("${(@f)$(rg -n --with-filename --no-heading -S "$re" "$file" 2>/dev/null || true)}")
+    else
+        matches=("${(@f)$(rg -n --with-filename --no-heading -S --hidden --no-ignore-vcs --glob '*.{c,cc,cpp,cxx,h,hh,hpp,hxx}' "$re" src include 2>/dev/null |
+            rg -v ':\d+:\s*(//|/\*)' |
+            rg -v ':\d+:\s*(if|for|while|switch|catch)\b' || true)}")
+        ((${#matches} == 0)) && matches=("${(@f)$(rg -n --with-filename --no-heading -S --hidden --no-ignore-vcs --glob '*.{c,cc,cpp,cxx,h,hh,hpp,hxx}' "$re" src include 2>/dev/null || true)}")
+    fi
 
-	if (( ${#matches} == 0 )); then
-		echo "cpfunc: no matches for '$name'." >&2
-		return 1
-	fi
+    if ((${#matches} == 0)); then
+        echo "cpfunc: no matches for '$name'." >&2
+        return 1
+    fi
 
-	if (( match_index < 1 || match_index > ${#matches} )); then
-		echo "cpfunc: -m out of range. matches=${#matches}, got=$match_index" >&2
-		return 1
-	fi
+    if ((match_index < 1 || match_index > ${#matches})); then
+        echo "cpfunc: -m out of range. matches=${#matches}, got=$match_index" >&2
+        return 1
+    fi
 
-	if (( ${#matches} > 1 && match_index == 1 )); then
-		echo "cpfunc: multiple matches (${#matches}). use -m N to choose:" >&2
-		local i=1
-		for m in "${matches[@]}"; do
-			echo "  [$i] $m" >&2
-			(( i++ ))
-			(( i > 8 )) && { echo "  ..."; break; }
-		done
-	fi
+    if ((${#matches} > 1 && match_index == 1)); then
+        echo "cpfunc: multiple matches (${#matches}). use -m N to choose:" >&2
+        local i=1
+        for m in "${matches[@]}"; do
+            echo "  [$i] $m" >&2
+            ((i++))
+            ((i > 8)) && {
+                echo "  ..."
+                break
+            }
+        done
+    fi
 
-	local pick="${matches[$match_index]}"
-	local pick_file="${pick%%:*}"
-	local rest="${pick#*:}"
-	local pick_line="${rest%%:*}"
+    local pick="${matches[$match_index]}"
+    local pick_file="${pick%%:*}"
+    local rest="${pick#*:}"
+    local pick_line="${rest%%:*}"
 
-	# python extractor (brace matching)
-	local snippet=""
-	snippet="$(python3 - "$pick_file" "$pick_line" "$name" <<'PY'
+    # python extractor (brace matching)
+    local snippet=""
+    snippet="$(
+        python3 - "$pick_file" "$pick_line" "$name" <<'PY'
 import sys
 
 path = sys.argv[1]
@@ -290,23 +295,23 @@ if end_i is None:
 
 sys.stdout.write("".join(lines[begin:end_i+1]).rstrip("\n") + "\n")
 PY
-)" || {
-		echo "cpfunc: parse failed; fallback to context around ${pick_file}:${pick_line}" >&2
-		local lo=$(( pick_line > 20 ? pick_line-20 : 1 ))
-		local hi=$(( pick_line+60 ))
-		snippet="$(sed -n "${lo},${hi}p" "$pick_file")"
-	}
+    )" || {
+        echo "cpfunc: parse failed; fallback to context around ${pick_file}:${pick_line}" >&2
+        local lo=$((pick_line > 20 ? pick_line - 20 : 1))
+        local hi=$((pick_line + 60))
+        snippet="$(sed -n "${lo},${hi}p" "$pick_file")"
+    }
 
-	output+="File: $pick_file${nl}"
-	output+="${separator}${nl}"
-	output+="${snippet}${nl}"
-	output+="${separator}${nl}${nl}"
+    output+="File: $pick_file${nl}"
+    output+="${separator}${nl}"
+    output+="${snippet}${nl}"
+    output+="${separator}${nl}${nl}"
 
-	if (( to_stdout && to_clip )); then
-		print -rn -- "$output" | tee >(wl-copy >/dev/null)
-	elif (( to_stdout )); then
-		print -rn -- "$output"
-	elif (( to_clip )); then
-		print -rn -- "$output" | wl-copy
-	fi
+    if ((to_stdout && to_clip)); then
+        print -rn -- "$output" | tee >(wl-copy >/dev/null)
+    elif ((to_stdout)); then
+        print -rn -- "$output"
+    elif ((to_clip)); then
+        print -rn -- "$output" | wl-copy
+    fi
 }

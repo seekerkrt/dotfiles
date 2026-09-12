@@ -1,83 +1,86 @@
-cpc () {
-  emulate -L zsh
-  setopt localoptions pipefail no_aliases
+cpc() {
+    emulate -L zsh
+    setopt localoptions pipefail no_aliases
 
-  local separator="----------------------------------------"
-  local nl=$'\n'
+    local separator="----------------------------------------"
+    local nl=$'\n'
 
-  local count=0
-  local output=""
+    local count=0
+    local output=""
 
-  local to_clip=1
-  local to_stdout=0
+    local to_clip=1
+    local to_stdout=0
 
-  # options
-  while [[ "$1" == -* ]]; do
-    case "$1" in
-      (-p|--print)
-        to_stdout=1
-        to_clip=0       # ← -p は「stdoutのみ」にする（-b と差別化）
-        ;;
-      (-b|--both)
-        to_stdout=1
-        to_clip=1
-        ;;
-      (-n|--no-clip)
-        to_clip=0
-        (( to_stdout == 0 )) && to_stdout=1  # ← -n 単体でも出力は欲しいよね、の保険
-        ;;
-      (-h|--help)
-        cat <<'USAGE'
+    # options
+    while [[ "$1" == -* ]]; do
+        case "$1" in
+        -p | --print)
+            to_stdout=1
+            to_clip=0 # ← -p は「stdoutのみ」にする（-b と差別化）
+            ;;
+        -b | --both)
+            to_stdout=1
+            to_clip=1
+            ;;
+        -n | --no-clip)
+            to_clip=0
+            ((to_stdout == 0)) && to_stdout=1 # ← -n 単体でも出力は欲しいよね、の保険
+            ;;
+        -h | --help)
+            cat <<'USAGE'
 cpc [options] <files...>
   (default) wl-copy に送る
   -p, --print    標準出力のみ
   -b, --both     クリップボード + 標準出力
   -n, --no-clip  クリップボードに送らない（stdout用途）
 USAGE
-        return 0
-        ;;
-      (*) break ;;
-    esac
-    shift
-  done
+            return 0
+            ;;
+        *) break ;;
+        esac
+        shift
+    done
 
-  if (( to_clip )) && ! command -v wl-copy > /dev/null 2>&1; then
-    echo "cpc: wl-copy not found. Install wl-clipboard or use -p/-n." >&2
-    return 1
-  fi
-
-  # Git branch
-  local branch=""
-  branch=$(git branch --show-current 2>/dev/null)
-
-  # header（★ここが今回の肝：\n じゃなく nl を使う）
-  [[ -n "$branch" ]] && output+="Current Branch: $branch${nl}"
-  output+="${separator}${nl}${nl}"
-
-  # files
-  local f
-  for f in "$@"; do
-    [[ -d "$f" || "$f" == "cpc" ]] && continue
-
-    if [[ -f "$f" ]]; then
-      output+="File: $f${nl}"
-      output+="${separator}${nl}"
-      output+="$(<"$f")${nl}"
-      output+="${separator}${nl}${nl}"
-      ((count++))
-    else
-      echo "cpc: Warning: '$f' not found" >&2
+    if ((to_clip)) && ! command -v wl-copy >/dev/null 2>&1; then
+        echo "cpc: wl-copy not found. Install wl-clipboard or use -p/-n." >&2
+        return 1
     fi
-  done
 
-  (( count == 0 )) && { echo "cpc: No files were copied." >&2; return 2; }
+    # Git branch
+    local branch=""
+    branch=$(git branch --show-current 2>/dev/null)
 
-  # output routing
-  if (( to_clip && to_stdout )); then
-    printf '%s' "$output" | tee >(wl-copy) >/dev/null
-  elif (( to_clip )); then
-    printf '%s' "$output" | wl-copy
-  else
-    printf '%s' "$output"
-  fi
+    # header（★ここが今回の肝：\n じゃなく nl を使う）
+    [[ -n "$branch" ]] && output+="Current Branch: $branch${nl}"
+    output+="${separator}${nl}${nl}"
+
+    # files
+    local f
+    for f in "$@"; do
+        [[ -d "$f" || "$f" == "cpc" ]] && continue
+
+        if [[ -f "$f" ]]; then
+            output+="File: $f${nl}"
+            output+="${separator}${nl}"
+            output+="$(<"$f")${nl}"
+            output+="${separator}${nl}${nl}"
+            ((count++))
+        else
+            echo "cpc: Warning: '$f' not found" >&2
+        fi
+    done
+
+    ((count == 0)) && {
+        echo "cpc: No files were copied." >&2
+        return 2
+    }
+
+    # output routing
+    if ((to_clip && to_stdout)); then
+        printf '%s' "$output" | tee >(wl-copy) >/dev/null
+    elif ((to_clip)); then
+        printf '%s' "$output" | wl-copy
+    else
+        printf '%s' "$output"
+    fi
 }

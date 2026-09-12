@@ -38,36 +38,36 @@ function pack_source_files() {
             -o -path "*/.ccls-cache" \
             -o -path "*/node_modules" \) -prune \
             -o -type f \( \
-                -name "*.c" -o \
-                -name "*.cc" -o \
-                -name "*.cpp" -o \
-                -name "*.cxx" -o \
-                -name "*.h" -o \
-                -name "*.hh" -o \
-                -name "*.hpp" -o \
-                -name "*.hxx" -o \
-                -name "*.asm" -o \
-                -name "*.nasm" -o \
-                -name "*.s" -o \
-                -name "*.S" -o \
-                -name "*.jc" -o \
-                -name "CMakeLists.txt" -o \
-                -name "Makefile" -o \
-                -name "README.md" -o \
-                -name "AGENTS.md" -o \
-                -name "CLAUDE.md" -o \
-                -path "*/docs/*.md" \
-            \) -print0 \
-        | sort -z \
-        | while IFS= read -r -d '' file; do
-            printf '\n'
-            printf '============================================================\n'
-            printf 'FILE: %s\n' "$file"
-            printf '============================================================\n\n'
-            cat "$file"
-            printf '\n'
-        done
-    } > "$output_file"
+            -name "*.c" -o \
+            -name "*.cc" -o \
+            -name "*.cpp" -o \
+            -name "*.cxx" -o \
+            -name "*.h" -o \
+            -name "*.hh" -o \
+            -name "*.hpp" -o \
+            -name "*.hxx" -o \
+            -name "*.asm" -o \
+            -name "*.nasm" -o \
+            -name "*.s" -o \
+            -name "*.S" -o \
+            -name "*.jc" -o \
+            -name "CMakeLists.txt" -o \
+            -name "Makefile" -o \
+            -name "README.md" -o \
+            -name "AGENTS.md" -o \
+            -name "CLAUDE.md" -o \
+            -path "*/docs/*.md" \
+            \) -print0 |
+            sort -z |
+            while IFS= read -r -d '' file; do
+                printf '\n'
+                printf '============================================================\n'
+                printf 'FILE: %s\n' "$file"
+                printf '============================================================\n\n'
+                cat "$file"
+                printf '\n'
+            done
+    } >"$output_file"
 
     echo "Done! Saved to $(realpath "$output_file")"
     echo "You can now upload this file to Gemini/ChatGPT/etc."

@@ -33,3 +33,8 @@ indent_style = unset
 indent_size = unset
 tab_width = unset
 trim_trailing_whitespace = unset
+
+[.zsh/functions/*]
+shell_variant = zsh
+indent_style = space
+indent_size = 4
