@@ -262,6 +262,7 @@ vulkan-asahi
 vulkan-dzn
 vulkan-freedreno
 vulkan-gfxstream
+vulkan-headers
 vulkan-intel
 vulkan-mesa-layers
 vulkan-swrast

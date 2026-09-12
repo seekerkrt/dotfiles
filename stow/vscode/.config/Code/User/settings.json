@@ -26,7 +26,8 @@
     },
     "files.associations": {
         "*.cade": "cpp",
-        "*.cadh": "cpp"
+        "*.cadh": "cpp",
+        "**/.zsh/functions/*": "zsh",
     },
     "breadcrumbs.enabled": true,
     "window.zoomLevel": 1,
@@ -168,6 +169,14 @@
     },
     "shellcheck.enable": true,
     "shellcheck.run": "onType",
+    // Zsh
+    "[zsh]": {
+        "editor.defaultFormatter": "lumirelle.shell-format-rev",
+        "editor.formatOnSave": true
+    },
+    "shellformat.useEditorConfig": true,
+    "zshcheck.enable": true,
+    "zshcheck.runOnType": true,
     // Rust
     "[rust]": {
         "editor.defaultFormatter": "rust-lang.rust-analyzer",
