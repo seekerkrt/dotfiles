@@ -131,6 +131,7 @@ stow/gemini/.gemini/antigravity-cli/updater/
 
 # Python bytecode cache (hooks が共有モジュールを import すると生成される)
 __pycache__/
-stow/scripts/.local/bin/claude
 
+# .local/bin
+stow/scripts/.local/bin/claude
 stow/scripts/.local/bin/gersemi
