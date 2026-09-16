@@ -32,7 +32,6 @@ write前にユーザー判断を求める。
 - repository、branch、HEAD、working tree、完了事項、採用判断、scope / non-goal、validation、未実施、未確認、risk、next、Git操作状態を残す。
 - file一覧、command全文、Structure before / afterは再開に必要な場合だけ含める。
 - external handoff path、suggested archive path、archive statusは、ユーザーが必要としない限り省く。
-- handoffを作るためだけに新しい実装、広範な調査、高costな検証を始めない。
 - inline成果物の生成ではfile、directory、clipboard、background task、
   Git / GitHub mutationを行わない。
 
@@ -44,6 +43,7 @@ write前にユーザー判断を求める。
 ## Current state
 
 - Repo / branch / HEAD:
+- Date / Agent / Phase:
 - Working tree:
 
 ## Completed and decisions

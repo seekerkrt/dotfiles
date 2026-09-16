@@ -25,14 +25,42 @@ write前にユーザー判断を求める。通常handoffからrepository archiv
 
 ## Evidence collection
 
-1. repository root、repository名、branch、HEAD、日時、agentを確認し、filename用のbranch-slugを決める。
-2. 関連する場合はIssue / PRとの対応を確認し、scopeとphaseを決める。
-3. 作成前の`git status --short --branch`を記録する。
-4. 読んだfile、変更したfile、実施内容、non-goalを整理する。
-5. 実行したvalidation commandと結果、未実施と理由を整理する。
-6. 決定、既知risk、未確認、次の一手を整理する。
-7. handoffを作成し、内容とpathを検証する。
-8. 作成後のrepository statusを確認し、handoff生成によるrepository差分がないことを確かめる。
+共通contractのevidence再利用原則に従い、同一sessionの作業終了直後で必要なevidenceが揃う場合はFast pathを使う。
+既読で不変のSkill / commonは再読しない。不足・不整合があるclaimだけRecovery pathで扱う。
+
+### Fast path
+
+1. 対象repositoryに実行directoryを固定する。確認済みのroot、repository名、Issue / PRとの対応、scope、
+   作業内容、判断、validation結果を再利用する。日時、agent、phaseを記録する。
+2. 保存前に次を原則各1回freshに取得する。1観測setをfilename、本文、保存後validationで共有する。
+
+   ```bash
+   git branch --show-current
+   git rev-parse HEAD
+   git status --short --branch
+   ```
+
+3. 既存evidenceから共通の必須情報を整理し、外部へ新規保存する。
+4. 下記「永続handoffの検証」を1つの工程として行う。保存後statusは1回取得し、結果を最終報告へ再利用する。
+
+既知のdirty stateだけを理由にRecoveryへ降りない。ただしbranch / HEAD / statusの一致を内容不変の証明にしない。
+dirty fileは同じ`M`表示のまま再編集され、untracked pathの内容も変わり得る。
+並行writer / watcher、Git操作、cwd / worktree変更、長い中断等、evidenceを無効化する変更の可能性があれば、
+影響するclaimだけRecoveryで確認する。通常経路で全file hashや全diff取得を必須にしない。
+
+### Recovery path
+
+次の場合は不足・不整合の範囲を特定し、必要な現在stateと根拠だけを取得する。
+
+- standalone invocation、context不足、evidence provenance不足、historical claimしかない。
+- branch / HEAD不整合、ユーザー指定と現状の矛盾、repository stateが作業中に変化した可能性がある。
+
+対象repo / worktreeが曖昧ならrootを確認する。対象file / diff、Issue / PR、指定artifact等のうち、
+当該claimの確認に必要なものだけを読む。過去handoffはexact pathまたは限定scopeで扱い、全体探索しない。
+取得済みの有効なstateは使い続け、Fast pathの全commandを再実行しない。
+保存に使うbranch / HEAD / statusが古くなった場合だけ更新し、理由を残す。
+
+repo、scope、出力mode、書込み権限等の保存成立条件を確定できない場合は、依存する書込みを止めて不足情報を報告する。
 
 ## 永続fileの配置
 
@@ -49,11 +77,7 @@ write前にユーザー判断を求める。通常handoffからrepository archiv
 - 特定テーマ: `topic-<short-kebab-slug>`
 - repository全体または分類不能: `general`
 
-`<branch-slug>`は、handoff作成時点で実際にcheckoutされているbranchから決める。
-
-```bash
-git branch --show-current
-```
+`<branch-slug>`は、Evidence collectionで取得した保存前のbranch / HEADから決める。命名のために再取得しない。
 
 - 通常branch: branch名の`/`だけを`-`へ置換する。
 - detached HEAD: `detached-<short-sha>`とし、short-shaは12文字程度を使う。
@@ -81,6 +105,7 @@ phaseは`audit`、`design`、`investigation`、`implementation`、`validation`�
 filenameのbranch-slugは本文の代替ではない。`Current state`の`Branch:`へ、置換前の完全なbranch名を引き続き記録する。
 
 `latest.md`、`current.md`等の固定名を作らない。既存handoffを移動、rename、削除しない。この命名は新規handoffだけへ適用し、旧`<YYYYMMDD-HHMMSS>-<agent>-<phase>.md`形式の既存handoffはそのまま残す。必要なdirectoryだけ作る。
+保存先の解決先がrepository外の上記directoryに収まることを確認し、既存fileを上書きしない。
 
 新規永続handoffでは、共通の必須情報に加えて次を記録する。
 
@@ -176,12 +201,8 @@ PR bodyへ記録する場合も、scope / non-scope、validation、risk、next�
 
 ## 永続handoffの検証
 
-```bash
-git status --short --branch
-test -f ~/handoff/<repo>/<scope>/<filename>
-```
-
-次を確認する。
+保存済みartifactのread-backと次の内容・path確認、保存後の`git status --short --branch`を1つのvalidation工程で行う。
+statusは保存前と比較するために1回取得する。filenameや本文の照合には保存前の観測setを使い、branch / HEADを再取得しない。
 
 - filenameがtimestamp、agent、branch-slug、phaseを持つ。
 - branch-slugが作成時点のbranch、またはdetached HEADの`detached-<short-sha>`と対応する。
@@ -190,11 +211,13 @@ test -f ~/handoff/<repo>/<scope>/<filename>
 - 必須情報とarchive metadataがある。
 - 本文の`Branch:`に完全なbranch名がある。
 - `Archive status`が`not archived`である。
-- repositoryがhandoff生成によってdirtyになっていない。
+- repository statusにhandoff生成による追加変更がなく、既存ユーザー変更が保持されている。
 - handoffをstage、commit、pushしていない。
 
+status一致だけでfile内容の完全不変を証明したとは扱わない。変化や競合の兆候があれば、該当するclaimだけRecoveryで扱う。
+保存失敗・結果不明の場合は今回のartifactの存在と内容を先に確認し、同じ保存を無条件に繰り返さない。
 出力先へ書けない場合は固定名やrepository内fileで代用せず、未作成と理由を報告する。
 
 ## 最終報告
 
-handoff path、suggested archive path、必須情報確認、repository statusを簡潔に報告する。作業全体でのGit operationsと、handoff生成自体によるarchive / stage / commit / pushの有無を分ける。通常handoffではhandoff fileを自動archive、stage、commit、pushしない。作業結果の最終報告にもhandoff pathを含める。
+上記validation結果を再利用し、handoff path、suggested archive path、必須情報確認、repository statusを簡潔に報告する。同じstateを別の最終確認として再取得しない。作業全体でのGit operationsと、handoff生成自体によるarchive / stage / commit / pushの有無を分ける。通常handoffではhandoff fileを自動archive、stage、commit、pushしない。作業結果の最終報告にもhandoff pathを含める。

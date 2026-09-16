@@ -49,6 +49,19 @@ agentの推奨とユーザーが採用した判断を分ける。
 
 確認済み事実、採用判断、proposal、推測、未確認を区別し、未取得の情報や未実施検証を捏造しない。
 
+## Session evidenceの再利用
+
+normal / inlineでは、出所、対象repo / revision / fileやdiff、観測時点、必要な実行環境を対応付けられ、
+対象を無効化する変更の兆候がないsession evidenceを再利用する。出所を保持したsession summaryも利用できる。
+
+- 過去runのpassをcurrent passへ昇格しない。対象や実行後の変更との対応が不明なら、現状態への適用は未確認とする。
+- GitHub Issue / PR等は取得時点のsnapshotとして扱い、現在のserver stateへ昇格しない。
+  現在の外部状態が必要なclaimだけ、必要なresourceを再取得する。local remote-tracking情報で代用しない。
+- provenance不足、historical claimのみ、対象の変更兆候等があれば、不明なclaimだけ限定Recoveryする。
+  有効なevidenceは保持し、全repositoryの再監査へ拡張しない。取得できない情報は未確認と理由を残す。
+- handoff生成だけを理由にsource全量再読、既存build / test / audit再実行、不要なIssue / PR再取得・remote再照会、
+  過去handoffの広範探索、diff全量再取得、新しい実装、その他の広範な調査・高cost検証を始めない。
+
 ## 必須情報
 
 該当する内容を次から落とさない。空のsectionを増やす必要はない。

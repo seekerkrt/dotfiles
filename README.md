@@ -175,6 +175,9 @@ SKILL.mdのfront matterと、`handoff-inline`の共通reference参照パスは�
 verificationの詳細workflowは`verify`（Claude Codeでは`verify-diff`）を正とし、
 `issue-slice`はacceptance criteria・impact / riskを渡して必要な検証の完了を確認します。
 `handoff`と`handoff-inline`は共通referenceを使い、inlineは通常保存のSKILL.mdを読む必要がありません。
+通常handoffは同一sessionの有効なevidenceをFast pathで再利用し、不足・不整合のあるclaimだけRecoveryします。
+観測・validation・安全境界の詳細は各Skillとcommon referenceを正とします。
+inlineはno-write、archiveは選別済みsnapshotを内容不変で収蔵します。
 `github/references/commands.md`はCLI例が必要な場合だけ参照し、安全境界は`github/SKILL.md`に残します。
 
 supporting referenceは各Skill directory内に置き、同じStow treeで配布します。
@@ -600,6 +603,10 @@ workflow. `issue-slice` supplies acceptance criteria and impact / risk,
 then checks that the required verification is complete.
 `handoff` and `handoff-inline` use the common reference; inline does not
 need to read the normal-save SKILL.md.
+Normal handoff reuses valid evidence from the same session via the Fast path
+and recovers only claims with missing or inconsistent evidence.
+The skills and common reference are authoritative for observation, validation, and safety requirements.
+Inline remains no-write; archive stores selected snapshots without changing their contents.
 `github/references/commands.md` is read only when CLI examples are needed;
 safety boundaries remain in `github/SKILL.md`.
 
