@@ -21,6 +21,7 @@ breeze-plymouth
 btop
 btrfs-progs
 ccache
+chatgpt-bin
 chezmoi
 clamav
 clamtk
