@@ -6,10 +6,17 @@ BACKUP_NAME="ssh-backup.tar.gz.gpg"
 # Allowlist:
 # Only these files are included in the encrypted backup.
 # authorized_keys / known_hosts / known_hosts.old are intentionally excluded.
+# Keep this list in sync with ALLOW_PATHS in restore-ssh-allowlist.sh.
 INCLUDE_PATHS='
 .ssh/config
 .ssh/id_ed25519
 .ssh/id_ed25519.pub
+.ssh/id_ed25519_github
+.ssh/id_ed25519_github.pub
+.ssh/id_ed25519_gitlab
+.ssh/id_ed25519_gitlab.pub
+.ssh/id_ed25519_gitlab_mirror
+.ssh/id_ed25519_gitlab_mirror.pub
 '
 
 usage() {
@@ -33,6 +40,12 @@ included files:
   ~/.ssh/config
   ~/.ssh/id_ed25519
   ~/.ssh/id_ed25519.pub
+  ~/.ssh/id_ed25519_github
+  ~/.ssh/id_ed25519_github.pub
+  ~/.ssh/id_ed25519_gitlab
+  ~/.ssh/id_ed25519_gitlab.pub
+  ~/.ssh/id_ed25519_gitlab_mirror
+  ~/.ssh/id_ed25519_gitlab_mirror.pub
 
 excluded files:
   ~/.ssh/authorized_keys

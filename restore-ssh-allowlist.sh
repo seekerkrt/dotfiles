@@ -6,10 +6,17 @@ BACKUP_NAME="ssh-backup.tar.gz.gpg"
 # Restore allowlist:
 # The archive must contain only these files.
 # authorized_keys / known_hosts / known_hosts.old are intentionally not restored.
+# Keep this list in sync with INCLUDE_PATHS in backup-ssh-allowlist.sh.
 ALLOW_PATHS='
 .ssh/config
 .ssh/id_ed25519
 .ssh/id_ed25519.pub
+.ssh/id_ed25519_github
+.ssh/id_ed25519_github.pub
+.ssh/id_ed25519_gitlab
+.ssh/id_ed25519_gitlab.pub
+.ssh/id_ed25519_gitlab_mirror
+.ssh/id_ed25519_gitlab_mirror.pub
 '
 
 usage() {
@@ -33,6 +40,12 @@ restored files:
   ~/.ssh/config
   ~/.ssh/id_ed25519
   ~/.ssh/id_ed25519.pub
+  ~/.ssh/id_ed25519_github
+  ~/.ssh/id_ed25519_github.pub
+  ~/.ssh/id_ed25519_gitlab
+  ~/.ssh/id_ed25519_gitlab.pub
+  ~/.ssh/id_ed25519_gitlab_mirror
+  ~/.ssh/id_ed25519_gitlab_mirror.pub
 
 not restored:
   ~/.ssh/authorized_keys
