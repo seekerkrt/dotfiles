@@ -216,5 +216,22 @@
     // Docker
     "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
     "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
-    "chat.agent.sandbox.enabled": "on"
+    "chat.agent.sandbox.enabled": "on",
+    // Theme & Color
+    "workbench.colorTheme": "Night Owl",
+    "editor.tokenColorCustomizations": {
+        "comments": "#6A9955",
+        "[Tokyo Night Storm]": {
+            "comments": "#6A9955"
+        },
+        "[Abyss]": {
+            "comments": "#6A9955"
+        },
+        "[Night Owl]": {
+            "comments": "#6A9955"
+        },
+        "[GitHub Dark High Contrast]": {
+            "comments": "#6A9955"
+        },
+    }
 }

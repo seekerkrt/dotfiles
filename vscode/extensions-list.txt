@@ -1,6 +1,8 @@
 charliermarsh.ruff
 davidanson.vscode-markdownlint
+enkia.tokyo-night
 fcrespo82.markdown-table-formatter
+github.github-vscode-theme
 golang.go
 gruntfuggly.todo-tree
 jeff-hykin.better-shellscript-syntax
@@ -24,6 +26,7 @@ ms-vscode.makefile-tools
 mushan.vscode-paste-image
 openai.chatgpt
 rust-lang.rust-analyzer
+sdras.night-owl
 shopify.ruby-lsp
 sumneko.lua
 tamasfe.even-better-toml
