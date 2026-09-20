@@ -19,7 +19,7 @@ extends = ":workspace"
 
 [agents]
 enabled = true
-max_concurrent_threads_per_session = 2
+max_concurrent_threads_per_session = 4
 
 [tui]
 status_line = [
@@ -98,5 +98,3 @@ enabled = true
 [shell_environment_policy]
 inherit = "core"
 
-[shell_environment_policy.set]
-DISABLE_TELEMETRY = "1"
