@@ -99,6 +99,10 @@ def strip_redirects(tokens):
 
 def tokenize(command: str):
     """コマンド文字列を演算子込みでトークン化。解析不能なら None。"""
+    # shlex は改行を空白として消す。引用・行継続も解釈せず、
+    # 複数行は判定を放棄して Claude Code 本来の permission 評価へ戻す。
+    if "\n" in command or "\r" in command:
+        return None
     if any(s in command for s in BAILOUT_SUBSTRINGS):
         return None
     lexer = shlex.shlex(command, posix=True, punctuation_chars=True)

@@ -1,0 +1,7 @@
+# test-rules-gate.sh 専用の固定入力。本番の permission policy / authority ではない。
+# 個人の live rules を読まず、既存回帰ケースで使う prefix だけを定義する。
+prefix_rule(pattern=["make"], decision="allow")
+prefix_rule(pattern=["gh", "pr", "list"], decision="allow")
+prefix_rule(pattern=["git", "add", "--"], decision="allow")
+prefix_rule(pattern=["git", "commit", "-m"], decision="allow")
+prefix_rule(pattern=["env", "-u", "MAKEFLAGS", "-u", "MFLAGS", "make"], decision="allow")

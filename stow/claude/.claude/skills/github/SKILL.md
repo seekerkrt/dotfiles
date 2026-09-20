@@ -20,7 +20,10 @@ CLIのcommand例・引数を確認する必要があるときだけ、[command r
 
 ## 認証境界
 
-利用可能ならread-onlyの`gh`を優先する。必要な場合だけ`gh auth status`で利用可否を確認してよい。失敗した場合やClaude Codeのpermissionで利用できない場合も認証・permission設定を修復または回避せず、利用可能なread-only GitHub connector / MCP toolへfallbackする。
+利用可能ならread-onlyの`gh`を優先する。必要な場合だけ`gh auth status`で利用可否を確認してよい。認証・permission設定は修復・変更しない。
+
+- `gh` executableの不在、認証済みtransportの利用不能、現在のtool surfaceに経路がない等のtool / transport障害では、同じread-only操作が別経路で独立して許可されている場合だけ、read-only GitHub connector / MCP toolへfallbackしてよい。write操作をread-only操作へ読み替えない。
+- user / policy / current authorityによる操作自体のdeny（permission promptでの拒否を含む）や未許可をtransport障害として扱わない。read-onlyでも別toolへ迂回せず停止し、許可確認が必要ならユーザーへ確認する。ask / denyの扱いは`CLAUDE.md`のpermission境界に従い、本Skillで上書きしない。
 
 次を実行しない。
 
