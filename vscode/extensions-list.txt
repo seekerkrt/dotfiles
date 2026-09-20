@@ -24,7 +24,6 @@ ms-vscode.cpptools-extension-pack
 ms-vscode.cpptools-themes
 ms-vscode.makefile-tools
 mushan.vscode-paste-image
-openai.chatgpt
 rust-lang.rust-analyzer
 sdras.night-owl
 shopify.ruby-lsp

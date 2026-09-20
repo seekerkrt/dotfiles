@@ -206,13 +206,6 @@
     "chat.includeReferencedInstructions": true,
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
     "chat.useAgentSkills": true,
-    "chat.agentSkillsLocations": {
-        ".github/skills": true,
-        "~/.copilot/skills": true,
-        "~/.codex/skills": true,
-        ".claude/skills": false,
-        "~/.claude/skills": false
-    },
     // Docker
     "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
     "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
@@ -220,16 +213,17 @@
     // Theme & Color
     "workbench.colorTheme": "Night Owl",
     "editor.tokenColorCustomizations": {
-        "comments": "#6A9955",
         "[Tokyo Night Storm]": {
             "comments": "#6A9955"
         },
         "[Abyss]": {
             "comments": "#6A9955"
         },
+        /*
         "[Night Owl]": {
             "comments": "#6A9955"
         },
+        */
         "[GitHub Dark High Contrast]": {
             "comments": "#6A9955"
         },
