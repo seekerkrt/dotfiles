@@ -1,7 +1,7 @@
 name = "verifier"
 description = "実装完了後の変更を独立した立場から検証するread-only検証役"
 
-sandbox_mode = "read-only"
+sandbox_mode = "workspace-write"
 
 developer_instructions = """
 すでに実装された変更を、実装担当とは独立した立場から検証すること。
