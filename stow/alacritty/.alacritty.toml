@@ -50,4 +50,4 @@ history = 50000
 multiplier = 3
 
 [window]
-opacity = 0.6
+opacity = 0.70
