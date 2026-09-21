@@ -10,12 +10,13 @@ approvals_reviewer = "user"
 service_tier = "default"
 personality = "pragmatic"
 
-[permissions.workspace-handoff]
-description = "Current workspace plus handoff directory"
+[permissions.workspace-dev]
+description = "Current workspace plus handoff and ramdisk directories"
 extends = ":workspace"
 
-[permissions.workspace-handoff.workspace_roots]
+[permissions.workspace-dev.workspace_roots]
 "~/handoff" = true
+"/ramdisk" = true
 
 [agents]
 enabled = true

@@ -8,7 +8,7 @@ description: C++コードの生成・編集・review、およびC++から利用�
 ## 適用順
 
 1. 作業対象に適用される`AGENTS.md`を読む。
-2. repositoryの`docs/CODING_CONVENTIONS.md`が存在すれば読む。
+2. repositoryの`docs/coding-conventions.md`のようなコーディング規約文書が存在すれば読む。
 3. Makefile、CMake等の実際のbuild設定からcompiler、C++標準、例外、RTTI、warningを確認する。
 4. project側に明示がない部分へ本Skillの共通baselineを適用する。
 
