@@ -21,11 +21,13 @@ prefix_rule(
         "MAKEFLAGS",
         "-u",
         "MFLAGS",
+        "TMPDIR=/ramdisk",
         "make",
     ],
     decision="allow",
-    justification="MAKEFLAGSとMFLAGSを除去したmake実行を自動許可する",
+    justification="MAKEFLAGSとMFLAGSを除去し、TMPDIR=/ramdiskを指定したmake実行を自動許可する",
 )
+
 prefix_rule(
     pattern=["docker", "ps"],
     decision="allow",
@@ -87,3 +89,5 @@ prefix_rule(
 )
 prefix_rule(pattern=["docker", "inspect"], decision="allow")
 prefix_rule(pattern=["docker", "logs"], decision="allow")
+prefix_rule(pattern=["python"] decision="allow")
+prefix_rule(pattern=["python3"] decision="allow")
