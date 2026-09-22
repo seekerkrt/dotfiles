@@ -197,19 +197,12 @@
         "editor.defaultFormatter": "tamasfe.even-better-toml",
         "editor.formatOnSave": true
     },
-    "github.copilot.nextEditSuggestions.enabled": true,
+    // Chat
     "chat.useAgentsMdFile": true,
     "chat.useClaudeMdFile": false,
     "chat.includeApplyingInstructions": true,
     "chat.includeReferencedInstructions": true,
     "chat.useAgentSkills": true,
-    "chat.agentSkillsLocations": {
-        ".github/skills": true,
-        "~/.copilot/skills": true,
-        "~/.codex/skills": true,
-        ".claude/skills": false,
-        "~/.claude/skills": false
-    },
     // Docker
     "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
     "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",

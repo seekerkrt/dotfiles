@@ -61,7 +61,8 @@ repositoryの文書が別のsource of truthや優先順位を指定している�
 commit直前のstage対象・staged diff等、時点依存の状態はその時点で再確認する。
 
 - `audit`: 問い・調査scopeに対するread-only監査。根拠・反証・未確認を整理し、診断・findingを返す。
-- `cpp-conventions`: C++の生成、編集、review、およびC++から利用するC互換headerや共有ABI境界。repositoryの`docs/CODING_CONVENTIONS.md`とbuild設定も追加で読む。
+- `c-conventions`: Cの生成、編集、review、およびCから利用するC互換headerや共有ABI境界。repositoryの`docs/coding-conventions.md`とbuild設定も追加で読む。
+- `cpp-conventions`: C++の生成、編集、review、およびC++から利用するC互換headerや共有ABI境界。repositoryの`docs/coding-conventions.md`とbuild設定も追加で読む。
 - `issue-slice`: GitHub Issueまたは明示されたPR単位のscope固定と、最小実装から検証までの統括。
 - `verify`: acceptance criteriaに対する検証選択・実行結果・環境・artifact・未完了状態を扱う。
   pass / fail / partial等の判定と、長い出力・作業artifactの保存規則を正とする。
