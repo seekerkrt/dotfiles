@@ -15,9 +15,6 @@ agents = false
 mcps = false
 hooks = false
 
-[skills]
-paths = ["~/.codex/skills"]
-
 [marketplace]
 default_skills_installs_purged = true
 official_marketplace_auto_installed = true

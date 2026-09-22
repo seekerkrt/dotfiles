@@ -128,27 +128,27 @@ Stow 対象外で、リポジトリへ自動適用するスクリプトはあり
 | エージェント | リポジトリ内の実体 | 実際の参照先 | 内容 |
 | --- | --- | --- | --- |
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **共通契約の正本** |
-| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 9種（directory symlink） |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 10種（directory symlink） |
 | Codex | `stow/codex/.codex/config.toml` | `~/.codex/config.toml` | 常用デフォルト |
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | モデル別プロファイル（astra / luna / sol / terra / spark / safe） |
 | Codex | `stow/codex/.codex/config.toml.example` | `~/.codex/config.toml.example` | 最小構成の例 |
 | Codex | `stow/codex/.codex/rules/` | `~/.codex/rules/` | prefix_rule（実ファイルcopy。現在は `default.rules`） |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Codex正本のimport＋固有差分 |
-| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 9種 |
+| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 10種 |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、hooks、プラグイン等 |
 | Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | Codex rulesをBash PreToolUseへ流用するゲート |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
-| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 9種 |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 10種 |
 | Antigravity CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI設定 |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/settings.json` | `~/.gemini/antigravity-cli/settings.json` | Antigravity CLI設定 |
 | Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Codex正本へのsymlink |
 | Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI / UI / marketplace 設定（未配置時seed） |
 | GitHub Copilot | `stow/copilot/.copilot/instructions/global.instructions.md` | `~/.copilot/instructions/global.instructions.md` | Codex正本への参照 |
 
-SkillはCodex・Claude Code・Antigravity CLIの3エージェント共通で次の9種を配置しています。
+SkillはCodex・Claude Code・Antigravity CLIの3エージェント共通で次の10種を配置しています。
 
 ```text
-audit  commit-prep  cpp-conventions  github
+audit  c-conventions  commit-prep  cpp-conventions  github
 handoff  handoff-inline  handoff-archive  issue-slice  verify
 ```
 
@@ -158,7 +158,7 @@ handoff  handoff-inline  handoff-archive  issue-slice  verify
 > 中身の契約は他エージェントの `verify` と同じです。
 
 `issue-slice`はGitHub Issueまたは明示されたPR単位でscope / non-scopeを固定し、
-既存の`audit`、`cpp-conventions`、`verify`（Claude Codeでは`verify-diff`）、
+既存の`audit`、`c-conventions`、`cpp-conventions`、`verify`（Claude Codeでは`verify-diff`）、
 `commit-prep`、`github`、`handoff`へ必要な段階でroutingしながら、
 最小実装と検証を進めてcommit前で停止するオーケストレータです。
 
@@ -195,7 +195,7 @@ Geminiの`--no-folding`配置では、新規reference追加後にStowを再適�
 > **Grokの `config.toml` はfile symlinkではなく、未配置時だけcopyするseedです。**
 > 既存のlive configはGrok自身が書き換えるため上書きしません。
 > `~/.grok` は実ディレクトリのまま残り、`AGENTS.md` だけがfile symlinkです。
-> Skill 9種の複製は `stow/grok` には置いていません。
+> Skill 10種の複製は `stow/grok` には置いていません。
 > `auth.json`、`sessions/`、`logs/` などの実行時データはホーム側に残り、
 > このリポジトリの追跡対象外です。
 

@@ -82,9 +82,12 @@ Follow-up / release audit:
 - 実装前の独立監査、read-only調査、Issue化前調査が依頼された場合は、
   `~/.gemini/antigravity-cli/skills/audit/SKILL.md`を適用する。
   調査だけの依頼を編集や実装へ拡張しない。
+- C、Cから利用するABI header、C/C++共有境界の生成・編集・reviewには
+  `~/.gemini/antigravity-cli/skills/c-conventions/SKILL.md`を適用する。
+  repositoryの`docs/coding-conventions.md`があれば併読し、実際のcompiler設定も確認する。
 - C++、C++から利用するC互換header、共有ABI境界の生成・編集・reviewには
   `~/.gemini/antigravity-cli/skills/cpp-conventions/SKILL.md`を適用する。
-  repositoryの`docs/CODING_CONVENTIONS.md`があれば併読し、実際のcompiler設定も確認する。
+  repositoryの`docs/coding-conventions.md`があれば併読し、実際のcompiler設定も確認する。
 - 実装後の検証には`~/.gemini/antigravity-cli/skills/verify/SKILL.md`を適用する。
 - commit準備を求められた場合だけ
   `~/.gemini/antigravity-cli/skills/commit-prep/SKILL.md`を適用する。
