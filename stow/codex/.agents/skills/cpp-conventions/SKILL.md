@@ -1,6 +1,6 @@
 ---
 name: cpp-conventions
-description: C++コードの生成・編集・review、およびC++から利用するC互換headerやC/C++共有境界で使用し、C++標準、宣言と定義の分離、共通命名、コメント、所有権、C++機能、castの全project共通baselineを適用する。repositoryにdocs/CODING_CONVENTIONS.mdがあれば必ず併読し、build設定とproject規約が本Skillと異なる部分はproject側を優先する。
+description: C++コードの生成・編集・review、およびC++から利用するC互換headerやC/C++共有境界で使用し、C++標準、宣言と定義の分離、共通命名、コメント、所有権、C++機能、castの全project共通baselineを適用する。repositoryにdocs/coding-conventions.mdがあれば必ず併読し、build設定とproject規約が本Skillと異なる部分はproject側を優先する。
 ---
 
 # C++共通規約
