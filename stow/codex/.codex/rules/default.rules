@@ -89,5 +89,5 @@ prefix_rule(
 )
 prefix_rule(pattern=["docker", "inspect"], decision="allow")
 prefix_rule(pattern=["docker", "logs"], decision="allow")
-prefix_rule(pattern=["python"] decision="allow")
-prefix_rule(pattern=["python3"] decision="allow")
+prefix_rule(pattern=["python"], decision="allow")
+prefix_rule(pattern=["python3"], decision="allow")
