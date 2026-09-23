@@ -22,6 +22,10 @@ extends = ":workspace"
 enabled = true
 max_concurrent_threads_per_session = 4
 
+[agents.handoff]
+description = "Create the final handoff only. Do not implement or modify production work."
+config_file = "./agents/handoff-luna.toml"
+
 [tui]
 status_line = [
     "model-with-reasoning",
