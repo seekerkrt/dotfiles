@@ -10,6 +10,10 @@ approvals_reviewer = "user"
 service_tier = "default"
 personality = "pragmatic"
 
+[features.network_proxy]
+enabled = true
+allow_local_binding = true
+
 [permissions.workspace-dev]
 description = "Current workspace plus handoff and ramdisk directories"
 extends = ":workspace"
@@ -17,6 +21,10 @@ extends = ":workspace"
 [permissions.workspace-dev.workspace_roots]
 "~/handoff" = true
 "/ramdisk" = true
+
+[permissions.workspace-dev.network]
+enabled = true
+allow_local_binding = true
 
 [agents]
 enabled = true
@@ -102,4 +110,3 @@ enabled = true
 
 [shell_environment_policy]
 inherit = "core"
-
