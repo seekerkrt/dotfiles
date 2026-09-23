@@ -20,7 +20,7 @@ extends = ":workspace"
 
 [agents]
 enabled = true
-max_concurrent_threads_per_session = 4
+max_concurrent_threads_per_session = 3
 
 [agents.handoff]
 description = "Create the final handoff only. Do not implement or modify production work."
