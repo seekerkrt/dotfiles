@@ -1,7 +1,7 @@
-model = "gpt-6-astra"
+model = "gpt-6-sol"
 model_context_window = 1000000
 model_auto_compact_token_limit = 900000
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 model_verbosity = "medium"
 approval_policy = "on-request"
 default_permissions = "workspace-dev"
@@ -102,3 +102,4 @@ enabled = true
 
 [shell_environment_policy]
 inherit = "core"
+
