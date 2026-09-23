@@ -2,5 +2,5 @@
 # Inherits approval, sandbox, web-search, and verbosity defaults
 # from ~/.codex/config.toml.
 
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 model_reasoning_effort = "xhigh"
