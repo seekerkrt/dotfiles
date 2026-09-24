@@ -14,6 +14,10 @@ personality = "pragmatic"
 enabled = true
 allow_local_binding = true
 
+[permissions.workspace-dev.network.unix_sockets]
+"/run/docker.sock" = "allow"
+"/var/run/docker.sock" = "allow"
+
 [permissions.workspace-dev]
 description = "Current workspace plus handoff and ramdisk directories"
 extends = ":workspace"
