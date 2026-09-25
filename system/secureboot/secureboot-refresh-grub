@@ -41,7 +41,6 @@ readonly -a GRUB_MODULES=(
   search_fs_file
   all_video
   efi_gop
-  efi_uga
   gfxterm
   gettext
   gzio
