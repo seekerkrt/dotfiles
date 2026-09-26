@@ -1,5 +1,5 @@
 ---
-name: github
+name: github-safe-ops
 description: GitHub repository、Issue、PR、review、Actions、release、branch、tag、repository設定、GitHub APIの調査・操作、またはlocal branch / remote / commitとGitHub対象の対応確認で使用する。read-onlyとmutationを分け、書き込みは対象と操作内容の明示依頼時だけ行い、認証情報を探索・変更しない。
 ---
 
@@ -20,10 +20,9 @@ CLIのcommand例・引数を確認する必要があるときだけ、[command r
 
 ## 認証境界
 
-利用可能ならread-onlyの`gh`を優先する。必要な場合だけ`gh auth status`で利用可否を確認してよい。認証・permission設定は修復・変更しない。
+GitHubへ接続する前に、`command -v gh`、`gh --version`、`gh auth status --hostname HOST`で利用可否を確認する。`gh`がない、未認証、token無効、実行環境の制約で認証状態を確認できないのいずれかなら、`gh unavailable`としてfail closedにし、readもwriteも実行しない。
 
-- `gh` executableの不在、認証済みtransportの利用不能、現在のtool surfaceに経路がない等のtool / transport障害では、同じread-only操作が別経路で独立して許可されている場合だけ、read-only GitHub connector / MCP toolへfallbackしてよい。write操作をread-only操作へ読み替えない。
-- user / policy / current authorityによる操作自体のdeny（permission promptでの拒否を含む）や未許可をtransport障害として扱わない。read-onlyでも別toolへ迂回せず停止し、許可確認が必要ならユーザーへ確認する。ask / denyの扱いは`CLAUDE.md`のpermission境界に従い、本Skillで上書きしない。
+fail closed時は`curl`、browser automation、独自script等の別経路へ切り替えず、local Gitで確認できる事実だけを報告し、Issue、PR、Actions等のGitHub側stateは「未確認」とする。認証失敗はAGYのpermission不足ではないため、approvalを追加して押し通そうとしない。
 
 次を実行しない。
 
@@ -37,6 +36,28 @@ gh auth token
 ```
 
 token、credential、cookie、秘密鍵、keyring、credential store、認証用環境変数の秘密値を探索・表示・保存しない。account、scope、credential helper、Git protocol、SSH / GPG keyを変更しない。
+
+## AGY permissionとapproval
+
+`gh`と認証が利用可能な状態で、予定した`gh` commandがAGYのpermissionにより拒否された場合だけ、組み込み契約に従って最小権限を求める。
+
+- exactな`OWNER/REPO`とresourceを使い、不要な`*`を使わない。
+- `ask_permission`はActionを`custom`、Targetを次の形式にする。
+- permissionやworkspace境界を回避するoptionを設定しない。
+- 拒否された元commandは、承認後に一度だけ再実行する。
+- 承認されない、または権限を狭く表現できない場合は`environment blocked`とする。
+- permission回避のためにAGY設定、workspace、remote、credentialを変更しない。
+
+```text
+gh.read({"org":"OWNER","repo":"REPO"})
+gh.read({"org":"OWNER","repo":"REPO","pr":"123"})
+gh.create({"org":"OWNER","repo":"REPO","issue":"*"})
+gh.update({"org":"OWNER","repo":"REPO","issue":"123"})
+gh.approve({"org":"OWNER","repo":"REPO","pr":"123"})
+gh.merge({"org":"OWNER","repo":"REPO","pr":"123"})
+```
+
+AGYのGitHub permission判定を保つため、`gh` commandの出力をpipeやredirectしない。必要なfieldは`--json`や`--jq`でcommand自身に絞らせる。
 
 ## Target resolution
 
@@ -66,7 +87,7 @@ Issueではtitle、body、state、labels、comments、関連Issue / PR、close�
 
 base / head、state、changed files、diff、top-level conversation、inline comment、review submission、requested changes、resolved / unresolved、checksを区別する。review itemは修正必須、回答必要、提案、修正済み、stale、判定保留へ分ける。
 
-`gh pr view --comments`や通常のPR metadataだけで、inline review threadのresolved / unresolvedを確認済みとしない。必要な情報を`gh`で取得できない場合は、Claude Codeで利用可能なread-only GitHub connector / MCP toolまたはGraphQL queryを使い、top-level comment、inline thread、review submissionを個別に確認する。
+`gh pr view --comments`や通常のPR metadataだけで、inline review threadのresolved / unresolvedを確認済みとしない。必要な情報を通常のsubcommandで取得できない場合は、read-onlyのGraphQL queryを使い、top-level comment、inline thread、review submissionを個別に確認する。
 
 ### Actions
 
@@ -168,6 +189,6 @@ read-onlyで変更対象を再取得し、意図した値を確認する。
 ## 失敗時と出力
 
 - error、repository、permission、state、引数を確認し、read-onlyで現在状態を取得する。
-- connector結果、GitHub上の事実、local Git、推測、未確認を混同しない。
+- GitHub上の事実、local Git、推測、未確認を混同しない。
 - 調査のみなら対象、確認事実、未確認、推し案、次の一手を報告する。
 - mutationありなら実行操作、対象、結果、post-mutation確認、未確認を報告する。

@@ -148,18 +148,15 @@ Stow 対象外で、リポジトリへ自動適用するスクリプトはあり
 SkillはCodex・Claude Code・Antigravity CLIの3エージェント共通で次の10種を配置しています。
 
 ```text
-audit  c-conventions  commit-prep  cpp-conventions  github
-handoff  handoff-inline  handoff-archive  issue-slice  verify
+audit  c-conventions  commit-prep  cpp-conventions  github-safe-ops
+handoff  handoff-inline  handoff-archive  issue-slice  validate
 ```
 
 > [!NOTE]
-> **Claude Codeだけは `verify` ではなく `verify-diff` という名前です。**
-> `verify` が組み込みコマンドと衝突するため、意図的にリネームしています。
-> 中身の契約は他エージェントの `verify` と同じです。
 
 `issue-slice`はGitHub Issueまたは明示されたPR単位でscope / non-scopeを固定し、
-既存の`audit`、`c-conventions`、`cpp-conventions`、`verify`（Claude Codeでは`verify-diff`）、
-`commit-prep`、`github`、`handoff`へ必要な段階でroutingしながら、
+既存の`audit`、`c-conventions`、`cpp-conventions`、`validate`、
+`commit-prep`、`github-safe-ops`、`handoff`へ必要な段階でroutingしながら、
 最小実装と検証を進めてcommit前で停止するオーケストレータです。
 
 長いtest、build、release-check、compiler、runtime、diff等の作業logは、
@@ -172,7 +169,7 @@ handoff系3種（`handoff` / `handoff-inline` / `handoff-archive`）の本文と
 `handoff/references/common.md`を3エージェントで一致させる運用です。
 SKILL.mdのfront matterと、`handoff-inline`の共通reference参照パスはエージェント固有差分として許容します。
 
-verificationの詳細workflowは`verify`（Claude Codeでは`verify-diff`）を正とし、
+verificationの詳細workflowは`validate`を正とし、
 `issue-slice`はacceptance criteria・impact / riskを渡して必要な検証の完了を確認します。
 `handoff`と`handoff-inline`は共通referenceを使い、inlineは通常保存のSKILL.mdを読む必要がありません。
 通常handoffは同一sessionの有効なevidenceをFast pathで再利用し、不足・不整合のあるclaimだけRecoveryします。
@@ -568,22 +565,19 @@ Each agent reads the following files, backed by this repository:
 | Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI, UI, and marketplace settings (seed if missing) |
 | GitHub Copilot | `stow/copilot/.copilot/instructions/global.instructions.md` | `~/.copilot/instructions/global.instructions.md` | Points to the Codex source |
 
-Codex, Claude Code, and Antigravity CLI carry the same nine skills:
+Codex, Claude Code, and Antigravity CLI carry the same ten skills:
 
 ```text
-audit  commit-prep  cpp-conventions  github
-handoff  handoff-inline  handoff-archive  issue-slice  verify
+audit  c-conventions  commit-prep  cpp-conventions  github-safe-ops
+handoff  handoff-inline  handoff-archive  issue-slice  validate
 ```
 
 > [!NOTE]
-> **On Claude Code the skill is named `verify-diff`, not `verify`.**
-> It is renamed deliberately because `verify` collides with a built-in command.
-> The contract itself matches the other agents' `verify`.
 
 `issue-slice` is the orchestrator for a GitHub Issue or an explicitly selected
 PR-sized implementation slice. It fixes scope and non-scope, routes to the
-existing `audit`, `cpp-conventions`, `verify` (`verify-diff` on Claude Code),
-`commit-prep`, `github`, and `handoff` skills when needed, performs the minimum
+existing `audit`, `c-conventions`, `cpp-conventions`, `validate`,
+`commit-prep`, `github-safe-ops`, and `handoff` skills when needed, performs the minimum
 implementation and verification, and stops before commit.
 
 Long test, build, release-check, compiler, runtime, and diff logs are kept
@@ -598,7 +592,7 @@ The bodies of the three handoff skills (`handoff` / `handoff-inline` /
 across all three agents. SKILL.md front matter and the common-reference
 path in `handoff-inline` are permitted per-agent differences.
 
-`verify` (`verify-diff` on Claude Code) owns the detailed verification
+`validate` owns the detailed verification
 workflow. `issue-slice` supplies acceptance criteria and impact / risk,
 then checks that the required verification is complete.
 `handoff` and `handoff-inline` use the common reference; inline does not

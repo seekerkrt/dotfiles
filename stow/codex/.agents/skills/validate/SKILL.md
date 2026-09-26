@@ -1,5 +1,5 @@
 ---
-name: verify
+name: validate
 description: 非自明な変更後、docsと実装の同期確認、またはbuild / test / lint / runtime検証依頼で使用し、対象diffとrepository固有commandを段階的に確認してpass、fail、warning、partial、未実施、環境制約を区別して報告する。
 ---
 
@@ -32,7 +32,7 @@ git diff --cached
 
 次の順で正規の検証入口を探す。
 
-1. 適用される`GEMINI.md` / `AGENTS.md`
+1. 適用される`AGENTS.md`
 2. README、CONTRIBUTING、developer docs
 3. Makefile、task runner、package script、test script
 4. CI workflowや既存automation
@@ -115,7 +115,7 @@ runtime検証では環境を具体的に記録する。
 `<scope>`は、Issueがあれば`issue-<number>`、PRだけなら`pr-<number>`、特定テーマなら`topic-<short-kebab-slug>`、それ以外は`general`とする。filenameは次とし、`latest.*`等の固定名を作らず、既存artifactをrename、移動、削除しない。
 
 ```text
-<YYYYMMDD-HHMMSS>-agy-<short-purpose>.<log|txt|diff>
+<YYYYMMDD-HHMMSS>-codex-<short-purpose>.<log|txt|diff>
 ```
 
 検証commandの実行と、観測済み結果の保存は別操作にする。

@@ -1,6 +1,6 @@
 ---
-name: verify-diff
-description: Claude Codeで非自明な変更後、docsと実装の同期確認、またはbuild / test / lint / runtime検証を行うverify-diff Skillとして使用し、対象diffとrepository固有commandを段階的に確認してpass、fail、warning、partial、未実施、環境制約を区別して報告する。
+name: validate
+description: Claude Codeで非自明な変更後、docsと実装の同期確認、またはbuild / test / lint / runtime検証を行うvalidate Skillとして使用し、対象diffとrepository固有commandを段階的に確認してpass、fail、warning、partial、未実施、環境制約を区別して報告する。
 ---
 
 # Verification

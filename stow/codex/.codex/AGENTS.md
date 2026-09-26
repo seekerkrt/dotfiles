@@ -55,7 +55,7 @@ repositoryの文書が別のsource of truthや優先順位を指定している�
 
 ### Routing
 
-ユーザー依頼と必要な成果物に応じてSkillを選び、audit → verify → commit-prepの固定pipelineにはしない。
+ユーザー依頼と必要な成果物に応じてSkillを選び、audit → validate → commit-prepの固定pipelineにはしない。
 同一作業内のread-only情報は、対象と鮮度が十分なら再利用し、不足・変化がある範囲だけ再取得する。
 commit直前のstage対象・staged diff等、時点依存の状態はその時点で再確認する。
 
@@ -63,11 +63,11 @@ commit直前のstage対象・staged diff等、時点依存の状態はその時�
 - `c-conventions`: Cの生成、編集、review、およびCから利用するC互換headerや共有ABI境界。repositoryの`docs/coding-conventions.md`とbuild設定も追加で読む。
 - `cpp-conventions`: C++の生成、編集、review、およびC++から利用するC互換headerや共有ABI境界。repositoryの`docs/coding-conventions.md`とbuild設定も追加で読む。
 - `issue-slice`: GitHub Issueまたは明示されたPR単位のscope固定と、最小実装から検証までの統括。
-- `verify`: acceptance criteriaに対する検証選択・実行結果・環境・artifact・未完了状態を扱う。
+- `validate`: acceptance criteriaに対する検証選択・実行結果・環境・artifact・未完了状態を扱う。
   pass / fail / partial等の判定と、長い出力・作業artifactの保存規則を正とする。
 - `commit-prep`: 論理的なcommit単位、staged / unstaged / untrackedの分類、stage候補、message案。
-  既存verification evidenceの対象・鮮度を確認し、不足時だけverifyへ戻す。
-- `github`: GitHub repository、Issue、PR、Actions、release、branch、tag、APIの調査または操作。GitHubの認証境界もここを正とする。
+  既存verification evidenceの対象・鮮度を確認し、不足時だけvalidateへ戻す。
+- `github-safe-ops`: GitHub repository、Issue、PR、Actions、release、branch、tag、APIの調査または操作。GitHubの認証境界もここを正とする。
 - `handoff`: 通常のhandoffまたは引き継ぎメモを明示的に求められた場合の永続handoff。
 - `handoff-inline`: inline、本文だけ、保存不要、file不要が明示されたhandoff。
 - `handoff-archive`: 選別済みの外部handoff snapshotを内容不変でrepositoryへ収蔵する明示依頼。

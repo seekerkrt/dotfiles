@@ -195,7 +195,7 @@ Suggested pathは提案だけであり、通常handoffではrepository内に作�
 - 最新の出力指定が通常保存である成果物は、PR bodyの有無にかかわらず既定の永続fileを作る。
 - PR bodyはhandoffのEvidenceや再利用元として参照できるが、自動的な代替にはしない。
 - ユーザーが「PR bodyだけ」「外部handoff fileは不要」と明示した場合だけ、PR bodyを代替出力として扱える。
-- PR bodyの作成・更新はGitHub mutationであるため、対象と操作内容の明示依頼を確認し、`github` Skillに従う。
+- PR bodyの作成・更新はGitHub mutationであるため、対象と操作内容の明示依頼を確認し、`github-safe-ops` Skillに従う。
 
 PR bodyへ記録する場合も、scope / non-scope、validation、risk、nextを事実に合わせて残す。
 

@@ -29,7 +29,7 @@ Skill本文・referenceの読取りは共通指示に従い、確認済みで不
 10. 既存consumerと近傍test
 
 Issue、PR、decision、関連履歴のGitHub確認が必要なら、
-`~/.gemini/antigravity-cli/skills/github/SKILL.md`の契約に従う。
+`~/.gemini/antigravity-cli/skills/github-safe-ops/SKILL.md`の契約に従う。
 存在を確認していないpath、command、Issue、PR、branch、decisionを推測で補わない。
 
 Issueやdecision authorityを参照できない場合も、確認できた情報だけで安全に固定できるsliceがあるか判断する。確認済みscopeと未確認部分を分け、成立条件が確定しない場合は実装を開始せずblockerとして報告する。
@@ -72,7 +72,7 @@ Follow-up / release audit:
 2. required、accepted supporting changes、explicit non-scope、follow-up / release auditを固定する。
 3. 既存構造、public contract、consumer、tests、build surfaceを調査する。
 4. required scopeを成立させる最小変更を実装する。
-5. acceptance criteria、impact / risk、repository・ユーザー要求を`verify`へ渡し、
+5. acceptance criteria、impact / risk、repository・ユーザー要求を`validate`へ渡し、
    必要な検証を行う。
 6. その結果・未完了事項・必要なartifactを確認し、sliceの成立条件を満たすか判断する。
 7. commit前のworking treeとIssue残scopeを確認して報告する。
@@ -88,10 +88,10 @@ Follow-up / release audit:
 - C++、C++から利用するC互換header、共有ABI境界の生成・編集・reviewには
   `~/.gemini/antigravity-cli/skills/cpp-conventions/SKILL.md`を適用する。
   repositoryの`docs/coding-conventions.md`があれば併読し、実際のcompiler設定も確認する。
-- 実装後の検証には`~/.gemini/antigravity-cli/skills/verify/SKILL.md`を適用する。
+- 実装後の検証には`~/.gemini/antigravity-cli/skills/validate/SKILL.md`を適用する。
 - commit準備を求められた場合だけ
   `~/.gemini/antigravity-cli/skills/commit-prep/SKILL.md`を適用する。
-- GitHubの調査・操作は`github`へroutingする。外部mutationは明示された対象と操作だけに限定する。
+- GitHubの調査・操作は`github-safe-ops`へroutingする。外部mutationは明示された対象と操作だけに限定する。
 - 通常handoffまたは引き継ぎメモを明示的に求められた場合だけ
   `~/.gemini/antigravity-cli/skills/handoff/SKILL.md`を適用する。
   raw log保存だけでは起動しない。
@@ -107,12 +107,12 @@ Follow-up / release audit:
 
 ## Verification
 
-詳細workflowのownerは`~/.gemini/antigravity-cli/skills/verify/SKILL.md`とする。
+詳細workflowのownerは`~/.gemini/antigravity-cli/skills/validate/SKILL.md`とする。
 本Skillはdecision authorityから定めたacceptance criteria、
 scope / non-scope、impact / risk、repository・ユーザー要求を検証の入力として保持する。
-検証選択・実行・結果分類・環境・artifact保存・完了条件は`verify`へ委ね、ここでは再定義しない。
+検証選択・実行・結果分類・環境・artifact保存・完了条件は`validate`へ委ね、ここでは再定義しない。
 
-本Skillは`verify`の結果と必要な検証・artifactの完了を確認し、未完了事項や残るriskを報告する。
+本Skillは`validate`の結果と必要な検証・artifactの完了を確認し、未完了事項や残るriskを報告する。
 実装済みという理由だけでsliceを完了扱いせず、成立条件とIssue全体の残scopeを確認する。
 
 ## Gitと外部mutationの停止境界

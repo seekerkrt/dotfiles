@@ -1,5 +1,5 @@
 ---
-name: github
+name: github-safe-ops
 description: GitHub repository、Issue、PR、review、Actions、release、branch、tag、repository設定、GitHub APIの調査・操作、またはlocal branch / remote / commitとGitHub対象の対応確認で使用する。read-onlyとmutationを分け、書き込みは対象と操作内容の明示依頼時だけ行い、認証情報を探索・変更しない。
 ---
 
@@ -20,7 +20,10 @@ CLIのcommand例・引数を確認する必要があるときだけ、[command r
 
 ## 認証境界
 
-利用可能ならread-onlyの`gh`を優先する。必要な場合だけ`gh auth status`で利用可否を確認してよい。失敗しても認証状態を修復せず、利用可能なGitHub connectorへfallbackする。
+利用可能ならread-onlyの`gh`を優先する。必要な場合だけ`gh auth status`で利用可否を確認してよい。認証・permission設定は修復・変更しない。
+
+- `gh` executableの不在、認証済みtransportの利用不能、現在のtool surfaceに経路がない等のtool / transport障害では、同じread-only操作が別経路で独立して許可されている場合だけ、read-only GitHub connector / MCP toolへfallbackしてよい。write操作をread-only操作へ読み替えない。
+- user / policy / current authorityによる操作自体のdeny（permission promptでの拒否を含む）や未許可をtransport障害として扱わない。read-onlyでも別toolへ迂回せず停止し、許可確認が必要ならユーザーへ確認する。ask / denyの扱いは`CLAUDE.md`のpermission境界に従い、本Skillで上書きしない。
 
 次を実行しない。
 
@@ -63,7 +66,7 @@ Issueではtitle、body、state、labels、comments、関連Issue / PR、close�
 
 base / head、state、changed files、diff、top-level conversation、inline comment、review submission、requested changes、resolved / unresolved、checksを区別する。review itemは修正必須、回答必要、提案、修正済み、stale、判定保留へ分ける。
 
-`gh pr view --comments`や通常のPR metadataだけで、inline review threadのresolved / unresolvedを確認済みとしない。必要な情報を`gh`で取得できない場合は、read-onlyのGitHub connectorまたはGraphQL queryを使い、top-level comment、inline thread、review submissionを個別に確認する。
+`gh pr view --comments`や通常のPR metadataだけで、inline review threadのresolved / unresolvedを確認済みとしない。必要な情報を`gh`で取得できない場合は、Claude Codeで利用可能なread-only GitHub connector / MCP toolまたはGraphQL queryを使い、top-level comment、inline thread、review submissionを個別に確認する。
 
 ### Actions
 
@@ -87,7 +90,7 @@ RESTでは`-f` / `-F`を使ってもGETを省略しない。次はmutationとし
 --input
 ```
 
-GraphQLではHTTP methodや`--input`の有無だけで分類せず、送信する内容と実行対象のoperationを確認する。
+GraphQLではHTTP methodや`--input`の有無だけでquery / mutationを分類せず、送信するGraphQL documentと実際に実行されるoperationを確認する。
 `--input`を使う場合は入力本文も確認し、複数operationがある場合は`operationName`による選択も確認する。
 
 - 内容を確認できたGraphQL query: POSTや`--input`を使う場合もread-onlyとして扱える。

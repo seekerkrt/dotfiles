@@ -17,7 +17,7 @@ description: commit前の差分整理、stage対象選定、commit分割相談�
 - 実行していないtest、未確認のIssue完了、未実装の変更をmessageへ書かない。
 - commit実行直前にstage対象とstaged diffを再確認する。
 - repository固有のcommit規約と直近履歴を優先する。
-- 実施済み検証は実行commandと結び付け、pass、fail、warning、partial、environment blocked、not runを分ける。判断は`verify` Skillの契約に従う。
+- 実施済み検証は実行commandと結び付け、pass、fail、warning、partial、environment blocked、not runを分ける。判断は`validate` Skillの契約に従う。
 
 ## Preflight
 

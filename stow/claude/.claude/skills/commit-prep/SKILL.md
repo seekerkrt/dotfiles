@@ -6,7 +6,7 @@ description: commit前の差分整理、stage対象選定、commit分割相談�
 # Commit preparation
 
 成果物は、論理的なcommit単位、staged / unstaged / untrackedの分類、stage候補、commit messageである。
-既存verification evidenceを確認し、不足時だけverify-diffへ戻る。auditやverify-diffの後に自動起動するSkillではない。
+既存verification evidenceを確認し、不足時だけvalidateへ戻る。auditやvalidateの後に自動起動するSkillではない。
 
 ## 固有契約
 
@@ -17,7 +17,7 @@ description: commit前の差分整理、stage対象選定、commit分割相談�
 - 実行していないtest、未確認のIssue完了、未実装の変更をmessageへ書かない。
 - commit実行直前にstage対象とstaged diffを再確認する。
 - repository固有のcommit規約と直近履歴を優先する。
-- 実施済み検証は実行commandと結び付け、pass、fail、warning、partial、environment blocked、not runを分ける。判断は`verify-diff` Skillの契約に従う。
+- 実施済み検証は実行commandと結び付け、pass、fail、warning、partial、environment blocked、not runを分ける。判断は`validate` Skillの契約に従う。
 
 ## Preflight
 
@@ -34,7 +34,7 @@ git diff --check
 staged変更があれば必要に応じて`git diff --cached --check`も確認する。untracked fileは対象判断に必要な範囲だけ読む。目的が不明なfileや秘密情報らしきfileは開かず、「内容未確認」として候補から外す。
 
 既存verification evidenceの対象diff / commit、検証範囲、実行後の変更、環境を確認する。
-現在のstage候補を十分に覆う新鮮な結果があれば再実行せず、不足・古い結果・未解決riskがある場合だけverify-diffへ戻す。
+現在のstage候補を十分に覆う新鮮な結果があれば再実行せず、不足・古い結果・未解決riskがある場合だけvalidateへ戻す。
 
 ## Path classification
 
