@@ -206,6 +206,12 @@
     "chat.includeReferencedInstructions": true,
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
     "chat.useAgentSkills": true,
+    "chat.permissions.default": "autoApprove",
+    "chat.editing.autoAcceptDelay": 3,
+    "chat.tools.edits.autoApprove": {
+        "**/*": true
+    },
+    "chat.editing.revealNextChangeOnResolve": false,
     // Docker
     "containers.containerClient": "com.microsoft.visualstudio.containers.docker",
     "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.dockercompose",
