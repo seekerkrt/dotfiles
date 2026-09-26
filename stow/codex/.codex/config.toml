@@ -49,7 +49,7 @@ status_line = [
     "weekly-limit",
 ]
 status_line_use_colors = true
-theme = "solarized-dark"
+theme = "Tokyo Night Storm"
 screen_reader_detection_done = true
 
 [tui.model_availability_nux]
@@ -114,3 +114,4 @@ enabled = true
 
 [shell_environment_policy]
 inherit = "core"
+
