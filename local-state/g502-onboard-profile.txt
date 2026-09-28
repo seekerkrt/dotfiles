@@ -1,0 +1,32 @@
+hollering-marmot - Logitech G502 HERO Gaming Mouse
+             Model: usb:046d:c08b:0
+       Device Type: Mouse
+ Number of Buttons: 11
+    Number of Leds: 2
+Number of Profiles: 5
+Profile 0: (active)
+  Name: n/a
+  Report Rate: 1000Hz
+  Resolutions:
+    0: 800dpi
+    1: 2400dpi (active) (default)
+    2: 3200dpi
+    3: 6400dpi
+    4: 100dpi (disabled)
+  Button: 0 is mapped to 'button 1'
+  Button: 1 is mapped to 'button 2'
+  Button: 2 is mapped to 'button 3'
+  Button: 3 is mapped to 'button 4'
+  Button: 4 is mapped to 'button 5'
+  Button: 5 is mapped to 'resolution-alternate'
+  Button: 6 is mapped to 'resolution-down'
+  Button: 7 is mapped to 'resolution-up'
+  Button: 8 is mapped to 'resolution-default'
+  Button: 9 is mapped to 'wheel-right'
+  Button: 10 is mapped to 'wheel-left'
+  LED: 0, depth: rgb, mode: cycle, duration: 8000, brightness: 255
+  LED: 1, depth: rgb, mode: cycle, duration: 8000, brightness: 255
+Profile 1: (disabled)
+Profile 2: (disabled)
+Profile 3: (disabled)
+Profile 4: (disabled)

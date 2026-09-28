@@ -7,7 +7,7 @@ approval_policy = "on-request"
 default_permissions = "workspace-dev"
 web_search = "cached"
 approvals_reviewer = "user"
-service_tier = "default"
+service_tier = "fast"
 personality = "pragmatic"
 
 [features.network_proxy]
@@ -37,6 +37,9 @@ max_concurrent_threads_per_session = 3
 [agents.handoff]
 description = "Create the final handoff only. Do not implement or modify production work."
 config_file = "./agents/handoff-luna.toml"
+
+[shell_environment_policy]
+inherit = "all"
 
 [tui]
 status_line = [
@@ -111,7 +114,4 @@ enabled = true
 
 [plugins."pyright-lsp@claude-plugins-official"]
 enabled = true
-
-[shell_environment_policy]
-inherit = "core"
 
