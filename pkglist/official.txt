@@ -12,6 +12,7 @@ bash-completion
 bat
 bc
 bear
+bind
 bluedevil
 bluez-utils
 boost
@@ -68,6 +69,7 @@ filelight
 firefox
 fish
 fluidsynth
+freerdp
 gimp
 git
 git-filter-repo
@@ -84,6 +86,7 @@ gst-plugins-ugly
 gwenview
 htop
 inetutils
+inotify-tools
 jdk-openjdk
 kactivitymanagerd
 kalarm
@@ -212,6 +215,7 @@ polkit-kde-agent
 powerdevil
 prettier
 pyright
+python-gersemi
 python-pipx
 python-pynvim
 qemu-full

@@ -16,7 +16,6 @@ ttf-myricam
 ttf-plemoljp-bin
 ttf-udev-gothic
 ventoy-bin
-virtualbox-ext-oracle
 visual-studio-code-bin
 vkd3d-proton-bin
 wezterm-git
