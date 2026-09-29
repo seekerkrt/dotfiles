@@ -1,4 +1,4 @@
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_context_window = 1000000
 model_auto_compact_token_limit = 900000
 model_reasoning_effort = "xhigh"
@@ -7,7 +7,7 @@ approval_policy = "on-request"
 default_permissions = "workspace-dev"
 web_search = "cached"
 approvals_reviewer = "user"
-service_tier = "fast"
+service_tier = "default"
 personality = "pragmatic"
 
 [features.network_proxy]
@@ -54,11 +54,6 @@ status_line = [
 status_line_use_colors = true
 theme = "Tokyo Night Storm"
 screen_reader_detection_done = true
-
-[tui.model_availability_nux]
-"gpt-5.5" = 4
-"gpt-5.6-sol" = 4
-gpt-6-astra = 4
 
 [notice]
 hide_full_access_warning = true
