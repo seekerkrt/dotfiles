@@ -6,7 +6,7 @@ description: 実装前調査、責務境界・未使用コード・危険な前�
 # Read-only audit
 
 成果物は、問い・調査scopeに対するevidence / counter-evidence / unknownsと診断・findingである。
-監査だけの依頼はこの成果物を返して終了し、verifyやcommit-prepへ固定順で進まない。
+監査だけの依頼はこの成果物を返して終了し、validateやcommit-prepへ固定順で進まない。
 
 ## 固有契約
 

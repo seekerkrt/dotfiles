@@ -148,8 +148,8 @@ Changed:
 - <file / contract>
 
 Validation:
-- <verifyの結果・必要な検証の完了状況>
-- artifact: <verifyの保存先>
+- <validateの結果・必要な検証の完了状況>
+- artifact: <validateの保存先>
 
 Findings:
 - blocker:

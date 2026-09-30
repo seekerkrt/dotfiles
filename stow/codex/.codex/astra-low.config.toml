@@ -1,4 +1,4 @@
-# ~/.codex/astra-high.config.toml
+# ~/.codex/astra-low.config.toml
 # Inherits approval, sandbox, web-search, and verbosity defaults
 # from ~/.codex/config.toml.
 
