@@ -1,7 +1,7 @@
 name = "auditor"
 description = "実装の正しさ、回帰、設計上の不変条件、テスト不足を独立して確認するread-only監査役"
 
-sandbox_mode = "read-only"
+default_permissions = ":read-only"
 
 developer_instructions = """
 独立した監査役としてコードを確認すること。

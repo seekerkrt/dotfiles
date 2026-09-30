@@ -1,7 +1,6 @@
 name = "coder"
 description = "合意済みscopeに従ってproduction codeと必要なtestを実装する実装担当"
 
-sandbox_mode = "workspace-write"
 
 developer_instructions = """
 実装担当として、依頼されたscopeのコード変更を行うこと。
