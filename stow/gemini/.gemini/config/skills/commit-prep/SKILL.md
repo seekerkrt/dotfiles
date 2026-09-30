@@ -33,7 +33,7 @@ git diff --check
 
 staged変更があれば必要に応じて`git diff --cached --check`も確認する。untracked fileは対象判断に必要な範囲だけ読む。目的が不明なfileや秘密情報らしきfileは開かず、「内容未確認」として候補から外す。
 
-read-only commandがAGYのpermissionまたはworkspace境界で拒否された場合は、設定変更や境界回避をせず、取得できた状態と未確認項目を分ける。
+read-only commandがAntigravity IDEのpermissionまたはworkspace境界で拒否された場合は、設定変更や境界回避をせず、取得できた状態と未確認項目を分ける。
 
 既存verification evidenceの対象diff / commit、検証範囲、実行後の変更、環境を確認する。
 現在のstage候補を十分に覆う新鮮な結果があれば再実行せず、不足・古い結果・未解決riskがある場合だけvalidateへ戻す。
@@ -90,7 +90,7 @@ stageが明示依頼された場合だけ、対象を絞った`git add -- <path>
 例:
 
 ```text
-docs: AGY向け規約の責務をグローバルとprojectへ分離
+docs: Antigravity IDE向け規約の責務をグローバルとprojectへ分離
 ```
 
 ## Stage / commit実行時

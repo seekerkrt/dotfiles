@@ -18,7 +18,7 @@ description: 実装前調査、責務境界・未使用コード・危険な前�
 
 ユーザーが修正まで依頼している場合も、編集前の監査phaseだけにこの契約を適用し、監査結果と実装結果を混同しない。
 
-read-only操作がAGYのpermissionまたはworkspace境界で拒否された場合は、境界を広げず設定も変更せず、確認できた終点と未確認範囲を記録する。
+read-only操作がAntigravity IDEのpermissionまたはworkspace境界で拒否された場合は、境界を広げず設定も変更せず、確認できた終点と未確認範囲を記録する。
 
 ## Workflow
 

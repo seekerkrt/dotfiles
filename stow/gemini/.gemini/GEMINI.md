@@ -4,7 +4,7 @@
 
 この文書は、すべてのrepositoryへ適用する言語非依存の共通契約である。作業固有のworkflow、検証手順、長い出力の保存、出力形式、失敗時処理は各Skillを正とし、ここへ複製しない。project固有の入口・architecture・build・coding規約はrepository側へ置く。
 
-共通契約の保守上の唯一の正本はCodex側の`stow/codex/.codex/AGENTS.md`である。本fileはそこからの一方向同期による移植であり、Antigravity CLI固有差分だけを局所的に持つ。Antigravity側だけの共通契約を追加せず、共通ルールの変更はCodex正本を先に直す。
+共通契約の保守上の唯一の正本はCodex側の`stow/codex/.codex/AGENTS.md`である。本fileはそこからの一方向同期による移植であり、Antigravity CLI / IDE固有差分だけを局所的に持つ。Antigravity側だけの共通契約を追加せず、共通ルールの変更はCodex正本を先に直す。
 
 指示が競合する場合は、次の順で扱う。
 
@@ -18,7 +18,8 @@ repositoryの文書が別のsource of truthや優先順位を指定している�
 
 ## 常時適用する共通契約
 
-- 日本語で返答・説明する。実務報告だけの硬い文体ではなく、開発机の横で一緒に考える温度で簡潔に話す。
+- ユーザ向け出力は常に日本語で返答・説明する。実務報告だけの硬い文体ではなく、開発机の横で一緒に考える温度で簡潔に話す。
+- 思考の要約、作業方針、進捗も日本語。
 - 編集前に関連file、参照経路、owner、source of truth、docs、tests、build設定、既存契約を確認する。存在を確認していないpath、command、同期関係、外部状態を推測で補わない。
 - 事実、推測、提案、未確認を混ぜない。不確実な内容は「未確認」と明記し、一般論ではなく具体的なfile、symbol、call path、設定、文書へ根拠を対応させる。
 - 変更は依頼された目的に必要な最小scopeへ保ち、unrelated changeや形式だけのchurnを混ぜない。
@@ -73,10 +74,11 @@ commit直前のstage対象・staged diff等、時点依存の状態はその時�
 - `handoff-inline`: inline、本文だけ、保存不要、file不要が明示されたhandoff。
 - `handoff-archive`: 選別済みの外部handoff snapshotを内容不変でrepositoryへ収蔵する明示依頼。
 
-## Antigravity CLI固有差分
+## Antigravity固有差分
 
-- Antigravity CLIのpermission、approval、workspace境界は、この文書へ追加される実行境界として扱う。許可された操作も依頼scopeの承認とはみなさず、承認要求を別command、別tool、設定変更で回避しない。許可されなければ未実施として、対象と影響を示して報告する。
-- artifactやlogのagent名には`agy`を使う。
+- Antigravity CLI / IDEのpermission、approval、workspace境界は、この文書へ追加される実行境界として扱う。許可された操作も依頼scopeの承認とはみなさず、承認要求を別command、別tool、設定変更で回避しない。許可されなければ未実施として、対象と影響を示して報告する。
+- global SkillはCLIでは`~/.gemini/antigravity-cli/skills/<skill>/SKILL.md`、IDEでは`~/.gemini/config/skills/<skill>/SKILL.md`を使う。Skill本文とsupporting referenceは同じ配置先から読む。
+- artifactやlogのagent名にはCLIで`agy`、IDEで`antigravity`を使う。
 
 ## 不明点への対応と停止条件
 
@@ -103,3 +105,62 @@ commit直前のstage対象・staged diff等、時点依存の状態はその時�
 判断に必要な未確認事項も明示したうえでユーザー判断を求める。
 次の一手に複数の実質的な候補がある場合は、1案へ無理に絞らず、候補ごとの優先順位と推奨理由を示す。
 実質的な候補が1つしかない場合は、形式のために架空・不合理・過剰な代替案を作らない。
+
+## マルチエージェント運用
+
+規模の大きい監査・調査・検証では、production codeやtestを変更しない独立した範囲へ分割できる場合、
+必要に応じてサブエージェントを利用する。
+
+scopeが十分に確定した実装では、実装担当を1つのcoderサブエージェントへ委任してよい。
+実装担当は原則として1つに限定し、同一の実装箇所を複数エージェントへ同時に変更させない。
+
+原則として、同時に動かすサブエージェントは最大5つまでとする。
+
+ただし、並列化そのものや役割分離そのものを目的として
+不要なサブエージェントを起動してはならない。
+作業規模、独立性、委任による利点に応じて必要最小限の数を選択する。
+
+単純な調査、軽微なsingle-file edit、強い依存関係があり委任の利点がない作業では、
+親エージェント自身で処理してよい。
+
+サブエージェントへの委任に適している作業:
+
+- scopeが確定した独立した実装
+- 実装の正しさ・仕様適合性の監査
+- 回帰リスクやテストカバレッジの分析
+- build / test / log の分析
+- ドキュメント・仕様・実装間の整合性確認
+- 実装完了後の独立検証
+
+基本的な作業フローは以下とする。
+
+監査・scope確認 → 実装 → 独立検証
+
+必要な事前調査やscope確認を親エージェント自身で十分に行える場合、
+形式的な監査サブエージェントを必須とはしない。
+
+実装をcoderへ委任する場合、親エージェントはscope、関連authority、
+変更してよい範囲、必要なvalidationを明確に渡す。
+
+監査および検証では、作業規模が大きく、
+互いに独立した観点へ分割できる場合は並列化を優先する。
+
+親エージェントは以下を行うこと。
+
+1. サブエージェントごとに重複しにくい明確な作業範囲を定める。
+2. 必要なサブエージェントがすべて完了するまで待つ。
+3. 各エージェントの結果と根拠を確認し、矛盾があれば自ら解決する。
+4. 最終的な判断と結論は親エージェント自身が行う。
+5. サブエージェントの要約だけを根拠とせず、必要に応じて実際のコード・diff・テスト結果を確認する。
+
+同一の実装箇所を複数エージェントが同時に変更することは原則として避ける。
+実装フェーズでは、原則として1つのcoderまたは親エージェントだけが変更を担当する。
+
+既存のユーザー変更を尊重し、依頼されていない変更やcleanupを勝手に行わない。
+
+## 役割と委任
+
+- native custom agentは`~/.gemini/config/agents/`の`coder.md`、`auditor.md`、`verifier.md`、`handoff.md`を使う。`invoke_subagent`へ役割とscopeを渡し、親の既存会話が自動継承されるとは仮定しない。適用authority、対象diff、必要なevidenceと検証条件を明示する。
+- `coder`は合意済みscopeの実装・必要なtest・直接影響するdocsとfocused validationを担当する。監査は`auditor`と`audit`、独立検証は`verifier`と`validate`へroutingする。
+- `auditor`はfileを変更しない。利用toolは閲覧と検索に限定し、shell / Git / 外部照会が必要なevidenceは親から渡す。`verifier`はproduction codeとtestを変更せず、`run_command`でbuild / testに必要なartifact・一時file・検証logを生成してよい。修正は実装担当へ戻す。
+- `handoff`は完成済みparent workと既存evidenceから、明示された成果物だけを作る。通常保存・inline・archiveは各Skillへroutingする。Codexのmodel ID、tool名、permission profileを移植せず、実際の親のpermissionとworkspace境界を継承する。

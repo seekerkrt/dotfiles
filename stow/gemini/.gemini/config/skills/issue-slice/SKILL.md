@@ -29,7 +29,7 @@ Skill本文・referenceの読取りは共通指示に従い、確認済みで不
 10. 既存consumerと近傍test
 
 Issue、PR、decision、関連履歴のGitHub確認が必要なら、
-`~/.gemini/antigravity-cli/skills/github-safe-ops/SKILL.md`の契約に従う。
+`~/.gemini/config/skills/github-safe-ops/SKILL.md`の契約に従う。
 存在を確認していないpath、command、Issue、PR、branch、decisionを推測で補わない。
 
 Issueやdecision authorityを参照できない場合も、確認できた情報だけで安全に固定できるsliceがあるか判断する。確認済みscopeと未確認部分を分け、成立条件が確定しない場合は実装を開始せずblockerとして報告する。
@@ -80,20 +80,20 @@ Follow-up / release audit:
 段階ごとのroutingは次とする。
 
 - 実装前の独立監査、read-only調査、Issue化前調査が依頼された場合は、
-  `~/.gemini/antigravity-cli/skills/audit/SKILL.md`を適用する。
+  `~/.gemini/config/skills/audit/SKILL.md`を適用する。
   調査だけの依頼を編集や実装へ拡張しない。
 - C、Cから利用するABI header、C/C++共有境界の生成・編集・reviewには
-  `~/.gemini/antigravity-cli/skills/c-conventions/SKILL.md`を適用する。
+  `~/.gemini/config/skills/c-conventions/SKILL.md`を適用する。
   repositoryの`docs/coding-conventions.md`があれば併読し、実際のcompiler設定も確認する。
 - C++、C++から利用するC互換header、共有ABI境界の生成・編集・reviewには
-  `~/.gemini/antigravity-cli/skills/cpp-conventions/SKILL.md`を適用する。
+  `~/.gemini/config/skills/cpp-conventions/SKILL.md`を適用する。
   repositoryの`docs/coding-conventions.md`があれば併読し、実際のcompiler設定も確認する。
-- 実装後の検証には`~/.gemini/antigravity-cli/skills/validate/SKILL.md`を適用する。
+- 実装後の検証には`~/.gemini/config/skills/validate/SKILL.md`を適用する。
 - commit準備を求められた場合だけ
-  `~/.gemini/antigravity-cli/skills/commit-prep/SKILL.md`を適用する。
+  `~/.gemini/config/skills/commit-prep/SKILL.md`を適用する。
 - GitHubの調査・操作は`github-safe-ops`へroutingする。外部mutationは明示された対象と操作だけに限定する。
 - 通常handoffまたは引き継ぎメモを明示的に求められた場合だけ
-  `~/.gemini/antigravity-cli/skills/handoff/SKILL.md`を適用する。
+  `~/.gemini/config/skills/handoff/SKILL.md`を適用する。
   raw log保存だけでは起動しない。
 
 ## 実装契約
@@ -107,7 +107,7 @@ Follow-up / release audit:
 
 ## Verification
 
-詳細workflowのownerは`~/.gemini/antigravity-cli/skills/validate/SKILL.md`とする。
+詳細workflowのownerは`~/.gemini/config/skills/validate/SKILL.md`とする。
 本Skillはdecision authorityから定めたacceptance criteria、
 scope / non-scope、impact / risk、repository・ユーザー要求を検証の入力として保持する。
 検証選択・実行・結果分類・環境・artifact保存・完了条件は`validate`へ委ね、ここでは再定義しない。
@@ -132,7 +132,7 @@ GitLab mirror更新
 handoff archive
 ```
 
-AGYのpermission、approval、workspace境界を追加の停止境界として扱い、workspace追加、設定変更、別tool等で回避しない。accessできない検証や操作は未実施または`environment blocked`として報告する。
+Antigravity IDEのpermission、approval、workspace境界を追加の停止境界として扱い、workspace追加、設定変更、別tool等で回避しない。accessできない検証や操作は未実施または`environment blocked`として報告する。
 
 依頼があっても、対象、scope、現在状態、影響を確認し、各Skillとagentのpermission境界に従う。本Skillの通常終了点はunstagedまたはユーザーが既にstageした状態を保持したcommit前である。
 

@@ -8,7 +8,7 @@ description: Cコードの生成・編集・review、およびCから利用す�
 
 ## 適用順
 
-1. 作業対象に適用される`AGENTS.md`を読む。
+1. 作業対象に適用される`CLAUDE.md`を読む。
 2. repositoryの`docs/coding-conventions.md`のようなコーディング規約文書が存在すれば読む。
 3. Makefile、CMake、Meson等の実際のbuild設定からcompiler、C標準、warning、optimization、freestanding / hosted等の条件を確認する。
 4. project側に明示がない部分へ本Skillの共通baselineを適用する。

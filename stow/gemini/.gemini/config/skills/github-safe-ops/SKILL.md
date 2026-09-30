@@ -22,7 +22,7 @@ CLIのcommand例・引数を確認する必要があるときだけ、[command r
 
 GitHubへ接続する前に、`command -v gh`、`gh --version`、`gh auth status --hostname HOST`で利用可否を確認する。`gh`がない、未認証、token無効、実行環境の制約で認証状態を確認できないのいずれかなら、`gh unavailable`としてfail closedにし、readもwriteも実行しない。
 
-fail closed時は`curl`、browser automation、独自script等の別経路へ切り替えず、local Gitで確認できる事実だけを報告し、Issue、PR、Actions等のGitHub側stateは「未確認」とする。認証失敗はAGYのpermission不足ではないため、approvalを追加して押し通そうとしない。
+fail closed時は`curl`、browser automation、独自script等の別経路へ切り替えず、local Gitで確認できる事実だけを報告し、Issue、PR、Actions等のGitHub側stateは「未確認」とする。認証失敗はAntigravity IDEのpermission不足ではないため、approvalを追加して押し通そうとしない。
 
 次を実行しない。
 
@@ -37,27 +37,16 @@ gh auth token
 
 token、credential、cookie、秘密鍵、keyring、credential store、認証用環境変数の秘密値を探索・表示・保存しない。account、scope、credential helper、Git protocol、SSH / GPG keyを変更しない。
 
-## AGY permissionとapproval
+## Antigravity IDE permissionとapproval
 
-`gh`と認証が利用可能な状態で、予定した`gh` commandがAGYのpermissionにより拒否された場合だけ、組み込み契約に従って最小権限を求める。
+`gh`と認証が利用可能な状態で、予定した`gh` commandがAntigravity IDEのpermissionにより拒否された場合だけ、組み込み契約に従って最小権限を求める。
 
 - exactな`OWNER/REPO`とresourceを使い、不要な`*`を使わない。
-- `ask_permission`はActionを`custom`、Targetを次の形式にする。
-- permissionやworkspace境界を回避するoptionを設定しない。
-- 拒否された元commandは、承認後に一度だけ再実行する。
-- 承認されない、または権限を狭く表現できない場合は`environment blocked`とする。
-- permission回避のためにAGY設定、workspace、remote、credentialを変更しない。
+- 現在のIDEが提示する組み込みpermission / approval手順を使い、対象command・repository・resource・影響を明示する。CLI専用のtool名やpermission target形式を仮定しない。
+- permissionやworkspace境界を回避するoptionを設定しない。承認後に拒否された元commandを一度だけ再実行し、承認されなければ`environment blocked`とする。
+- permission回避のためにIDE設定、workspace、remote、credentialを変更しない。
 
-```text
-gh.read({"org":"OWNER","repo":"REPO"})
-gh.read({"org":"OWNER","repo":"REPO","pr":"123"})
-gh.create({"org":"OWNER","repo":"REPO","issue":"*"})
-gh.update({"org":"OWNER","repo":"REPO","issue":"123"})
-gh.approve({"org":"OWNER","repo":"REPO","pr":"123"})
-gh.merge({"org":"OWNER","repo":"REPO","pr":"123"})
-```
-
-AGYのGitHub permission判定を保つため、`gh` commandの出力をpipeやredirectしない。必要なfieldは`--json`や`--jq`でcommand自身に絞らせる。
+Antigravity IDEのGitHub permission判定を保つため、`gh` commandの出力をpipeやredirectしない。必要なfieldは`--json`や`--jq`でcommand自身に絞らせる。
 
 ## Target resolution
 

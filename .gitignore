@@ -100,7 +100,10 @@ stow/gemini/.gemini/antigravity-cli/jetski_state.pbtxt
 stow/gemini/.gemini/antigravity-cli/keybindings.json
 stow/gemini/.gemini/antigravity-cli/knowledge/
 stow/gemini/.gemini/antigravity-cli/log/
-stow/gemini/.gemini/config/
+# Keep runtime config ignored; only managed Skills and native agents are tracked.
+stow/gemini/.gemini/config/*
+!stow/gemini/.gemini/config/skills/
+!stow/gemini/.gemini/config/agents/
 stow/gemini/.gemini/antigravity-cli/conversations/
 stow/gemini/.gemini/antigravity-cli/brain/
 

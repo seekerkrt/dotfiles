@@ -1,6 +1,6 @@
 ---
 name: cpp-conventions
-description: C++コードの生成・編集・review、およびC++から利用するC互換headerやC/C++共有境界で使用し、C++標準、宣言と定義の分離、共通命名、コメント、所有権、C++機能、castの全project共通baselineを適用する。repositoryにdocs/CODING_CONVENTIONS.mdがあれば必ず併読し、build設定とproject規約が本Skillと異なる部分はproject側を優先する。
+description: C++コードの生成・編集・review、およびC++から利用するC互換headerやC/C++共有境界で使用し、C++標準、宣言と定義の分離、共通命名、コメント、所有権、C++機能、castの全project共通baselineを適用する。repositoryにdocs/coding-conventions.mdがあれば必ず併読し、build設定とproject規約が本Skillと異なる部分はproject側を優先する。
 ---
 
 # C++共通規約
@@ -8,7 +8,7 @@ description: C++コードの生成・編集・review、およびC++から利用�
 ## 適用順
 
 1. 作業対象に適用される`CLAUDE.md`を読む。
-2. repositoryの`docs/CODING_CONVENTIONS.md`が存在すれば読む。
+2. repositoryの`docs/coding-conventions.md`のようなコーディング規約文書が存在すれば読む。
 3. Makefile、CMake等の実際のbuild設定からcompiler、C++標準、例外、RTTI、warningを確認する。
 4. project側に明示がない部分へ本Skillの共通baselineを適用する。
 

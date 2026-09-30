@@ -97,9 +97,9 @@ phaseは`audit`、`design`、`investigation`、`implementation`、`validation`�
 例:
 
 ```text
-~/handoff/jpacker/issue-281/20260728-100747-codex-feat-issue-281-upgrade-all-cli-implementation.md
-~/handoff/jadeos/issue-243/20260724-094904-codex-fix-issue-243-ramfs-filename-bound-validation.md
-~/handoff/dotfiles/topic-handoff-filename/20260728-130000-claude-sonnet-main-validation.md
+~/handoff/example-project/issue-281/20260728-100747-codex-feat-issue-281-example-implementation.md
+~/handoff/example-project/issue-243/20260724-094904-codex-fix-issue-243-example-validation.md
+~/handoff/example-project/topic-handoff-filename/20260728-130000-claude-sonnet-main-validation.md
 ```
 
 filenameのbranch-slugは本文の代替ではない。`Current state`の`Branch:`へ、置換前の完全なbranch名を引き続き記録する。
