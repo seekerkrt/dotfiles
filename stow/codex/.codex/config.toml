@@ -32,7 +32,7 @@ allow_local_binding = true
 
 [agents]
 enabled = true
-max_concurrent_threads_per_session = 3
+max_concurrent_threads_per_session = 5
 
 [agents.handoff]
 description = "Create the final handoff only. Do not implement or modify production work."
@@ -55,12 +55,12 @@ status_line_use_colors = true
 theme = "Tokyo Night Storm"
 screen_reader_detection_done = true
 
+[tui.model_availability_nux]
+"gpt-6.1-sol" = 1
+
 [notice]
 hide_full_access_warning = true
 hide_rate_limit_model_nudge = true
-
-[notice.model_migrations]
-"gpt-5.4" = "gpt-5.5"
 
 [mcp_servers.openaiDeveloperDocs]
 url = "https://developers.openai.com/mcp"
@@ -109,4 +109,8 @@ enabled = true
 
 [plugins."pyright-lsp@claude-plugins-official"]
 enabled = true
+
+[desktop]
+followUpQueueMode = "steer"
+preventSleepWhileRunning = true
 

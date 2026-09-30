@@ -5,7 +5,7 @@ This directory contains third-party themes redistributed for use with Codex.
 ## Night Owl
 
 Source:
-https://github.com/batpigandme/night-owlish
+<https://github.com/batpigandme/night-owlish>
 
 Theme:
 `Night Owl.tmTheme`
@@ -19,7 +19,7 @@ See:
 ## Tokyo Night Storm
 
 Source:
-https://github.com/folke/tokyonight.nvim
+<https://github.com/folke/tokyonight.nvim>
 
 Theme:
 `Tokyo Night Storm.tmTheme`
