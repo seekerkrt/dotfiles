@@ -66,6 +66,7 @@ status_line = [
 status_line_use_colors = true
 theme = "Tokyo Night Storm"
 screen_reader_detection_done = true
+fullscreen_transcript = false
 
 [tui.model_availability_nux]
 "gpt-6.1-sol" = 4
