@@ -37,7 +37,7 @@ description: C++コードの生成・編集・review、およびC++から利用�
 - 型、class、struct、`enum class`はPascalCaseを基本とする。
 - namespaceは小文字を基本とする。
 - local変数と関数引数はsnake_caseを基本とする。
-- class memberは`_`接尾辞、単純なdata aggregateのstruct memberは接尾辞なしを基本とする。
+- class / structのnon-static data memberはtrailing underscoreを付けない。
 - classの状態は`private` / `protected`を基本とし、単純なdata aggregateだけをpublic member中心で扱う。意味のないaccessorを形式的に増やさない。
 - 定数とmacroはUPPER_SNAKE_CASEを基本とし、magic numberは意味が残る`constexpr`等へ寄せる。
 - global stateは避ける。必要なら翻訳単位へ閉じ、project規約に従って寿命と副作用が分かる名前を付ける。
@@ -47,6 +47,87 @@ description: C++コードの生成・編集・review、およびC++から利用�
 - `tmp`、`ret`、`val`、`obj`等の曖昧な名前は、短い局所処理以外で避ける。
 
 public / internal関数、enum value、file名等の命名がprojectごとに異なる場合は、project規約と周辺コードへ従う。
+
+## Current objectのmember規約
+
+### Member access
+
+- current objectのnon-static data member accessは`this->member`を必須とする。
+- current objectのnon-static member function callも`this->Method()`を必須とする。
+
+採用:
+
+```cpp
+this->width = width;
+this->state = State::Running;
+this->Update();
+this->Repaint();
+```
+
+避ける（`width` / `state`がcurrent objectのdata member、`Update` / `Repaint`がnon-static member functionの場合）:
+
+```cpp
+width_ = width;
+state_ = State::Running;
+width = width;
+Update();
+Repaint();
+```
+
+### Member naming
+
+non-static data memberは`this->`で所属を示すため、trailing underscoreによる二重マーキングを行わない。
+
+採用:
+
+```cpp
+int width;
+State state;
+```
+
+避ける:
+
+```cpp
+int width_;
+State state_;
+```
+
+### Constructor
+
+memberとparameterを同名にしてよい。constructor initializer listのmember指定には`this->`を書けないため、`x(x)`を正式に許容する。
+
+採用:
+
+```cpp
+Object::Object(int x, int y)
+    : x(x),
+      y(y)
+{
+}
+```
+
+member名との衝突回避だけを目的に、`init_x`、`arg_x`、`new_x`等の人工的prefixを導入しない。
+
+避ける（prefixの目的がmember名との衝突回避だけの場合）:
+
+```cpp
+Object::Object(int init_x, int init_y)
+    : x(init_x),
+      y(init_y)
+{
+}
+```
+
+parameterがmemberと本当に異なるsemantic meaningを持つ場合は、その意味を表す名前を使ってよい。
+
+### 適用範囲と意図
+
+この規約はcurrent objectのnon-static memberを対象とする。
+local / parameter、static member、global、function-local static、other objectのmember、explicit base qualification、external / ABIで指定された名前は別扱いとし、それぞれの既存契約に従う。
+globalの`g_`、function-local staticの`s_`等、別scopeの既存命名規約は変更しない。
+
+current objectの状態へのaccessを視覚的に明示し、data memberとmember functionを同じ規則へ統一する。
+local / parameterとの違いはaccess expressionで示し、trailing underscoreとの二重表示を避ける。
 
 ## コメント
 
