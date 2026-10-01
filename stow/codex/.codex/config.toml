@@ -36,19 +36,19 @@ max_concurrent_threads_per_session = 5
 
 [agents.coder]
 description = "合意済みscopeに従ってproduction codeと必要なtestを実装する実装担当"
-config_file = "./agents/coder.toml"
+config_file = "../dotfiles/stow/codex/.codex/agents/coder.toml"
 
 [agents.auditor]
 description = "実装の正しさ、回帰、設計上の不変条件、テスト不足を独立して確認するread-only監査役"
-config_file = "./agents/auditor.toml"
+config_file = "../dotfiles/stow/codex/.codex/agents/auditor.toml"
 
 [agents.verifier]
 description = "実装完了後の変更を独立した立場から検証する検証役"
-config_file = "./agents/verifier.toml"
+config_file = "../dotfiles/stow/codex/.codex/agents/verifier.toml"
 
 [agents.handoff]
 description = "Create the final handoff only. Do not implement or modify production work."
-config_file = "./agents/handoff-luna.toml"
+config_file = "../dotfiles/stow/codex/.codex/agents/handoff-luna.toml"
 
 [shell_environment_policy]
 inherit = "all"
