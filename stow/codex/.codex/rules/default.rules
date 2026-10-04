@@ -89,3 +89,8 @@ prefix_rule(
 )
 prefix_rule(pattern=["docker", "inspect"], decision="allow")
 prefix_rule(pattern=["docker", "logs"], decision="allow")
+prefix_rule(
+    pattern=["ctest"],
+    decision="allow",
+    justification="trusted workspaceでのCTest test suite実行を自動許可する",
+)
