@@ -1,7 +1,7 @@
 model = "gpt-6.1-sol"
 model_context_window = 1000000
 model_auto_compact_token_limit = 900000
-model_reasoning_effort = "xhigh"
+model_reasoning_effort = "max"
 model_verbosity = "medium"
 approval_policy = "on-request"
 default_permissions = "workspace-dev"
@@ -9,6 +9,38 @@ web_search = "cached"
 approvals_reviewer = "user"
 service_tier = "fast"
 personality = "pragmatic"
+
+approvals_reviewer = "auto_review"
+
+[auto_review]
+policy = """
+以下の条件を満たす、非破壊的なローカル開発コマンドは承認してよい。
+
+- 対象がリポジトリ配下、/ramdisk、/tmp、~/handoff に限定されている
+- ビルド、テスト、検証、静的解析、フォーマット、lint が目的である
+- cmake、ninja、make、ctest、コンパイラ、リンカ、テストランナーなど通常の開発ツールである
+- AF_UNIX socket を使用するテストなど、sandbox の制約だけが理由で sandbox 外実行を必要としている
+- Git / GitHub の読み取り専用操作である
+
+特に、既存のテストスイートを実行する ctest が
+AF_UNIX socket の作成制限によって sandbox 外実行を要求している場合は、
+非破壊的な検証処理として承認してよい。
+
+以下は自動承認しない。
+
+- git reset、git restore、git clean、git stash など作業内容を失う可能性がある操作
+- force push
+- ファイルやディレクトリの広範囲な削除
+- sudo や権限昇格
+- システム設定の変更
+- パッケージのシステム全体へのインストールや削除
+- 認証情報、秘密鍵、トークン、パスワード等へのアクセス
+- /etc やシステム領域への書き込み
+- ユーザーが明示的に許可していない外部への破壊的変更
+- 上記の安全条件に該当するか判断できない操作
+
+判断に迷う場合はユーザーへ承認を求めること。
+"""
 
 [features.network_proxy]
 enabled = true
