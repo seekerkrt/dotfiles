@@ -133,6 +133,7 @@ Stow 対象外で、リポジトリへ自動適用するスクリプトはあり
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | モデル別プロファイル（astra / luna / sol / terra / spark / safe） |
 | Codex | `stow/codex/.codex/config.toml.example` | `~/.codex/config.toml.example` | 最小構成の例 |
 | Codex | `stow/codex/.codex/rules/` | `~/.codex/rules/` | prefix_rule（実ファイルcopy。現在は `default.rules`） |
+| Codex | `stow/codex/.codex/agents/` | `~/.codex/agents/` | custom role 4種（自動発見、実ファイルcopy） |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Codex正本のimport＋固有差分 |
 | Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 9種 |
 | Claude Code | `stow/claude/.claude/agents/` | `~/.claude/agents/` | native role 4種 |
@@ -278,6 +279,13 @@ Codexの `~/.codex/rules/*.rules` はStow symlinkではなく、
 `apply-stow.sh` がリポジトリ側を実ファイルとしてcopyします（既存fileは上書き）。
 `remove-stow.sh` は、リポジトリ側と内容が一致するcopyだけを削除し、
 配置後に変更されたrulesは残します。
+Codexは `~/.codex/agents/*.toml` からcustom role（`coder` / `auditor` / `verifier` / `handoff`）を
+自動発見するため、`config.toml` にroleごとの `config_file` 登録は置かず、共通設定は `[agents]` に残します。
+`stow/codex/.codex/agents/` が正本で、`agents/` はStow対象外です。現在のCodexはrole fileの
+symlinkを拒否するため、apply時に管理対象TOMLを実directoryの `~/.codex/agents/` へregular fileとしてcopyします。
+旧Stow symlinkは正本への参照を確認してから置き換え、管理外fileは保持します。
+remove時は正本と内容が一致するcopyだけを削除し、変更済みfileは保持し、空のdirectoryだけを削除します。
+その他のCodex設定は既存の配置方式を維持します。仕様の根拠は [Codex custom agents](https://learn.chatgpt.com/docs/agent-configuration/subagents#custom-agents) です。
 Grokの `config.toml` はStow対象外で、未配置時だけ実ファイルとしてseedされます。）
 
 > [!IMPORTANT]
@@ -578,6 +586,7 @@ Each agent reads the following files, backed by this repository:
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | Per-model profiles (astra / luna / sol / terra / spark / safe) |
 | Codex | `stow/codex/.codex/config.toml.example` | `~/.codex/config.toml.example` | Minimal example config |
 | Codex | `stow/codex/.codex/rules/` | `~/.codex/rules/` | prefix_rule files (copied as real files; currently `default.rules`) |
+| Codex | `stow/codex/.codex/agents/` | `~/.codex/agents/` | 4 custom roles (auto-discovered, regular file copies) |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Imports the Codex source + deltas |
 | Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 9 skills |
 | Claude Code | `stow/claude/.claude/agents/` | `~/.claude/agents/` | Four native roles |
@@ -729,6 +738,17 @@ are deployed as directory symlinks at `~/.agents/skills/<skill>`.
 from the repository as real files and overwrites existing copies.
 `remove-stow.sh` deletes a copied rule only when it still matches the
 repository source, and leaves rules that were edited after deployment.
+Codex auto-discovers custom roles (`coder`, `auditor`, `verifier`, and `handoff`)
+from `~/.codex/agents/*.toml`. There are no per-role `config_file` registrations
+in `config.toml`; shared settings remain under `[agents]`.
+`stow/codex/.codex/agents/` is the source of truth, and `agents/` is excluded
+from Stow. Current Codex rejects symlinked role files, so apply copies the managed
+TOMLs as regular files into the real `~/.codex/agents/` directory.
+Old Stow symlinks are replaced only after verifying that they point to the
+repository source; unmanaged files are preserved. Removal deletes only copies
+that match the source, preserves edited files, and removes the directory only
+when it is empty. Other Codex settings keep their existing deployment lifecycle.
+See [Codex custom agents](https://learn.chatgpt.com/docs/agent-configuration/subagents#custom-agents) for the discovery contract.
 Grok's `config.toml` is excluded from Stow and seeded as a real file only
 when it is missing.)
 

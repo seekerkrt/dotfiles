@@ -5,10 +5,12 @@ DOTFILES_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 STOW_DIR="$DOTFILES_DIR/stow"
 TARGET_DIR="$HOME"
 CODEX_RULES_IGNORE='^/\.codex/rules(/.*)?$'
+CODEX_AGENTS_IGNORE='^/\.codex/agents(/.*)?$'
 CODEX_CONFIG_IGNORE='^/\.codex(/.*)?$'
 CODEX_SKILLS_IGNORE='^/\.agents(/.*)?$'
 # CLIの--ignoreはpackage相対pathを先頭slashなしで照合する
 CODEX_RULES_CLI_IGNORE="^${CODEX_RULES_IGNORE#^/}"
+CODEX_AGENTS_CLI_IGNORE="^${CODEX_AGENTS_IGNORE#^/}"
 CODEX_CONFIG_CLI_IGNORE="^${CODEX_CONFIG_IGNORE#^/}"
 CODEX_SKILLS_CLI_IGNORE="^${CODEX_SKILLS_IGNORE#^/}"
 
@@ -36,6 +38,8 @@ stow_remove_one() {
         --no-folding \
         --ignore="$CODEX_RULES_IGNORE" \
         --ignore="$CODEX_RULES_CLI_IGNORE" \
+        --ignore="$CODEX_AGENTS_IGNORE" \
+        --ignore="$CODEX_AGENTS_CLI_IGNORE" \
         --ignore="$CODEX_SKILLS_IGNORE" \
         --ignore="$CODEX_SKILLS_CLI_IGNORE" \
         "$pkg"
@@ -150,6 +154,56 @@ remove_codex_rules() {
   fi
 }
 
+remove_codex_agents() {
+  src_dir="$STOW_DIR/codex/.codex/agents"
+  codex_dir="$TARGET_DIR/.codex"
+  dst_dir="$codex_dir/agents"
+
+  if [ -L "$src_dir" ] || [ ! -d "$src_dir" ]; then
+    echo "[remove] Codex agent source is not a real directory; copies left unchanged: $src_dir" >&2
+    return 0
+  fi
+  if [ -L "$codex_dir" ] || [ -L "$dst_dir" ]; then
+    echo "[remove] Codex agent directory is symlinked; left unchanged: $dst_dir" >&2
+    return 0
+  fi
+  if [ ! -e "$dst_dir" ]; then
+    return 0
+  fi
+  if [ ! -d "$dst_dir" ]; then
+    echo "[remove] unexpected Codex agent directory left unchanged: $dst_dir" >&2
+    return 0
+  fi
+  if [ "$src_dir" -ef "$dst_dir" ]; then
+    echo "[remove] refusing to remove Codex agents: source and destination resolve to the same directory" >&2
+    return 1
+  fi
+
+  for src in "$src_dir"/*.toml; do
+    [ ! -L "$src" ] && [ -f "$src" ] || continue
+
+    dst="$dst_dir/$(basename -- "$src")"
+    if [ -L "$dst" ]; then
+      echo "[remove] Codex agent is a symlink; left unchanged: $dst" >&2
+    elif [ -f "$dst" ]; then
+      if [ "$src" -ef "$dst" ]; then
+        echo "[remove] Codex agent aliases its SSOT; left unchanged: $dst" >&2
+      elif cmp -s -- "$src" "$dst"; then
+        rm -- "$dst"
+        echo "[remove] Codex agent: $dst"
+      else
+        echo "[remove] Codex agent differs from source; left unchanged: $dst" >&2
+      fi
+    elif [ -e "$dst" ]; then
+      echo "[remove] unexpected Codex agent path left unchanged: $dst" >&2
+    fi
+  done
+
+  if rmdir -- "$dst_dir" 2>/dev/null; then
+    echo "[remove] empty Codex agent directory: $dst_dir"
+  fi
+}
+
 found_any=0
 for path in "$STOW_DIR"/*; do
   [ -d "$path" ] || continue
@@ -167,6 +221,7 @@ for path in "$STOW_DIR"/*; do
   if [ "$pkg" = "codex" ]; then
     remove_codex_skill_dirs
     remove_codex_rules
+    remove_codex_agents
   fi
 done
 

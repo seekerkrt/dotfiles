@@ -1,6 +1,7 @@
 # Codex handoff agent configuration
 
 name = "handoff"
+description = "Create the final handoff only. Do not implement or modify production work."
 
 model = "gpt-6-luna"
 model_reasoning_effort = "xhigh"

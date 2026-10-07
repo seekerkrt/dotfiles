@@ -5,10 +5,12 @@ DOTFILES_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 STOW_DIR="$DOTFILES_DIR/stow"
 TARGET_DIR="$HOME"
 CODEX_RULES_IGNORE='^/\.codex/rules(/.*)?$'
+CODEX_AGENTS_IGNORE='^/\.codex/agents(/.*)?$'
 CODEX_CONFIG_IGNORE='^/\.codex(/.*)?$'
 CODEX_SKILLS_IGNORE='^/\.agents(/.*)?$'
 # CLIの--ignoreはpackage相対pathを先頭slashなしで照合する
 CODEX_RULES_CLI_IGNORE="^${CODEX_RULES_IGNORE#^/}"
+CODEX_AGENTS_CLI_IGNORE="^${CODEX_AGENTS_IGNORE#^/}"
 CODEX_CONFIG_CLI_IGNORE="^${CODEX_CONFIG_IGNORE#^/}"
 CODEX_SKILLS_CLI_IGNORE="^${CODEX_SKILLS_IGNORE#^/}"
 
@@ -29,11 +31,13 @@ stow_one() {
   pkg="$1"
   case "$pkg" in
     codex)
-      # .codexはrulesの実ファイル配置に備えて展開し、Skill subtreeはfold対象に残す
+      # .codexはrules / agentsの実ファイル配置に備えて展開し、Skill subtreeはfold対象に残す
       stow -d "$STOW_DIR" -t "$TARGET_DIR" \
         --no-folding \
         --ignore="$CODEX_RULES_IGNORE" \
         --ignore="$CODEX_RULES_CLI_IGNORE" \
+        --ignore="$CODEX_AGENTS_IGNORE" \
+        --ignore="$CODEX_AGENTS_CLI_IGNORE" \
         --ignore="$CODEX_SKILLS_IGNORE" \
         --ignore="$CODEX_SKILLS_CLI_IGNORE" \
         "$pkg"
@@ -331,6 +335,82 @@ materialize_codex_rules() {
   done
 }
 
+materialize_codex_agents() (
+  src_dir="$STOW_DIR/codex/.codex/agents"
+  codex_dir="$TARGET_DIR/.codex"
+  dst_dir="$codex_dir/agents"
+
+  if [ -L "$src_dir" ] || [ ! -d "$src_dir" ]; then
+    echo "[copy] Codex agent source is not a real directory: $src_dir" >&2
+    return 1
+  fi
+  if [ -L "$codex_dir" ] || { [ -e "$codex_dir" ] && [ ! -d "$codex_dir" ]; }; then
+    echo "[copy] refusing to use unexpected Codex directory: $codex_dir" >&2
+    return 1
+  fi
+  if [ -L "$dst_dir" ]; then
+    if [ ! "$src_dir" -ef "$dst_dir" ]; then
+      echo "[copy] refusing to replace unmanaged Codex agent directory symlink: $dst_dir" >&2
+      return 1
+    fi
+  elif [ -e "$dst_dir" ]; then
+    if [ ! -d "$dst_dir" ] || [ "$src_dir" -ef "$dst_dir" ]; then
+      echo "[copy] refusing to use unexpected or aliased Codex agent directory: $dst_dir" >&2
+      return 1
+    fi
+  fi
+
+  # 全配置先を確認し、管理外symlinkやsourceのaliasを上書きしない
+  found_agent=0
+  for src in "$src_dir"/*.toml; do
+    [ -e "$src" ] || [ -L "$src" ] || continue
+    if [ -L "$src" ] || [ ! -f "$src" ]; then
+      echo "[copy] Codex agent source is not a regular file: $src" >&2
+      return 1
+    fi
+    found_agent=1
+    dst="$dst_dir/$(basename -- "$src")"
+
+    # directory symlink自体の所有を確認済みなら、配下はsourceを参照している
+    [ ! -L "$dst_dir" ] || continue
+    if [ -L "$dst" ]; then
+      if [ ! "$src" -ef "$dst" ]; then
+        echo "[copy] refusing to replace unmanaged Codex agent symlink: $dst" >&2
+        return 1
+      fi
+    elif [ -e "$dst" ]; then
+      if [ ! -f "$dst" ] || [ "$src" -ef "$dst" ]; then
+        echo "[copy] refusing to replace unexpected or aliased Codex agent file: $dst" >&2
+        return 1
+      fi
+    fi
+  done
+  if [ "$found_agent" -eq 0 ]; then
+    echo "[copy] no Codex agent files found under: $src_dir" >&2
+    return 1
+  fi
+
+  # 全TOMLのcopy成功後に配置を始める。trapはこのsubshellの一時fileだけを片付ける
+  mkdir -p -- "$codex_dir"
+  copy_dir="$(mktemp -d "$codex_dir/.agents.XXXXXX")"
+  trap 'rm -f -- "$copy_dir"/*.toml; rmdir -- "$copy_dir"' 0
+  trap 'exit 1' HUP INT TERM
+  for src in "$src_dir"/*.toml; do
+    install -m 0644 -- "$src" "$copy_dir/$(basename -- "$src")"
+  done
+
+  if [ -L "$dst_dir" ]; then
+    unlink -- "$dst_dir"
+  fi
+  mkdir -p -- "$dst_dir"
+  for src in "$copy_dir"/*.toml; do
+    dst="$dst_dir/$(basename -- "$src")"
+    # symlinkをたどらずfile単位で置換する。directoryへの誤ったmoveも拒否する
+    mv -fT -- "$src" "$dst"
+    echo "[copy] Codex agent: $dst"
+  done
+)
+
 # stow/配下のディレクトリを自動列挙して実行
 # - globが空の時にそのまま "*" が残るのを避けるため、存在チェックを入れる
 found_any=0
@@ -349,6 +429,7 @@ for path in "$STOW_DIR"/*; do
 
   if [ "$pkg" = "codex" ]; then
     materialize_codex_rules
+    materialize_codex_agents
   fi
 done
 

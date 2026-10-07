@@ -65,22 +65,6 @@ allow_local_binding = true
 enabled = true
 max_concurrent_threads_per_session = 5
 
-[agents.coder]
-description = "合意済みscopeに従ってproduction codeと必要なtestを実装する実装担当"
-config_file = "../dotfiles/stow/codex/.codex/agent-configs/coder.toml"
-
-[agents.auditor]
-description = "実装の正しさ、回帰、設計上の不変条件、テスト不足を独立して確認するread-only監査役"
-config_file = "../dotfiles/stow/codex/.codex/agent-configs/auditor.toml"
-
-[agents.verifier]
-description = "実装完了後の変更を独立した立場から検証する検証役"
-config_file = "../dotfiles/stow/codex/.codex/agent-configs/verifier.toml"
-
-[agents.handoff]
-description = "Create the final handoff only. Do not implement or modify production work."
-config_file = "../dotfiles/stow/codex/.codex/agent-configs/handoff-luna.toml"
-
 [shell_environment_policy]
 inherit = "all"
 
