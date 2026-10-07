@@ -1,12 +1,11 @@
 ---
 name: handoff
-description: 非自明な開発、repository調査、検証、Issue / PR、debug、設計reviewの結果について、通常のhandoffまたは引き継ぎメモを明示的に求められた場合に使用し、後続会話が再開できる事実ベースの日本語Markdownを既定ではrepository外の~/handoffへ永続保存する。inline / 本文だけ / 保存不要はhandoff-inline、repository収蔵はhandoff-archiveへroutingする。
+description: 非自明な開発、repository調査、検証、Issue / PR、debug、設計reviewの結果について、通常のhandoffまたは引き継ぎメモを明示的に求められた場合に使用し、後続会話が再開できる事実ベースの日本語Markdownを既定ではrepository外の~/handoffへ永続保存する。inline / 本文だけ / 保存不要 / file不要 / fileを作らない / 次スレへ貼る文章だけが明示された場合は同じSkillのInline modeでfile / directoryを作らず最終応答本文だけへ出力し、repository収蔵はhandoff-archiveへroutingする。
 ---
 
 # Handoff基本契約
 
 handoff作成時は[共通contract](references/common.md)を確認し、authority・事実性・再開情報に適用する。
-以下は通常保存のworkflowとする。
 
 ## 目的
 
@@ -14,19 +13,87 @@ handoff作成時は[共通contract](references/common.md)を確認し、authorit
 
 ## Output mode
 
-- 通常handoffまたは引き継ぎメモの新規保存: repository外へ新しいhistorical snapshotを作る。
-- inline、本文だけ、保存不要、file不要: file / directoryを書かず、`../handoff-inline/SKILL.md`に従う。
-- 選別済みの外部handoff snapshotを内容不変でrepositoryへ収蔵: `../handoff-archive/SKILL.md`に従う。
-
 対象成果物ごとに最新の明確なユーザー指定を適用する。「保存不要」へ訂正された成果物には書き込まない。
 inline本文と別途保存用snapshot等、異なる成果物への両立可能な指定はそれぞれ扱い、片方を捨てない。
 出力モードの選択では、同じ成果物に対する最新のwrite / no-write指定が同時に有効で実質的に矛盾する場合だけ、
-write前にユーザー判断を求める。通常handoffからrepository archiveへ自動的に進まない。
+write前にユーザー判断を求める。
+
+### Persistent mode
+
+既定。通常handoffまたは引き継ぎメモを、repository外の`~/handoff/...`へ新しいhistorical snapshotとして保存する。
+下記「Persistent workflow」に従う。
+
+### Inline mode
+
+inline、本文だけ、保存不要、file不要、fileを作らない、次スレへ貼る文章だけ等が明示された成果物に適用する。
+
+- 保存先: 最終応答本文だけ
+- file / directory作成: なし
+- repository変更: なし
+- archive metadata: 原則不要
+- 長さ: 再開に必要な情報を保てる範囲で短く
+
+共通contractの該当する必須情報を保ち、次のinline固有差分を適用する。
+
+- repository、branch、HEAD、working tree、完了事項、採用判断、scope / non-goal、validation、未実施、未確認、risk、next、Git操作状態を残す。
+- file一覧、command全文、Structure before / afterは再開に必要な場合だけ含める。
+- External handoff path、Suggested repository path、Archive statusは、ユーザーが必要としない限り省く。
+- inline成果物の生成ではclipboard、background task、Git / GitHub mutationを行わない。
+
+完成したhandoff本文を最終応答へ直接出す。長い前置きや外側の説明を付けず、handoff本文から始める。全体をcode fenceで囲まない。
+
+#### Inline template
+
+```markdown
+# Inline handoff: <repo> / <task>
+
+## Current state
+
+- Repo / branch / HEAD:
+- Date / Agent / Phase:
+- Working tree:
+
+## Completed and decisions
+
+- ...
+
+## Validation
+
+- 実施:
+- 未実施:
+
+## Remaining
+
+- 未確認 / risk:
+
+## Next
+
+1. ...
+
+## Git operations
+
+- git add:
+- commit:
+- push:
+```
+
+### Archive mode
+
+選別済みの外部handoff snapshotを内容不変でrepositoryへ収蔵する場合は、`../handoff-archive/SKILL.md`に従う。
+通常handoffからrepository archiveへ自動的に進まない。
 
 ## Evidence collection
 
-共通contractのevidence再利用原則に従い、同一sessionの作業終了直後で必要なevidenceが揃う場合はFast pathを使う。
-既読で不変のSkill / commonは再読しない。不足・不整合があるclaimだけRecovery pathで扱う。
+Persistent / Inlineの双方で共通contractのevidence再利用原則に従う。既読で不変のSkill / commonは再読しない。
+Inline modeでもbranch / HEAD / working tree等のclaimに必要な鮮度を確認する。
+有効なsession evidenceを再利用し、不足・不整合や変更の兆候があるclaimだけ必要な現在stateと根拠を取得する。
+取得できない情報は未確認と理由を残す。
+
+## Persistent workflow
+
+以下の保存手順、永続fileの配置・filename生成、archive metadata付与、既定template、
+保存artifactのread-back validation、handoff path / suggested archive pathを含む最終報告はPersistent mode専用とする。
+同一sessionの作業終了直後で必要なevidenceが揃う場合はFast pathを使い、不足・不整合があるclaimだけRecovery pathで扱う。
 
 ### Fast path
 
@@ -62,7 +129,7 @@ dirty fileは同じ`M`表示のまま再編集され、untracked pathの内容�
 
 repo、scope、出力mode、書込み権限等の保存成立条件を確定できない場合は、依存する書込みを止めて不足情報を報告する。
 
-## 永続fileの配置
+### 永続fileの配置
 
 通常handoffは次へ作る。
 
@@ -118,7 +185,7 @@ Authority: historical snapshot; not the current specification
 
 Suggested pathは提案だけであり、通常handoffではrepository内に作らない。
 
-## 既定template
+### 既定template
 
 ````markdown
 # ChatGPT handoff: <repo> / <task>
@@ -190,7 +257,7 @@ Suggested pathは提案だけであり、通常handoffではrepository内に作�
 
 構造変更が再開に重要な場合だけStructure before / afterを追加する。Issue単位指定等がある場合は、overlayに合わせてsectionを置換・拡張する。
 
-## PR bodyとの関係
+### PR bodyとの関係
 
 - 最新の出力指定が通常保存である成果物は、PR bodyの有無にかかわらず既定の永続fileを作る。
 - PR bodyはhandoffのEvidenceや再利用元として参照できるが、自動的な代替にはしない。
@@ -199,7 +266,7 @@ Suggested pathは提案だけであり、通常handoffではrepository内に作�
 
 PR bodyへ記録する場合も、scope / non-scope、validation、risk、nextを事実に合わせて残す。
 
-## 永続handoffの検証
+### 永続handoffの検証
 
 保存済みartifactのread-backと次の内容・path確認、保存後の`git status --short --branch`を1つのvalidation工程で行う。
 statusは保存前と比較するために1回取得する。filenameや本文の照合には保存前の観測setを使い、branch / HEADを再取得しない。
@@ -218,6 +285,6 @@ status一致だけでfile内容の完全不変を証明したとは扱わない�
 保存失敗・結果不明の場合は今回のartifactの存在と内容を先に確認し、同じ保存を無条件に繰り返さない。
 出力先へ書けない場合は固定名やrepository内fileで代用せず、未作成と理由を報告する。
 
-## 最終報告
+### 最終報告
 
 上記validation結果を再利用し、handoff path、suggested archive path、必須情報確認、repository statusを簡潔に報告する。同じstateを別の最終確認として再取得しない。作業全体でのGit operationsと、handoff生成自体によるarchive / stage / commit / pushの有無を分ける。通常handoffではhandoff fileを自動archive、stage、commit、pushしない。作業結果の最終報告にもhandoff pathを含める。

@@ -28,7 +28,7 @@ handoff Skillの既定契約
 - 「短く」: 必須情報を落とさず圧縮する。
 - 「設計判断を詳しく」: Decisionと理由・棄却案を拡張する。
 - 「実機確認中心」: Validationを実機の機種、条件、観測、未確認中心に再構成する。
-- 「次スレに貼る本文だけ」: 対象本文を`handoff-inline`で扱う。
+- 「次スレに貼る本文だけ」: 対象本文を`handoff`のInline modeで扱う。
 - 「残作業をIssue単位で」: RemainingをIssue候補、scope、acceptanceへ整理する。
 
 ## Authority

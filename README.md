@@ -128,37 +128,37 @@ Stow 対象外で、リポジトリへ自動適用するスクリプトはあり
 | エージェント | リポジトリ内の実体 | 実際の参照先 | 内容 |
 | --- | --- | --- | --- |
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **共通契約の正本** |
-| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 10種（directory symlink） |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Skill 9種（directory symlink） |
 | Codex | `stow/codex/.codex/config.toml` | `~/.codex/config.toml` | 常用デフォルト |
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | モデル別プロファイル（astra / luna / sol / terra / spark / safe） |
 | Codex | `stow/codex/.codex/config.toml.example` | `~/.codex/config.toml.example` | 最小構成の例 |
 | Codex | `stow/codex/.codex/rules/` | `~/.codex/rules/` | prefix_rule（実ファイルcopy。現在は `default.rules`） |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Codex正本のimport＋固有差分 |
-| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 10種 |
+| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 9種 |
 | Claude Code | `stow/claude/.claude/agents/` | `~/.claude/agents/` | native role 4種 |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、hooks、プラグイン等 |
 | Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | Codex rulesをBash PreToolUseへ流用するゲート |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
-| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 10種 |
-| Antigravity IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | IDE向けSkill 10種 |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 9種 |
+| Antigravity IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | IDE向けSkill 9種 |
 | Antigravity CLI / IDE | `stow/gemini/.gemini/config/agents/` | `~/.gemini/config/agents/` | native role 4種 |
 | Antigravity CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI設定 |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/settings.json` | `~/.gemini/antigravity-cli/settings.json` | Antigravity CLI設定 |
 | Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Codex正本へのsymlink |
-| Grok | `stow/codex/.agents/skills/` | `~/.agents/skills/` | native対応の共有Skill 10種 |
+| Grok | `stow/codex/.agents/skills/` | `~/.agents/skills/` | native対応の共有Skill 9種 |
 | Grok | `stow/grok/.grok/agents/` | `~/.grok/agents/` | native role 4種 |
 | Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI / UI / marketplace 設定（未配置時seed） |
 | GitHub Copilot | `stow/copilot/.copilot/instructions/global.instructions.md` | `~/.copilot/instructions/global.instructions.md` | Codex正本への参照＋固有差分 |
-| GitHub Copilot CLI | `stow/codex/.agents/skills/` | `~/.agents/skills/` | native対応の共有Skill 10種 |
+| GitHub Copilot CLI | `stow/codex/.agents/skills/` | `~/.agents/skills/` | native対応の共有Skill 9種 |
 | GitHub Copilot CLI | `stow/copilot/.copilot/agents/` | `~/.copilot/agents/` | native role 4種 |
 
 Skillの意味上の基準は `stow/codex/.agents/skills/` です。
-Claude Code・Antigravity CLI・Antigravity IDEへ、配置path・instruction入口・permission境界を適合させて次の10種を移植します。
+Claude Code・Antigravity CLI・Antigravity IDEへ、配置path・instruction入口・permission境界を適合させて次の9種を移植します。
 GrokとCopilot CLIはnative対応の `~/.agents/skills/` を共有し、同名Skillを複製しません。
 
 ```text
 audit  c-conventions  commit-prep  cpp-conventions  github-safe-ops
-handoff  handoff-inline  handoff-archive  issue-slice  validate
+handoff  handoff-archive  issue-slice  validate
 ```
 
 > [!NOTE]
@@ -174,9 +174,9 @@ repositoryへ追加せず`~/handoff/<repo>/<scope>/`へtimestamp付きfilename�
 `~/handoff` を `~/PrivateDocs/handoff/` へ `*.md` / `*.txt` だけ同期するスクリプトは
 `stow/scripts/.local/bin/sync-handoff` です（Stow展開後は `sync-handoff`）。
 
-handoff系3種（`handoff` / `handoff-inline` / `handoff-archive`）の本文と、
+handoff系2種（`handoff` / `handoff-archive`）の本文と、
 `handoff/references/common.md`をCodex・Claude Code・Antigravity CLI・IDEで一致させる運用です。
-SKILL.mdのfront matterと、`handoff-inline`の共通reference参照パスはエージェント固有差分として許容します。
+SKILL.mdのfront matterはエージェント固有差分として許容します。
 
 役割は `coder` / `auditor` / `verifier` / `handoff` とし、Codex TOMLとは別に各agentのnative形式へ移植します。
 実装担当は原則1つ、監査・検証は独立したscopeで並列化できます。
@@ -196,7 +196,7 @@ Codexのmodel ID・permission profileは他agentへ移植せず、native側の�
 
 verificationの詳細workflowは`validate`を正とし、
 `issue-slice`はacceptance criteria・impact / riskを渡して必要な検証の完了を確認します。
-`handoff`と`handoff-inline`は共通referenceを使い、inlineは通常保存のSKILL.mdを読む必要がありません。
+`handoff`は共通referenceを使い、通常保存とinlineを同じSKILL.md内の出力modeとして扱います。
 通常handoffは同一sessionの有効なevidenceをFast pathで再利用し、不足・不整合のあるclaimだけRecoveryします。
 観測・validation・安全境界の詳細は各Skillとcommon referenceを正とします。
 inlineはno-write、archiveは選別済みsnapshotを内容不変で収蔵します。
@@ -217,7 +217,7 @@ Geminiの`--no-folding`配置では、新規reference追加後にStowを再適�
 > **Grokの `config.toml` はfile symlinkではなく、未配置時だけcopyするseedです。**
 > 既存のlive configはGrok自身が書き換えるため上書きしません。
 > `~/.grok` は実ディレクトリのまま残り、`AGENTS.md`とnative agent定義だけがfile symlinkです。
-> Skill 10種の複製は `stow/grok` には置いていません。
+> Skill 9種の複製は `stow/grok` には置いていません。
 > `auth.json`、`sessions/`、`logs/` などの実行時データはホーム側に残り、
 > このリポジトリの追跡対象外です。
 
@@ -573,38 +573,38 @@ Each agent reads the following files, backed by this repository:
 | Agent | Source in this repo | Resolved path | Contents |
 | --- | --- | --- | --- |
 | Codex | `stow/codex/.codex/AGENTS.md` | `~/.codex/AGENTS.md` | **Canonical shared contract** |
-| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | 10 skills (directory symlinks) |
+| Codex | `stow/codex/.agents/skills/` | `~/.agents/skills/` | 9 skills (directory symlinks) |
 | Codex | `stow/codex/.codex/config.toml` | `~/.codex/config.toml` | Default config |
 | Codex | `stow/codex/.codex/*.config.toml` | `~/.codex/` | Per-model profiles (astra / luna / sol / terra / spark / safe) |
 | Codex | `stow/codex/.codex/config.toml.example` | `~/.codex/config.toml.example` | Minimal example config |
 | Codex | `stow/codex/.codex/rules/` | `~/.codex/rules/` | prefix_rule files (copied as real files; currently `default.rules`) |
 | Claude Code | `stow/claude/.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Imports the Codex source + deltas |
-| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 10 skills |
+| Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 9 skills |
 | Claude Code | `stow/claude/.claude/agents/` | `~/.claude/agents/` | Four native roles |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, hooks, plugins |
 | Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | Gate that reuses Codex rules on Bash PreToolUse |
 | Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
-| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 10 skills |
-| Antigravity IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | Ten IDE-adapted skills |
+| Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 9 skills |
+| Antigravity IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | Nine IDE-adapted skills |
 | Antigravity CLI / IDE | `stow/gemini/.gemini/config/agents/` | `~/.gemini/config/agents/` | Four native roles |
 | Antigravity CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI settings |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/settings.json` | `~/.gemini/antigravity-cli/settings.json` | Antigravity CLI settings |
 | Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Symlink to the Codex source |
-| Grok | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Ten natively supported shared skills |
+| Grok | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Nine natively supported shared skills |
 | Grok | `stow/grok/.grok/agents/` | `~/.grok/agents/` | Four native roles |
 | Grok | `stow/grok/.grok/config.toml` | `~/.grok/config.toml` | CLI, UI, and marketplace settings (seed if missing) |
 | GitHub Copilot | `stow/copilot/.copilot/instructions/global.instructions.md` | `~/.copilot/instructions/global.instructions.md` | Points to the Codex source + deltas |
-| GitHub Copilot CLI | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Ten natively supported shared skills |
+| GitHub Copilot CLI | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Nine natively supported shared skills |
 | GitHub Copilot CLI | `stow/copilot/.copilot/agents/` | `~/.copilot/agents/` | Four native roles |
 
-`stow/codex/.agents/skills/` is the semantic source for the following ten skills.
+`stow/codex/.agents/skills/` is the semantic source for the following nine skills.
 Claude Code, Antigravity CLI, and Antigravity IDE carry adapted ports with their
 own paths, instruction entry points, and permission boundaries. Grok and Copilot
 CLI natively share `~/.agents/skills/` without duplicate copies:
 
 ```text
 audit  c-conventions  commit-prep  cpp-conventions  github-safe-ops
-handoff  handoff-inline  handoff-archive  issue-slice  validate
+handoff  handoff-archive  issue-slice  validate
 ```
 
 > [!NOTE]
@@ -622,10 +622,10 @@ instead of embedding raw logs.
 `stow/scripts/.local/bin/sync-handoff` copies `*.md` and `*.txt` from
 `~/handoff` to `~/PrivateDocs/handoff/` (available as `sync-handoff` after Stow).
 
-The bodies of the three handoff skills (`handoff` / `handoff-inline` /
+The bodies of the two handoff skills (`handoff` /
 `handoff-archive`) and `handoff/references/common.md` are kept identical
-across Codex, Claude Code, Antigravity CLI, and IDE. SKILL.md front matter and the common-reference
-path in `handoff-inline` are permitted per-agent differences.
+across Codex, Claude Code, Antigravity CLI, and IDE. SKILL.md front matter
+may have per-agent differences.
 
 Native roles are `coder`, `auditor`, `verifier`, and `handoff`. Implementation
 has one owner; independent audit and verification scopes may run in parallel.
@@ -638,8 +638,8 @@ settings instead of copying Codex model IDs or permission profiles.
 `validate` owns the detailed verification
 workflow. `issue-slice` supplies acceptance criteria and impact / risk,
 then checks that the required verification is complete.
-`handoff` and `handoff-inline` use the common reference; inline does not
-need to read the normal-save SKILL.md.
+`handoff` uses the common reference; normal-save and inline are output
+modes within the same SKILL.md.
 Normal handoff reuses valid evidence from the same session via the Fast path
 and recovers only claims with missing or inconsistent evidence.
 The skills and common reference are authoritative for observation, validation, and safety requirements.
@@ -665,7 +665,7 @@ Check reference resolution from the deployed paths as well as the sources.
 > **Grok's `config.toml` is a seed copy, not a Stow symlink.**
 > If a live config already exists, it is left alone because Grok rewrites
 > it. `~/.grok` remains a real directory; `AGENTS.md` and native agent definitions
-> are file symlinks. This repository does not keep a copy of the ten skills under
+> are file symlinks. This repository does not keep a copy of the nine skills under
 > `stow/grok`. Runtime data such as `auth.json`, `sessions/`, and `logs/`
 > stays in the home directory and is not tracked.
 

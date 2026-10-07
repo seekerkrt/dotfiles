@@ -70,8 +70,7 @@ commit直前のstage対象・staged diff等、時点依存の状態はその時�
 - `commit-prep`: 論理的なcommit単位、staged / unstaged / untrackedの分類、stage候補、message案。
   既存verification evidenceの対象・鮮度を確認し、不足時だけvalidateへ戻す。
 - `github-safe-ops`: GitHub repository、Issue、PR、Actions、release、branch、tag、APIの調査または操作。GitHubの認証境界もここを正とする。
-- `handoff`: 通常のhandoffまたは引き継ぎメモを明示的に求められた場合の永続handoff。
-- `handoff-inline`: inline、本文だけ、保存不要、file不要が明示されたhandoff。
+- `handoff`: 通常のhandoffまたは引き継ぎメモを明示的に求められた場合に使用し、既定は永続保存、inline / 本文だけ / 保存不要 / file不要等の明示時は同じSkillのInline modeで本文だけへ出力する。
 - `handoff-archive`: 選別済みの外部handoff snapshotを内容不変でrepositoryへ収蔵する明示依頼。
 
 ## Antigravity固有差分
