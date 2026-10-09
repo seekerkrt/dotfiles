@@ -10,6 +10,13 @@ web_search = "cached"
 service_tier = "fast"
 personality = "pragmatic"
 
+[browser_use.default_origin_policy]
+access = "allow"
+uploads = "deny"
+full_cdp_access = "deny"
+
+[computer_use]
+default_app_access = "allow"
 
 [auto_review]
 policy = """
@@ -37,6 +44,10 @@ AF_UNIX socket の作成制限によって sandbox 外実行を要求してい�
 - /etc やシステム領域への書き込み
 - ユーザーが明示的に許可していない外部への破壊的変更
 - 上記の安全条件に該当するか判断できない操作
+- 購入、契約、プラン変更、無料トライアル開始、
+  従量課金の有効化、決済情報の入力・送信など、
+  金銭的副作用のある操作。
+  ユーザーの明示依頼があっても自動承認しない。
 
 判断に迷う場合はユーザーへ承認を求めること。
 """
@@ -70,13 +81,13 @@ inherit = "all"
 
 [tui]
 status_line = [
-    "model-with-reasoning",
-    "current-dir",
-    "project-name",
-    "git-branch",
-    "branch-changes",
-    "context-used",
-    "weekly-limit",
+  "model-with-reasoning",
+  "current-dir",
+  "project-name",
+  "git-branch",
+  "branch-changes",
+  "context-used",
+  "weekly-limit",
 ]
 status_line_use_colors = true
 theme = "Tokyo Night Storm"
@@ -141,4 +152,3 @@ enabled = true
 [desktop]
 followUpQueueMode = "steer"
 preventSleepWhileRunning = true
-
