@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: 非自明な開発、repository調査、検証、Issue / PR、debug、設計reviewの結果について、通常のhandoffまたは引き継ぎメモを明示的に求められた場合に使用し、後続会話が再開できる事実ベースの日本語Markdownを既定ではrepository外の~/handoffへ永続保存する。inline / 本文だけ / 保存不要 / file不要 / fileを作らない / 次スレへ貼る文章だけが明示された場合は同じSkillのInline modeでfile / directoryを作らず最終応答本文だけへ出力し、repository収蔵はhandoff-archiveへroutingする。
+description: 非自明な開発、repository調査、検証、Issue / PR、debug、設計reviewの結果について、通常のhandoffまたは引き継ぎメモを明示的に求められた場合に使用し、後続会話が再開できる事実ベースの日本語Markdownを既定ではrepository外の~/handoffsへ永続保存する。inline / 本文だけ / 保存不要 / file不要 / fileを作らない / 次スレへ貼る文章だけが明示された場合は同じSkillのInline modeでfile / directoryを作らず最終応答本文だけへ出力し、repository収蔵はhandoff-archiveへroutingする。
 ---
 
 # Handoff基本契約
@@ -20,7 +20,7 @@ write前にユーザー判断を求める。
 
 ### Persistent mode
 
-既定。通常handoffまたは引き継ぎメモを、repository外の`~/handoff/...`へ新しいhistorical snapshotとして保存する。
+既定。通常handoffまたは引き継ぎメモを、repository外の`~/handoffs/...`へ新しいhistorical snapshotとして保存する。
 下記「Persistent workflow」に従う。
 
 ### Inline mode
@@ -134,7 +134,7 @@ repo、scope、出力mode、書込み権限等の保存成立条件を確定で�
 通常handoffは次へ作る。
 
 ```text
-~/handoff/<repo>/<scope>/<YYYYMMDD-HHMMSS>-<agent>-<branch-slug>-<phase>.md
+~/handoffs/<repo>/<scope>/<YYYYMMDD-HHMMSS>-<agent>-<branch-slug>-<phase>.md
 ```
 
 `<scope>`は次の順で決める。
@@ -164,9 +164,9 @@ phaseは`audit`、`design`、`investigation`、`implementation`、`validation`�
 例:
 
 ```text
-~/handoff/example-project/issue-281/20260728-100747-codex-feat-issue-281-example-implementation.md
-~/handoff/example-project/issue-243/20260724-094904-codex-fix-issue-243-example-validation.md
-~/handoff/example-project/topic-handoff-filename/20260728-130000-claude-sonnet-main-validation.md
+~/handoffs/example-project/issue-281/20260728-100747-codex-feat-issue-281-example-implementation.md
+~/handoffs/example-project/issue-243/20260724-094904-codex-fix-issue-243-example-validation.md
+~/handoffs/example-project/topic-handoff-filename/20260728-130000-claude-sonnet-main-validation.md
 ```
 
 filenameのbranch-slugは本文の代替ではない。`Current state`の`Branch:`へ、置換前の完全なbranch名を引き続き記録する。
@@ -177,7 +177,7 @@ filenameのbranch-slugは本文の代替ではない。`Current state`の`Branch
 新規永続handoffでは、共通の必須情報に加えて次を記録する。
 
 ```text
-External handoff: ~/handoff/<repo>/<scope>/<filename>
+External handoff: ~/handoffs/<repo>/<scope>/<filename>
 Suggested repository path: docs/handoffs/<scope>/<filename>
 Archive status: not archived
 Authority: historical snapshot; not the current specification

@@ -10,7 +10,7 @@ description: ユーザーが選別済みの外部handoffをrepositoryへ保存�
 選別済みの外部handoff snapshotを、明示依頼に基づいて次の経路で内容不変のまま収蔵する。
 
 ```text
-~/handoff/<repo>/<scope>/<filename>.md
+~/handoffs/<repo>/<scope>/<filename>.md
   ↓ byte-identical copy
 <repository>/docs/handoffs/<scope>/<filename>.md
 ```
@@ -62,7 +62,7 @@ repo / scopeだけ指定、候補が1file:
 各sourceについて確認する。
 
 - regular Markdown fileで、symlinkではない。
-- 解決後も`~/handoff/<repo>/<scope>/`配下にあり、path traversalがない。
+- 解決後も`~/handoffs/<repo>/<scope>/`配下にあり、path traversalがない。
 - 読み取り可能でemptyではない。
 - filenameが新形式`<YYYYMMDD-HHMMSS>-<agent>-<branch-slug>-<phase>.md`、またはlegacy形式`<YYYYMMDD-HHMMSS>-<agent>-<phase>.md`である。
 - repository、task、summary / completed、validation、Git status、Git operationsに相当する情報がある。
@@ -155,10 +155,10 @@ git diff --check -- docs/handoffs
 git diff --stat -- docs/handoffs
 test -f docs/handoffs/<scope>/<filename>
 cmp -s \
-  ~/handoff/<repo>/<scope>/<filename> \
+  ~/handoffs/<repo>/<scope>/<filename> \
   docs/handoffs/<scope>/<filename>
 sha256sum \
-  ~/handoff/<repo>/<scope>/<filename> \
+  ~/handoffs/<repo>/<scope>/<filename> \
   docs/handoffs/<scope>/<filename>
 ```
 

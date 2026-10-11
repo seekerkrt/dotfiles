@@ -39,7 +39,7 @@
       "Bash(git branch --delete:*)"
     ],
     "additionalDirectories": [
-      "~/handoff"
+      "~/handoffs"
     ]
   },
   "model": "opus[1m]",

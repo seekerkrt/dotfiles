@@ -35,9 +35,9 @@ repositoryの文書が別のsource of truthや優先順位を指定している�
 
 ## 検証ログとhandoff記録
 
-- handoffの基準ディレクトリは `~/handoff` とする。
+- handoffの基準ディレクトリは `~/handoffs` とする。
 - `/home/<user>` のようなユーザー固有の絶対パスをハードコードしない。
-- 保存先は原則として `~/handoff/<project>/issue-<number>/` から導出する。
+- 保存先は原則として `~/handoffs/<project>/issue-<number>/` から導出する。
 - 承認済みの検証コマンドは単独で実行する。
 - 検証コマンドへ `tee`、リダイレクト、変数代入、終了コード処理を連結しない。
 - 検証後、実行コマンド・終了結果・重要な確認事項をhandoff配下へ記録する。

@@ -109,7 +109,7 @@ runtime検証では環境を具体的に記録する。
 長い、または長くなる可能性が高いfull test、clean build、release-check、compiler full output、sanitizer、static analysis、large search、full diff、package build、runtime / VM等の出力は、repository外の次へ保存する。
 
 ```text
-~/handoff/<repo>/<scope>/
+~/handoffs/<repo>/<scope>/
 ```
 
 `<scope>`は、Issueがあれば`issue-<number>`、PRだけなら`pr-<number>`、特定テーマなら`topic-<short-kebab-slug>`、それ以外は`general`とする。filenameは次とし、`latest.*`等の固定名を作らず、既存artifactをrename、移動、削除しない。

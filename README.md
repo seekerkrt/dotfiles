@@ -58,7 +58,7 @@ Secure Boot運用スクリプト、パッケージ一覧のバックアップな
 │   ├── markdownlint/         # markdownlint設定
 │   ├── npm/                  # npm設定
 │   ├── nvim/                 # Neovim設定
-│   ├── scripts/              # 個人用スクリプト（agy / update-ai-cli.sh / sync-handoff など）
+│   ├── scripts/              # 個人用スクリプト（agy / update-ai-cli.sh など）
 │   ├── sway/                 # Sway設定
 │   ├── tmux/                 # tmux設定
 │   ├── tmuxp/                # tmuxp設定
@@ -170,10 +170,12 @@ handoff  handoff-archive  issue-slice  validate
 最小実装と検証を進めてcommit前で停止するオーケストレータです。
 
 長いtest、build、release-check、compiler、runtime、diff等の作業logは、
-repositoryへ追加せず`~/handoff/<repo>/<scope>/`へtimestamp付きfilenameで保存します。
+repositoryへ追加せず`~/handoffs/<repo>/<scope>/`へtimestamp付きfilenameで保存します。
 最終報告にはraw logを貼らず、pass / fail、保存path、重要な要点だけを記載します。
-`~/handoff` を `~/PrivateDocs/handoff/` へ `*.md` / `*.txt` だけ同期するスクリプトは
-`stow/scripts/.local/bin/sync-handoff` です（Stow展開後は `sync-handoff`）。
+handoffと作業logの保存先は`~/handoffs`へ一本化し、このdirectoryを独立したGit repositoryとして管理する方針です。
+Git初期化、remote設定、commit、pushは別途の明示依頼で行います。
+選別済みsnapshotを`docs/handoffs/<scope>/<filename>`へbyte-identical copyする
+`handoff-archive`は引き続き利用し、コピー検証、path traversal防止、symlink検査の安全条件を維持します。
 
 handoff系2種（`handoff` / `handoff-archive`）の本文と、
 `handoff/references/common.md`をCodex・Claude Code・Antigravity CLI・IDEで一致させる運用です。
@@ -511,7 +513,7 @@ excluded from this repository.
 │   ├── markdownlint/         # markdownlint config
 │   ├── npm/                  # npm config
 │   ├── nvim/                 # Neovim config
-│   ├── scripts/              # Local scripts (agy, update-ai-cli.sh, sync-handoff, …)
+│   ├── scripts/              # Local scripts (agy, update-ai-cli.sh, …)
 │   ├── sway/                 # Sway config
 │   ├── tmux/                 # tmux config
 │   ├── tmuxp/                # tmuxp config
@@ -625,11 +627,15 @@ existing `audit`, `c-conventions`, `cpp-conventions`, `validate`,
 implementation and verification, and stops before commit.
 
 Long test, build, release-check, compiler, runtime, and diff logs are kept
-outside the repository under `~/handoff/<repo>/<scope>/` with timestamped
+outside the repository under `~/handoffs/<repo>/<scope>/` with timestamped
 filenames. Final responses report pass / fail, the saved path, and key points
 instead of embedding raw logs.
-`stow/scripts/.local/bin/sync-handoff` copies `*.md` and `*.txt` from
-`~/handoff` to `~/PrivateDocs/handoff/` (available as `sync-handoff` after Stow).
+Handoffs and work logs use `~/handoffs` as their single storage location,
+with Git management of this directory as a separate repository planned.
+Git initialization, remote configuration, commits, and pushes require a separate explicit request.
+`handoff-archive` continues to copy selected snapshots byte-identically to
+`docs/handoffs/<scope>/<filename>`, retaining copy verification, path traversal
+prevention, and symlink checks.
 
 The bodies of the two handoff skills (`handoff` /
 `handoff-archive`) and `handoff/references/common.md` are kept identical

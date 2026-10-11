@@ -7,7 +7,7 @@ approval_policy = "on-request"
 approvals_reviewer = "auto_review"
 default_permissions = "workspace-dev"
 web_search = "cached"
-service_tier = "fast"
+service_tier = "default"
 personality = "pragmatic"
 
 [browser_use.default_origin_policy]
@@ -22,7 +22,7 @@ default_app_access = "allow"
 policy = """
 以下の条件を満たす、非破壊的なローカル開発コマンドは承認してよい。
 
-- 対象がリポジトリ配下、/ramdisk、/tmp、~/handoff に限定されている
+- 対象がリポジトリ配下、/ramdisk、/tmp、~/handoffs に限定されている
 - ビルド、テスト、検証、静的解析、フォーマット、lint が目的である
 - cmake、ninja、make、ctest、コンパイラ、リンカ、テストランナーなど通常の開発ツールである
 - AF_UNIX socket を使用するテストなど、sandbox の制約だけが理由で sandbox 外実行を必要としている
@@ -65,7 +65,7 @@ description = "Current workspace plus handoff and ramdisk directories"
 extends = ":workspace"
 
 [permissions.workspace-dev.workspace_roots]
-"~/handoff" = true
+"~/handoffs" = true
 "/ramdisk" = true
 
 [permissions.workspace-dev.network]
