@@ -65,8 +65,10 @@ description = "Current workspace plus handoff and ramdisk directories"
 extends = ":workspace"
 
 [permissions.workspace-dev.workspace_roots]
-"~/handoffs" = true
 "/ramdisk" = true
+
+[permissions.workspace-dev.filesystem]
+"~/handoffs" = "write"
 
 [permissions.workspace-dev.network]
 enabled = true
@@ -152,3 +154,4 @@ enabled = true
 [desktop]
 followUpQueueMode = "steer"
 preventSleepWhileRunning = true
+
