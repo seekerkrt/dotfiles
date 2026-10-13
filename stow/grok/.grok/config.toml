@@ -15,6 +15,13 @@ agents = false
 mcps = false
 hooks = false
 
+[skills]
+paths = ["~/.codex/skills"]
+ignore = []
+disabled = []
+server_skill_dirs = []
+bundled_skill_dirs = []
+
 [marketplace]
 default_skills_installs_purged = true
 official_marketplace_auto_installed = true
@@ -25,43 +32,172 @@ git = "https://github.com/xai-org/plugin-marketplace.git"
 
 [ui]
 max_thoughts_width = 120
-fork_secondary_model = "grok-4.5"
+fork_secondary_model = "grok-4.6"
 yolo = false
 compact_mode = false
 screen_mode = "fullscreen"
 show_timeline = true
-# permission_mode = "always-approve"
-permission_mode = "auto"
+permission_mode = "always-approve"
+theme = "tokyonight"
+auto_dark_theme = "tokyonight"
+collapsed_edit_blocks = true
+combine_queued_prompts = true
+follow_up_behavior = "steer"
+voice_stt_language = "ja"
 
-[permission]
-rules = [
-  { action = "allow", tool = "read" },
-  { action = "allow", tool = "grep" },
-  { action = "allow", tool = "bash", pattern = "git ls-remote*" },
-  { action = "allow", tool = "bash", pattern = "git diff*" },
-  { action = "allow", tool = "bash", pattern = "git add*" },
-  { action = "allow", tool = "bash", pattern = "git commit*" },
-  { action = "allow", tool = "bash", pattern = "git status*" },
-  { action = "allow", tool = "bash", pattern = "git log*" },
-  { action = "allow", tool = "bash", pattern = "gh issue *" },
-  { action = "allow", tool = "bash", pattern = "gh pr *" },
-  { action = "allow", tool = "bash", pattern = "gh repo *" },
-  { action = "allow", tool = "bash", pattern = "gh run *" },
-  { action = "allow", tool = "bash", pattern = "gh release *" },
-  { action = "allow", tool = "bash", pattern = "gh workflow *" },
-  { action = "allow", tool = "bash", pattern = "gh api --method GET*" },
-  { action = "allow", tool = "bash", pattern = "make*" },
-  { action = "allow", tool = "bash", pattern = "env -u MAKEFLAGS*" },
-  { action = "allow", tool = "bash", pattern = "docker ps*" },
-  { action = "allow", tool = "bash", pattern = "docker top*" },
-  { action = "allow", tool = "bash", pattern = "docker container ls*" },
-  { action = "allow", tool = "bash", pattern = "docker images*" },
-  { action = "allow", tool = "bash", pattern = "docker image ls*" },
-  { action = "allow", tool = "bash", pattern = "docker network ls*" },
-  { action = "allow", tool = "bash", pattern = "docker volume ls*" },
-  { action = "allow", tool = "bash", pattern = "docker version*" },
-  { action = "allow", tool = "bash", pattern = "docker info*" },
-  { action = "allow", tool = "bash", pattern = "docker system df*" },
-  { action = "allow", tool = "bash", pattern = "docker inspect*" },
-  { action = "allow", tool = "bash", pattern = "docker logs*" },
-]
+[[permission.rules]]
+action = "allow"
+tool = "read"
+
+[[permission.rules]]
+action = "allow"
+tool = "grep"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "git ls-remote*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "git diff*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "git add*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "git commit*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "git status*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "git log*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "gh issue *"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "gh pr *"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "gh repo *"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "gh run *"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "gh release *"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "gh workflow *"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "gh api --method GET*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "make*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "env -u MAKEFLAGS*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker ps*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker top*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker container ls*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker images*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker image ls*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker network ls*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker volume ls*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker version*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker info*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker system df*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker inspect*"
+
+[[permission.rules]]
+action = "allow"
+tool = "bash"
+pattern = "docker logs*"
+
+[privacy]
+privacy_banner_acked = "2026-08-19T21:25:48Z"
+
+[models]
+default = "grok-4.7"
+default_reasoning_effort = "xhigh"
+
+[toolset.ask_user_question]
+timeout_enabled = true
+
+[ui.status_line]
+type = "command"
+command = "~/.grok/statusline.sh"

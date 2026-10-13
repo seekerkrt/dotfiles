@@ -141,6 +141,7 @@ config.mouse_bindings = {
 -- =============================================================================
 -- Keys
 -- =============================================================================
+config.enable_kitty_keyboard = true -- Shift+Enterで改行
 config.keys = {
     { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo("Clipboard") },
     { key = "V", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom("Clipboard") },
