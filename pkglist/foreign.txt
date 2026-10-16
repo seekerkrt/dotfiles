@@ -3,6 +3,8 @@ downgrade
 emacs-rust-mode
 game-devices-udev
 google-chrome
+kgamma
+kwin-x11
 leaf-markdown-viewer-bin
 mingw-w64-lua
 moguet
