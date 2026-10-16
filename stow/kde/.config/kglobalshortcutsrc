@@ -32,10 +32,6 @@ stop=none,none,停止
 stop_after_current=Meta+Shift+V,Meta+Shift+V,現在のトラック後に停止
 toggleMainWindow=none,none,メインウィンドウ表示の切り替え
 
-[kaccess]
-Toggle Screen Reader On and Off=Meta+Alt+S,Meta+Alt+S,スクリーンリーダーをオン/オフ
-_k_friendly_name=アクセシビリティ
-
 [kmix]
 _k_friendly_name=オーディオの音量
 decrease_microphone_volume=Microphone Volume Down,Microphone Volume Down,マイクの音量を下げる
@@ -50,7 +46,7 @@ push_to_talk=none,none,プッシュトゥトーク
 
 [ksmserver]
 Halt Without Confirmation=none,none,確認なしでシャットダウン
-Lock Session=\tScreensaver,Screensaver\tMeta+L,スクリーンをロック
+Lock Session=Screensaver,Screensaver\tMeta+L,スクリーンをロック
 Log Out=Ctrl+Alt+Del,Ctrl+Alt+Del,ログアウト画面を表示
 Log Out Without Confirmation=none,none,確認なしでログアウト
 LogOut=none,none,ログアウト
@@ -108,8 +104,8 @@ KrohnkiteTreeColumnLayout=none,none,Krohnkite: Three Column Layout
 KrohnkitegrowWidth=Meta+Ctrl+L\tMeta+Ctrl+Right,none,Krohnkite: Grow Width
 KrohnkitetoggleDock=none,none,Krohnkite: Toggle Dock
 Move Tablet to Next LogicalOutput=none,none,次の入力にタブレットを移動
-MoveMouseToCenter=Meta+F6,Meta+F6,中央にマウスを移動
-MoveMouseToFocus=Meta+F5,Meta+F5,フォーカス中のウィンドウにマウスを移動
+MoveMouseToCenter=Meta+F6,Meta+F6,Center Pointer in Screen
+MoveMouseToFocus=Meta+F5,Meta+F5,Center Pointer in Focused Window
 MoveZoomDown=none,none,拡大エリアを下に移動
 MoveZoomLeft=none,none,拡大エリアを左に移動
 MoveZoomRight=none,none,拡大エリアを右に移動
@@ -188,6 +184,7 @@ Switch to Screen Below=Meta+Alt+Down,none,下のスクリーンに切り替え
 Switch to Screen to the Left=Meta+Alt+Left,none,左のスクリーンに切り替え
 Switch to Screen to the Right=Meta+Alt+Right,none,右のスクリーンに切り替え
 Toggle Night Color=none,none,Night Light のオン/オフ
+Toggle Show Compositing=none,none,Toggle “Show Compositing” effect
 Toggle Window Raise/Lower=none,none,ウィンドウを前面/背面に
 Walk Through Windows=Alt+Tab\tMeta+Tab,Alt+Tab\tMeta+Tab,ウィンドウを巡回
 Walk Through Windows (Reverse)=Alt+Shift+Tab\tMeta+Shift+Tab,Alt+Shift+Tab\tMeta+Shift+Tab,ウィンドウを巡回 (反対回り)
@@ -286,6 +283,36 @@ view_actual_size=Meta+0,Meta+0,実際のサイズにズーム(A)
 view_zoom_in=Meta++\tMeta+=,Meta++\tMeta+=,拡大(I)
 view_zoom_out=Meta+-,Meta+-,縮小(O)
 
+[kwin][$InverseAction]
+Cycle Overview Opposite=Cycle Overview
+Decrease Opacity=Increase Opacity
+MoveZoomDown=MoveZoomUp
+MoveZoomLeft=MoveZoomRight
+Switch One Desktop Up=Switch One Desktop Down
+Switch One Desktop to the Left=Switch One Desktop to the Right
+Switch Window Left=Switch Window Right
+Switch Window Up=Switch Window Down
+Switch to Next Desktop=Switch to Previous Desktop
+Switch to Previous Screen=Switch to Next Screen
+Switch to Screen Below=Switch to Screen Above
+Switch to Screen to the Right=Switch to Screen to the Left
+Walk Through Windows (Reverse)=Walk Through Windows
+Walk Through Windows Alternative (Reverse)=Walk Through Windows Alternative
+Walk Through Windows of Current Application (Reverse)=Walk Through Windows of Current Application
+Walk Through Windows of Current Application Alternative=Walk Through Windows of Current Application Alternative (Reverse)
+Window Grow Horizontal=Window Shrink Horizontal
+Window Grow Vertical=Window Shrink Vertical
+Window One Desktop Up=Window One Desktop Down
+Window One Desktop to the Left=Window One Desktop to the Right
+Window One Screen Up=Window One Screen Down
+Window One Screen to the Left=Window One Screen to the Right
+Window Pack Down=Window Pack Up
+Window Pack Left=Window Pack Right
+Window Raise=Window Lower
+Window to Next Screen=Window to Previous Screen
+Window to Previous Desktop=Window to Next Desktop
+view_zoom_out=view_zoom_in
+
 [mediacontrol]
 _k_friendly_name=メディアコントローラー
 mediavolumedown=none,none,メディアの音量を下げる
@@ -321,24 +348,28 @@ powerProfile=Battery\tMeta+B,Battery\tMeta+B,電源プロファイルを切り�
 Slideshow Wallpaper Next Image=none,none,次の壁紙画像
 _k_friendly_name=plasmashell
 activate application launcher=Meta\tAlt+F1,Meta\tAlt+F1,アプリケーションランチャーをアクティブ化
-activate task manager entry 1=Meta+1,Meta+1,タスクマネージャのエントリ 1 をアクティベート
-activate task manager entry 10=none,none,タスクマネージャのエントリ 10 をアクティベート
-activate task manager entry 2=Meta+2,Meta+2,タスクマネージャのエントリ 2 をアクティベート
-activate task manager entry 3=Meta+3,Meta+3,タスクマネージャのエントリ 3 をアクティベート
-activate task manager entry 4=Meta+4,Meta+4,タスクマネージャのエントリ 4 をアクティベート
-activate task manager entry 5=Meta+5,Meta+5,タスクマネージャのエントリ 5 をアクティベート
-activate task manager entry 6=Meta+6,Meta+6,タスクマネージャのエントリ 6 をアクティベート
-activate task manager entry 7=Meta+7,Meta+7,タスクマネージャのエントリ 7 をアクティベート
-activate task manager entry 8=Meta+8,Meta+8,タスクマネージャのエントリ 8 をアクティベート
-activate task manager entry 9=Meta+9,Meta+9,タスクマネージャのエントリ 9 をアクティベート
+activate next task manager entry=Meta+Ctrl+PgDown,Meta+Ctrl+PgDown,Activate Next Task Manager Entry
+activate previous task manager entry=Meta+Ctrl+PgUp,Meta+Ctrl+PgUp,Activate Previous Task Manager Entry
+activate task manager entry 1=Meta+1,Meta+1,Activate Task Manager Entry 1
+activate task manager entry 10=none,none,Activate Task Manager Entry 10
+activate task manager entry 2=Meta+2,Meta+2,Activate Task Manager Entry 2
+activate task manager entry 3=Meta+3,Meta+3,Activate Task Manager Entry 3
+activate task manager entry 4=Meta+4,Meta+4,Activate Task Manager Entry 4
+activate task manager entry 5=Meta+5,Meta+5,Activate Task Manager Entry 5
+activate task manager entry 6=Meta+6,Meta+6,Activate Task Manager Entry 6
+activate task manager entry 7=Meta+7,Meta+7,Activate Task Manager Entry 7
+activate task manager entry 8=Meta+8,Meta+8,Activate Task Manager Entry 8
+activate task manager entry 9=Meta+9,Meta+9,Activate Task Manager Entry 9
 clear history=none,none,通知履歴をクリア
 clear-history=none,none,クリップボードの履歴を消去(L)
-clipboard_action=Meta+Ctrl+X,Meta+Ctrl+X,自動アクションポップアップの切り替え
+clipboard_action=none,Meta+Ctrl+X,自動アクションポップアップの切り替え
 cycle-panels=Meta+Alt+P,Meta+Alt+P,キーボードフォーカスをパネル間で移動
 cycleNextAction=none,none,履歴をひとつ進める
 cyclePrevAction=none,none,履歴をひとつ戻す
 edit_clipboard=none,none,内容を編集(E)…
 manage activities=Meta+Q,Meta+Q,アクティビティスイッチャーを表示
+move active task to left=Meta+Ctrl+Shift+PgUp,Meta+Ctrl+Shift+PgUp,Move Active Task Manager Entry Backward
+move active task to right=Meta+Ctrl+Shift+PgDown,Meta+Ctrl+Shift+PgDown,Move Active Task Manager Entry Forward
 next activity=none,none,アクティビティ間を移動
 previous activity=Meta+Shift+A,none,アクティビティ間を移動 (反転)
 repeat_action=none,none,現在のクリップボードに対するアクションを手動で呼び出す
@@ -350,8 +381,6 @@ switch to previous activity=none,none,前のアクティビティに切り替え
 toggle do not disturb=none,none,マナーモードをオン/オフ
 
 [services][org.kde.spectacle.desktop]
-CurrentMonitorScreenShot=none
-OpenWithoutScreenshot=none
 RecordRegion=none
 RecordWindow=none
 
