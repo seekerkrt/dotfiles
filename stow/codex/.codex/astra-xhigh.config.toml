@@ -2,7 +2,7 @@
 # Inherits approval, sandbox, web-search, and verbosity defaults
 # from ~/.codex/config.toml.
 
-model = "gpt-6-astra"
+model = "gpt-6.2-astra"
 model_reasoning_effort = "xhigh"
 service_tier = "default"
 
