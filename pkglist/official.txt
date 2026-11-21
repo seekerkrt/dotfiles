@@ -3,6 +3,7 @@ age
 alacritty
 alsa-utils
 arch-install-scripts
+archiso
 ark
 atuin
 aurorae
@@ -84,8 +85,10 @@ gptfdisk
 grim
 grub
 gst-plugins-ugly
+guitarix
 gwenview
 htop
+imv
 inetutils
 inotify-tools
 jdk-openjdk
@@ -149,6 +152,7 @@ linux-lts
 linux-lts-headers
 linux-zen
 linux-zen-headers
+lldb
 lua-language-server
 man-db
 markdownlint-cli2
@@ -176,7 +180,6 @@ ntfsprogs
 nvidia-open-dkms
 nvme-cli
 obs-studio
-obs-studio-plugin-browser
 obsidian
 ocean-sound-theme
 okteta
@@ -212,13 +215,17 @@ plymouth-kcm
 polkit-kde-agent
 powerdevil
 prettier
+protontricks
 pyright
 python-gersemi
 python-pipx
 python-pynvim
 qemu-full
+qpwgraph
 qqc2-breeze-style
+qsynth
 rclone
+rosegarden
 rsync
 ruby
 ruby-bundler
@@ -231,10 +238,12 @@ sbctl
 sccache
 sd
 sddm-kcm
+sfizz-lv2
 shellcheck
 shfmt
 sl
 slurp
+soundfont-fluid
 spectacle
 steam
 stow
@@ -268,6 +277,7 @@ vulkan-gfxstream
 vulkan-headers
 vulkan-intel
 vulkan-mesa-layers
+vulkan-radeon
 vulkan-swrast
 vulkan-virtio
 wev
