@@ -141,8 +141,18 @@ config.mouse_bindings = {
 -- =============================================================================
 -- Keys
 -- =============================================================================
-config.enable_kitty_keyboard = true -- Shift+Enterで改行
+
+config.enable_kitty_keyboard = false -- NeovimのDeleteキー問題の切り分け
+--config.enable_kitty_keyboard = true -- Shift+Enterで改行
+
 config.keys = {
+    -- Shift+Enterで改行（Ctrl+J相当）
+    {
+        key = "Enter",
+        mods = "SHIFT",
+        action = wezterm.action.SendString("\x0a"),
+    },
+
     { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo("Clipboard") },
     { key = "V", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom("Clipboard") },
     { key = "R", mods = "CTRL|SHIFT", action = wezterm.action.ReloadConfiguration },
