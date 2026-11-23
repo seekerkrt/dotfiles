@@ -33,12 +33,22 @@ repositoryの文書が別のsource of truthや優先順位を指定している�
 - 非推奨または優先度の低い候補も、判断材料として意味がある場合は省略せず、非推奨・低優先である理由を明示する。
 - 実質的な候補が1つしかない場合は、形式のために候補を増やさない。
 
-## 検証ログとhandoff記録
+## 開発記録・検証証跡の保存境界
 
-- handoffの基準ディレクトリは `~/handoffs` とする。
+- `~/handoffs/<project>/<scope>/` は永続的な開発記録・引き継ぎ・検証証跡の保存領域とする。
+  証跡は再現性・追跡可能性・認証契約を満たす範囲で保存し、保存コストを理由に必要な検証、失敗記録、認証証跡を省略しない。
+- 再生成可能なbuild tree、展開済み外部source tree、dependency checkout、scratch、tmp、大量のtest生成物は、原則として`~/handoffs/`配下へ作成・複製しない。
+  repository固有の正式なbuild・validation treeを優先し、それ以外の独立した一時作業には`~/scratch/`配下を使う。並行sessionやsubagent間で一時作業directoryを共有しない。
+- 再取得・再生成できる依存関係やdownload cacheには、toolの正式なcache領域または`~/.cache/`を使う。
+- 重量級artifactの長期保存が必要な場合は、必要性、対象、再生成可能性、保存先、機密性を明示する。
+  `~/handoffs-archive/`は所有者が管理する重量級証跡の圧縮保管領域とする。`handoff-archive` Skillは選別済みMarkdownのrepository内`docs/handoffs/`への収蔵を扱う。
+- 既存証跡や重量級artifactの圧縮・移動・削除・外部バックアップ、および既存証跡の収蔵は自動実行せず、明示的な許可に従う。
+  一時作業物の作成やownershipによって既存の削除許可境界は変わらない。
 - `/home/<user>` のようなユーザー固有の絶対パスをハードコードしない。
-- 保存先は原則として `~/handoffs/<project>/issue-<number>/` から導出する。
-- 承認済みの検証コマンドは単独で実行する。
+
+次の検証契約は、`validate` Skillを直接使わないworkflowにも適用する。
+
+- 承認済みの検証コマンドは、証跡保存と分けて単独で実行する。保存方法と終了時の確認は対応するSkillを正とする。
 - 検証コマンドへ `tee`、リダイレクト、変数代入、終了コード処理を連結しない。
 - 検証後、実行コマンド・終了結果・重要な確認事項をhandoff配下へ記録する。
 
