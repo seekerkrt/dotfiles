@@ -13,14 +13,15 @@ export EDITOR=nvim
 export VISUAL=nvim
 export LANG=ja_JP.UTF-8
 export TERMINAL=wezterm
+export BROWSER=google-chrome-stable
 
 ### User specific aliases and functions
 ### Aliases
 alias ls="ls -F --color=auto"
 alias grep="grep --color=auto"
 alias egrep="egrep --color=auto"
-alias cat='bat --paging=never --style=plain'
-alias ccat='command cat'
+#alias cat='bat --paging=never --style=plain'
+#alias ccat='command cat'
 alias eza='eza -F'
 
 
