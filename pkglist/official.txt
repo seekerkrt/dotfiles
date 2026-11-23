@@ -250,6 +250,7 @@ stow
 strace
 stylua
 sweeper
+sysstat
 systemsettings
 taplo-cli
 terminator
