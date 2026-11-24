@@ -45,12 +45,13 @@ command、実行directory、dependency、targetの意味を確認する。見つ
 1. acceptance criteria、repository必須check、変更内容・影響範囲・risk、ユーザー要求から必要な検証を選ぶ。
 2. diff、構文、参照、設定、docs、同期関係を静的に確認する。
 3. 対象変更に対応する`git diff --check`を実行する。working treeなら通常diff、staged変更なら`--cached`、commit済み変更なら明示されたbase / headまたはcommit rangeを使う。
-4. 選択したvalidator、build、test、lintを実行する。実装途中は必要なfocused validationを優先する。
+4. 実行前に「検証の作業領域と証跡」の一時作業領域と永続保存先を区別し、必要な証跡を決める。
+   選択したvalidator、build、test、lintを実行する。実装途中は必要なfocused validationを優先する。
 5. public API、共通library、build設定、serialization等への影響とriskに応じてbroader suiteを選ぶ。
    失敗修正後はまず該当targetをfocused rerunし、変更・残るrisk・要求に応じて追加検証の範囲を決める。
 6. release前も同じ選択基準を使い、repositoryやユーザーが要求するfull suite等を省略しない。
 7. runtime固有の変更なら、利用可能な環境と依頼scopeを確認してruntime検証する。
-8. 結果、未実施理由、環境制約、残るriskを記録する。
+8. 結果、未実施理由、環境制約、残るriskを記録し、「終了時の確認」に従う。
 9. 最後に対象diffと`git status --short --branch`を再確認する。
 
 docs-only変更では、repositoryの契約が要求しないbuildやruntime検証を形式的に実行しない。参照path、同期、front matter、Markdown構造等、変更内容に直接対応する静的検証を選ぶ。
@@ -104,23 +105,53 @@ runtime検証では環境を具体的に記録する。
 - `environment blocked`: dependency、権限、sandbox、network、hardware等で実行できない。
 - `flaky / inconclusive`: 再現が安定せず結論を確定できない。
 
-## 長い出力と作業artifact
+## 検証の作業領域と証跡
 
-長い、または長くなる可能性が高いfull test、clean build、release-check、compiler full output、sanitizer、static analysis、large search、full diff、package build、runtime / VM等の出力は、repository外の次へ保存する。
+共通`GEMINI.md`の保存境界とrepository固有の検証規約に従う。
+検証開始前に、一時作業先、永続証跡の保存先、必要な証跡とその取得方法を確認する。生成物のない検証では一時作業directoryを作らない。
+
+### 一時作業領域
+
+repository固有の正式なbuild・validation treeを優先する。独立した一時作業が必要なら、次の場所を使う。
 
 ```text
-~/handoffs/<repo>/<scope>/
+~/scratch/<project>/<scope>/<unique-run-id>/
 ```
 
-`<scope>`は、Issueがあれば`issue-<number>`、PRだけなら`pr-<number>`、特定テーマなら`topic-<short-kebab-slug>`、それ以外は`general`とする。filenameは次とし、`latest.*`等の固定名を作らず、既存artifactをrename、移動、削除しない。
+`<project>`と`<scope>`は永続証跡と同じ値を使う。runごとに衝突しないdirectoryを新規確保し、pathとownerであるsession / subagentを記録する。並行するrunは一時作業directoryを共有しない。
+利用できる一時作業先がない場合は制約と未実施範囲を記録し、`~/handoffs/`を代替先に使わない。
+
+### 永続証跡の選択
+
+実行コマンド、終了結果、重要な確認事項を記録する。再現性・追跡可能性・認証に必要な証跡として、再現手順、raw log、diff、patch、artifact identity、checksum等を選び、次へ保存する。
 
 ```text
-<YYYYMMDD-HHMMSS>-antigravity-<short-purpose>.<log|txt|diff>
+~/handoffs/<project>/<scope>/
 ```
+
+`<project>`は対象repository名を使う。`<scope>`は、Issueがあれば`issue-<number>`、PRだけなら`pr-<number>`、特定テーマなら`topic-<short-kebab-slug>`、それ以外は`general`とする。logやテキスト証跡のfilenameは次とし、`latest.*`等の固定名を作らず、既存artifactをrename、移動、削除しない。
+
+```text
+<YYYYMMDD-HHMMSS>-antigravity-<short-purpose>.<log|txt|md|diff|patch>
+```
+
+対象worktreeのGit rootと`~/handoffs`の解決済みの実体が一致する場合に限り、`<project>`を`handoffs`とし、`~/handoffs/handoffs/<scope>/`への保存を許容する。
+それ以外は解決済みの保存先が対象repository外にあることを必須とする。`<project>`、`<scope>`、filenameは空要素、`.`、`..`、path区切りを含まない単一のpath要素とする。
+解決済みの`~/handoffs`に`<project>/<scope>`を連結したpathを保存範囲とし、symlink解決後の保存先をpath要素単位で照合する。
+未作成のdirectoryは既存の親から解決する。directory作成後、書込み直前に保存範囲と対象repositoryの内外を再確認し、保存領域自身が対象なら同じworktree内であることも確認する。
+既存file、directory、symlink（リンク切れを含む）との衝突時は停止する。対象worktree内ではHEAD / index / 保存前statusにある同一pathも衝突として扱い、fileは排他的に新規作成する（`O_CREAT | O_EXCL`と同等）。
+利用可能なtoolで排他作成を保証できなければ、保存を中止して理由を報告する。
+
+長い、または長くなる可能性が高いfull test、clean build、release-check、compiler full output、sanitizer、static analysis、large search、full diff、package build、runtime / VM等の出力は、取得したraw logやdiffを保存する。
+既定またはrepository・認証契約が要求する証跡は、容量や検証の成否を理由に省略・要約しない。保存内容は共通の機密情報の取り扱いに従う。
+重量級artifactの長期保存が必要な場合は、共通`GEMINI.md`が定める事項を記録し、許可が必要な保存操作の状態を報告する。
+
+### 証跡の保存
 
 検証commandの実行と、観測済み結果の保存は別操作にする。
 承認済みcommandは承認された形のまま単独実行し、保存のために`if`、`tee`、
 リダイレクト、変数代入、終了コード処理を結合しない。shell wrapperで別commandへ変換しない。
+実行環境のtool（verifierでは`run_command`）が返した結果を使い、取得と別操作での保存にはpermission / approval / workspace境界を適用する。
 
 次は、repositoryの正式な検証commandとして`make test`を確認できた場合の実行例である。`make test`を全repositoryへ固定するものではない。実際の利用時は、repository固有の指示、docs、build設定で確認した正式な検証commandへ置き換える。
 
@@ -145,7 +176,30 @@ env -u MAKEFLAGS -u MFLAGS make -j8 --output-sync=target test
 - success時は結果分類、保存済みlog pathまたは未保存理由、期待条件の要点だけを報告する。
   raw logをterminal会話やfinal responseへ貼らない。
 - raw log保存を通常handoff生成と混同せず、`handoff` Skillを自動起動しない。
-- raw logをrepositoryへ追加、stage、commitしない。
+
+### 証跡保存のGit検収
+
+保存操作の直前と直後に、同じ対象worktreeのrootで次を取得して比較する。
+
+```bash
+git --no-optional-locks status --porcelain=v2 --branch --untracked-files=all -z
+```
+
+NUL区切りの元データを保持し、rename / copyの種別`2`では続く元pathも同じレコードとして扱う。
+空白・改行や表示用のquoteでpathを分割・加工せず、解決済みの保存先から求めたrepository相対pathと完全一致で照合する。
+元データの欠落や切り詰めで比較できない場合は、Git検収を未確認として理由を報告する。
+
+- 通常の開発repositoryでは全レコードが一致することを確認する。
+- 保存領域自身が対象の場合は、今回作成したfileのpathに完全一致する未追跡レコード（`? <path>`）の追加だけを許容する。
+  追加分を除いた全レコードを保存前と比較する。statusに現れない新規fileは、`git check-ignore -- <path>`で当該pathのignoreを確認できれば、増分なしを正常として扱う。
+- 許容条件を満たさない場合は検証失敗とし、観測差分と保存操作に帰属すると確認できた増分を区別して報告する。
+  status一致だけでfile内容の完全不変を証明したとは扱わない。証跡をstage、commit、pushしない。
+
+### 終了時の確認
+
+- 永続証跡の保存先と保存状態を確認し、不足や未保存があれば対象と理由を記録する。
+- 一時作業領域のpathとowner、残存する重量級生成物のpathと扱い、再現性・検証結果への影響を確認する。
+- cleanupの実施または保留を記録する。削除は既存ユーザー変更、過去の証跡、他sessionの生成物、今回の一時作業物のいずれも既存の許可境界に従う。許可がなければ対象と保留理由を報告する。
 
 ## 失敗時
 
@@ -153,7 +207,9 @@ env -u MAKEFLAGS -u MFLAGS make -j8 --output-sync=target test
 - command、directory、exit code、判断に必要なerror / warningを記録する。
 - environment failureをcode failureと断定しない。
 - timeoutや部分成功の後は、再実行前に現在状態を確認する。
-- 検証生成物が残った場合は、そのpathと扱いを報告し、勝手に既存変更を消さない。
+- failure、timeout、部分成功、途中停止、環境制約による中断でも「終了時の確認」を適用する。
+  残存する一時作業領域と重量級生成物、取得済み証跡とその保存状態、cleanupの実施または保留を、確認できた範囲で報告する。
+- 証跡の保存だけを目的に検証を再実行しない。
 
 ## 出力
 
@@ -177,4 +233,4 @@ env -u MAKEFLAGS -u MFLAGS make -j8 --output-sync=target test
 - ...
 ```
 
-長い出力は上記の保存契約に従い、未実施項目を成功項目の陰に隠さない。
+証跡の保存状態と「終了時の確認」の該当項目を報告し、未実施項目を成功項目の陰に隠さない。

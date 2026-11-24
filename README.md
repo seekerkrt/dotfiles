@@ -139,11 +139,11 @@ Stow 対象外で、リポジトリへ自動適用するスクリプトはあり
 | Claude Code | `stow/claude/.claude/agents/` | `~/.claude/agents/` | native role 4種 |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、モデル、hooks、プラグイン等 |
 | Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | Codex rulesをBash PreToolUseへ流用するゲート |
-| Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
+| Antigravity / Gemini CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 9種 |
-| Antigravity IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | IDE向けSkill 9種 |
+| Antigravity App / CLI / IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | 共通のSkill探索先（9種） |
 | Antigravity CLI / IDE | `stow/gemini/.gemini/config/agents/` | `~/.gemini/config/agents/` | native role 4種 |
-| Antigravity CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI設定 |
+| Gemini CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI設定 |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/settings.json` | `~/.gemini/antigravity-cli/settings.json` | Antigravity CLI設定 |
 | Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Codex正本へのsymlink |
 | Grok | `stow/codex/.agents/skills/` | `~/.agents/skills/` | native対応の共有Skill 9種 |
@@ -155,7 +155,8 @@ Stow 対象外で、リポジトリへ自動適用するスクリプトはあり
 
 Skillの意味上の基準は `stow/codex/.agents/skills/` です。
 Claude Code・Antigravity CLI・Antigravity IDEへ、配置path・instruction入口・permission境界を適合させて次の9種を移植します。
-GrokとCopilot CLIはnative対応の `~/.agents/skills/` を共有し、同名Skillを複製しません。
+Grok、Copilot CLI、Gemini CLIは `~/.agents/skills/` のSkillを共有します。
+Gemini CLIの探索先には `~/.gemini/skills/` も含まれます。[Gemini CLIの探索規則](https://geminicli.com/docs/cli/using-agent-skills/#discovery-tiers)
 
 ```text
 audit  c-conventions  commit-prep  cpp-conventions  github-safe-ops
@@ -170,16 +171,18 @@ handoff  handoff-archive  issue-slice  validate
 最小実装と検証を進めてcommit前で停止するオーケストレータです。
 
 長いtest、build、release-check、compiler、runtime、diff等の作業logは、
-repositoryへ追加せず`~/handoffs/<repo>/<scope>/`へtimestamp付きfilenameで保存します。
+通常は対象repository外の`~/handoffs/<repo>/<scope>/`へtimestamp付きfilenameで保存します。
+対象Git rootの実体が`~/handoffs`自身と一致する場合に限り、対象repository内の`~/handoffs/handoffs/<scope>/`へ保存します。
 最終報告にはraw logを貼らず、pass / fail、保存path、重要な要点だけを記載します。
-handoffと作業logの保存先は`~/handoffs`へ一本化し、このdirectoryを独立したGit repositoryとして管理する方針です。
+`~/handoffs`は引き継ぎと検証証跡の永続保存領域で、独立したGit repositoryとして管理する方針です。
+再生成可能な作業物にはrepository固有の正式なbuild・validation treeを優先し、独立した一時作業には`~/scratch/<project>/<scope>/<unique-run-id>/`を使います。
 Git初期化、remote設定、commit、pushは別途の明示依頼で行います。
 選別済みsnapshotを`docs/handoffs/<scope>/<filename>`へbyte-identical copyする
 `handoff-archive`は引き続き利用し、コピー検証、path traversal防止、symlink検査の安全条件を維持します。
 
 handoff系2種（`handoff` / `handoff-archive`）の本文と、
-`handoff/references/common.md`をCodex・Claude Code・Antigravity CLI・IDEで一致させる運用です。
-SKILL.mdのfront matterはエージェント固有差分として許容します。
+`handoff/references/common.md`は、Codex・Claude Code・Antigravity CLI・App / IDEで共通契約の意味を揃えます。
+front matter、指示の参照先、tool・権限の境界は各環境に合わせます。
 
 役割は `coder` / `auditor` / `verifier` / `handoff` とし、Codex TOMLとは別に各agentのnative形式へ移植します。
 実装担当は原則1つ、監査・検証は独立したscopeで並列化できます。
@@ -594,11 +597,11 @@ Each agent reads the following files, backed by this repository:
 | Claude Code | `stow/claude/.claude/agents/` | `~/.claude/agents/` | Four native roles |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, model, hooks, plugins |
 | Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | Gate that reuses Codex rules on Bash PreToolUse |
-| Antigravity CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
+| Antigravity / Gemini CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 9 skills |
-| Antigravity IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | Nine IDE-adapted skills |
+| Antigravity App / CLI / IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | Shared discovery path for nine skills |
 | Antigravity CLI / IDE | `stow/gemini/.gemini/config/agents/` | `~/.gemini/config/agents/` | Four native roles |
-| Antigravity CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI settings |
+| Gemini CLI | `stow/gemini/.gemini/settings.json` | `~/.gemini/settings.json` | Gemini CLI settings |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/settings.json` | `~/.gemini/antigravity-cli/settings.json` | Antigravity CLI settings |
 | Grok | `stow/grok/.grok/AGENTS.md` | `~/.grok/AGENTS.md` | Symlink to the Codex source |
 | Grok | `stow/codex/.agents/skills/` | `~/.agents/skills/` | Nine natively supported shared skills |
@@ -610,8 +613,9 @@ Each agent reads the following files, backed by this repository:
 
 `stow/codex/.agents/skills/` is the semantic source for the following nine skills.
 Claude Code, Antigravity CLI, and Antigravity IDE carry adapted ports with their
-own paths, instruction entry points, and permission boundaries. Grok and Copilot
-CLI natively share `~/.agents/skills/` without duplicate copies:
+own paths, instruction entry points, and permission boundaries. Grok, Copilot CLI,
+and Gemini CLI share `~/.agents/skills/`. Gemini CLI also discovers `~/.gemini/skills/`.
+[Gemini CLI discovery tiers](https://geminicli.com/docs/cli/using-agent-skills/#discovery-tiers)
 
 ```text
 audit  c-conventions  commit-prep  cpp-conventions  github-safe-ops
@@ -626,21 +630,22 @@ existing `audit`, `c-conventions`, `cpp-conventions`, `validate`,
 `commit-prep`, `github-safe-ops`, and `handoff` skills when needed, performs the minimum
 implementation and verification, and stops before commit.
 
-Long test, build, release-check, compiler, runtime, and diff logs are kept
-outside the repository under `~/handoffs/<repo>/<scope>/` with timestamped
-filenames. Final responses report pass / fail, the saved path, and key points
-instead of embedding raw logs.
-Handoffs and work logs use `~/handoffs` as their single storage location,
-with Git management of this directory as a separate repository planned.
+Long test, build, release-check, compiler, runtime, and diff logs use timestamped
+filenames under `~/handoffs/<repo>/<scope>/`, outside the target repository by default.
+If the target Git root resolves to `~/handoffs` itself, logs are saved under `~/handoffs/handoffs/<scope>/`.
+Final responses report pass / fail, the saved path, and key points instead of embedding raw logs.
+`~/handoffs` holds persistent handoffs and verification evidence, with Git management
+as a separate repository planned. Regenerable output uses the repository's designated build
+or validation tree when available. Independent temporary work uses `~/scratch/<project>/<scope>/<unique-run-id>/`.
 Git initialization, remote configuration, commits, and pushes require a separate explicit request.
 `handoff-archive` continues to copy selected snapshots byte-identically to
 `docs/handoffs/<scope>/<filename>`, retaining copy verification, path traversal
 prevention, and symlink checks.
 
 The bodies of the two handoff skills (`handoff` /
-`handoff-archive`) and `handoff/references/common.md` are kept identical
-across Codex, Claude Code, Antigravity CLI, and IDE. SKILL.md front matter
-may have per-agent differences.
+`handoff-archive`) and `handoff/references/common.md` preserve the same shared
+contract across Codex, Claude Code, and the Antigravity CLI, App, and IDE.
+Front matter, instruction paths, tools, and permission boundaries follow each environment.
 
 Native roles are `coder`, `auditor`, `verifier`, and `handoff`. Implementation
 has one owner; independent audit and verification scopes may run in parallel.

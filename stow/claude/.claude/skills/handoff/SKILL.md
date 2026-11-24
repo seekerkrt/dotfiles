@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: 非自明な開発、repository調査、検証、Issue / PR、debug、設計reviewの結果について、通常のhandoffまたは引き継ぎメモを明示的に求められた場合に使用し、後続会話が再開できる事実ベースの日本語Markdownを既定ではrepository外の~/handoffsへ永続保存する。inline / 本文だけ / 保存不要 / file不要 / fileを作らない / 次スレへ貼る文章だけが明示された場合は同じSkillのInline modeでfile / directoryを作らず最終応答本文だけへ出力し、repository収蔵はhandoff-archiveへroutingする。
+description: 非自明な開発、repository調査、検証、Issue / PR、debug、設計reviewの結果について、通常のhandoffまたは引き継ぎメモを明示的に求められた場合に使用し、後続会話が再開できる事実ベースの日本語Markdownを既定では~/handoffsへ永続保存する。handoff自体にinline / 本文だけ / 保存不要 / file不要 / fileを作らない / 次スレへ貼る文章だけが明示された場合はInline modeでfile / directoryを作らず最終応答本文だけへ出力し、選別済みsnapshotのrepository収蔵はhandoff-archiveへroutingする。
 ---
 
 # Handoff基本契約
@@ -13,19 +13,21 @@ handoff作成時は[共通contract](references/common.md)を確認し、authorit
 
 ## Output mode
 
-対象成果物ごとに最新の明確なユーザー指定を適用する。「保存不要」へ訂正された成果物には書き込まない。
-inline本文と別途保存用snapshot等、異なる成果物への両立可能な指定はそれぞれ扱い、片方を捨てない。
+対象成果物ごとに最新の明確なユーザー指定を適用する。同じhandoffへの「保存不要」の訂正は、それ以前の保存指定に優先する。
+監査報告にinline指定があり、別途永続handoffが明示依頼されている場合は、監査報告を本文で返し、handoffをPersistent modeで保存する。
+監査報告だけを依頼された場合は監査報告だけを返す。handoffの作成にはhandoff自体の明示依頼が必要となる。
 出力モードの選択では、同じ成果物に対する最新のwrite / no-write指定が同時に有効で実質的に矛盾する場合だけ、
 write前にユーザー判断を求める。
 
 ### Persistent mode
 
-既定。通常handoffまたは引き継ぎメモを、repository外の`~/handoffs/...`へ新しいhistorical snapshotとして保存する。
+既定。通常handoffまたは引き継ぎメモを、`~/handoffs/...`へ新しいhistorical snapshotとして保存する。
 下記「Persistent workflow」に従う。
 
 ### Inline mode
 
-inline、本文だけ、保存不要、file不要、fileを作らない、次スレへ貼る文章だけ等が明示された成果物に適用する。
+inline、本文だけ、保存不要、file不要、fileを作らない、次スレへ貼る文章だけ等が明示されたhandoffに適用する。
+次の制約は、このinline handoffの生成に適用する。
 
 - 保存先: 最終応答本文だけ
 - file / directory作成: なし
@@ -97,17 +99,15 @@ Inline modeでもbranch / HEAD / working tree等のclaimに必要な鮮度を確
 
 ### Fast path
 
-1. 対象repositoryに実行directoryを固定する。確認済みのroot、repository名、Issue / PRとの対応、scope、
+1. 対象worktreeのGit rootに実行directoryを固定する。確認済みのrepository名、Issue / PRとの対応、scope、
    作業内容、判断、validation結果を再利用する。日時、agent、phaseを記録する。
-2. 保存前に次を原則各1回freshに取得する。1観測setをfilename、本文、保存後validationで共有する。
+2. 保存前に次を原則1回取得する。branch、HEAD、tracked / staged / untrackedの観測をfilename、本文、保存後validationで共有する。
 
    ```bash
-   git branch --show-current
-   git rev-parse HEAD
-   git status --short --branch
+   git --no-optional-locks status --porcelain=v2 --branch --untracked-files=all -z
    ```
 
-3. 既存evidenceから共通の必須情報を整理し、外部へ新規保存する。
+3. 既存evidenceから共通の必須情報を整理し、下記「永続fileの配置」に従って新規保存する。
 4. 下記「永続handoffの検証」を1つの工程として行う。保存後statusは1回取得し、結果を最終報告へ再利用する。
 
 既知のdirty stateだけを理由にRecoveryへ降りない。ただしbranch / HEAD / statusの一致を内容不変の証明にしない。
@@ -137,6 +137,10 @@ repo、scope、出力mode、書込み権限等の保存成立条件を確定で�
 ~/handoffs/<repo>/<scope>/<YYYYMMDD-HHMMSS>-<agent>-<branch-slug>-<phase>.md
 ```
 
+対象worktreeのGit rootと`~/handoffs`をsymlinkも含めて解決し、実体を比較する。
+一致する場合に限り、`<repo>`を`handoffs`とし、対象repository内の`~/handoffs/handoffs/<scope>/<filename>`への保存を許容する。
+それ以外は解決済みの保存先が対象repository外にあることを必須とする。
+
 `<scope>`は次の順で決める。
 
 - GitHub Issueがある: `issue-<number>`
@@ -164,15 +168,22 @@ phaseは`audit`、`design`、`investigation`、`implementation`、`validation`�
 例:
 
 ```text
-~/handoffs/example-project/issue-281/20260728-100747-codex-feat-issue-281-example-implementation.md
-~/handoffs/example-project/issue-243/20260724-094904-codex-fix-issue-243-example-validation.md
-~/handoffs/example-project/topic-handoff-filename/20260728-130000-claude-sonnet-main-validation.md
+~/handoffs/example-project/issue-281/20260728-100747-claude-feat-issue-281-example-implementation.md
+~/handoffs/example-project/issue-243/20260724-094904-claude-fix-issue-243-example-validation.md
+~/handoffs/example-project/topic-handoff-filename/20260728-130000-claude-main-validation.md
 ```
 
 filenameのbranch-slugは本文の代替ではない。`Current state`の`Branch:`へ、置換前の完全なbranch名を引き続き記録する。
 
 `latest.md`、`current.md`等の固定名を作らない。既存handoffを移動、rename、削除しない。この命名は新規handoffだけへ適用し、旧`<YYYYMMDD-HHMMSS>-<agent>-<phase>.md`形式の既存handoffはそのまま残す。必要なdirectoryだけ作る。
-保存先の解決先がrepository外の上記directoryに収まることを確認し、既存fileを上書きしない。
+保存前に`<repo>`、`<scope>`、filenameがそれぞれ単一のpath要素であることを確認し、空要素、`.`、`..`、path区切りを含む値を拒否する。
+解決済みの`~/handoffs`に検証済みの`<repo>/<scope>`を連結したpathを保存範囲とする。
+未作成のdirectoryは既存の親から解決し、解決後の保存先をpath要素単位でその範囲と照合する。
+directory作成後、書込み直前に保存範囲と対象repositoryの内外を再確認する。保存領域自身が対象の場合は、保存先が同じworktreeに属することも確認する。
+同名の既存file、directory、symlink（リンク切れを含む）との衝突があれば保存を止める。
+対象worktree内への保存では、HEAD / index / 保存前statusに同一pathがある場合も衝突として扱う。
+fileは排他的に新規作成する（`O_CREAT | O_EXCL`と同等）。利用可能なtoolで排他作成を保証できなければ、保存を中止して理由を報告する。
+保存内容は共通`CLAUDE.md`（importした共通契約を含む）の機密情報の取り扱いに従う。
 
 新規永続handoffでは、共通の必須情報に加えて次を記録する。
 
@@ -183,9 +194,14 @@ Archive status: not archived
 Authority: historical snapshot; not the current specification
 ```
 
-Suggested pathは提案だけであり、通常handoffではrepository内に作らない。
+Suggested pathは選別済みsnapshotを明示依頼で収蔵する場合の候補であり、ここでは作成しない。
+保存領域自身が対象の場合は`External handoff`を`Handoff path`に置き換えて実際の保存先を記録し、`Suggested repository path`を省く。
+この場合も`Archive status: not archived`と`Authority`を記録する。通常保存から収蔵やpublishへ進むには別の明示依頼が必要となる。
 
 ### 既定template
+
+`Archive`欄は「永続fileの配置」のmetadata規則を保存先に応じて適用する。
+`Git status`欄には、保存前のNUL区切りの観測を読みやすい形式で記録する。
 
 ````markdown
 # ChatGPT handoff: <repo> / <task>
@@ -244,8 +260,10 @@ Suggested pathは提案だけであり、通常handoffではrepository内に作�
 
 ## Git status
 
+保存前の観測
+
 ```text
-<git status --short --branch>
+<保存前のstatusの表示用整形>
 ```
 
 ## Git operations
@@ -268,23 +286,30 @@ PR bodyへ記録する場合も、scope / non-scope、validation、risk、next�
 
 ### 永続handoffの検証
 
-保存済みartifactのread-backと次の内容・path確認、保存後の`git status --short --branch`を1つのvalidation工程で行う。
-statusは保存前と比較するために1回取得する。filenameや本文の照合には保存前の観測setを使い、branch / HEADを再取得しない。
+保存済みartifactのread-backと次の内容・path確認を行い、保存前と同じstatus commandを1回実行して比較する。
+filenameや本文の照合には保存前の観測setを使う。
+NUL区切りの元データを保持し、rename / copyの種別`2`では続く元pathも同じレコードとして扱う。
+空白・改行や表示用のquoteでpathを分割・加工せず、解決済みの保存先から求めたrepository相対pathと完全一致で照合する。
+元データの欠落や切り詰めで比較できない場合は、Git検収を未確認として理由を報告する。
 
 - filenameがtimestamp、agent、branch-slug、phaseを持つ。
 - branch-slugが作成時点のbranch、またはdetached HEADの`detached-<short-sha>`と対応する。
 - repo / scope directoryが正しい。
 - 既存handoffをrename、移動、削除していない。
-- 必須情報とarchive metadataがある。
+- 必須情報と、保存先に対応するarchive metadataがある。
 - 本文の`Branch:`に完全なbranch名がある。
 - `Archive status`が`not archived`である。
-- repository statusにhandoff生成による追加変更がなく、既存ユーザー変更が保持されている。
+- 通常の開発repositoryでは保存前後のstatusが一致する。
+- 保存領域自身が対象の場合は、今回の保存先に完全一致するrepository相対pathの未追跡レコード（`? <path>`）の追加だけを許容する。
+  そのレコードを除いた全項目を保存前と比較し、既存のtracked / staged / untracked状態が保持されていることを確認する。
+  保存前後のstatusが一致する場合は、`git check-ignore -- <path>`で当該pathがignore対象と確認できたときに限り、status上の増分なしを正常として記録する。
 - handoffをstage、commit、pushしていない。
 
-status一致だけでfile内容の完全不変を証明したとは扱わない。変化や競合の兆候があれば、該当するclaimだけRecoveryで扱う。
+status一致だけでfile内容の完全不変を証明したとは扱わない。予期しない差分や競合の兆候があれば、該当するclaimだけRecoveryで扱う。
+許容条件を満たさない場合は検証失敗として観測差分を報告し、保存操作に帰属すると確認できた増分だけをそのように記録する。
 保存失敗・結果不明の場合は今回のartifactの存在と内容を先に確認し、同じ保存を無条件に繰り返さない。
-出力先へ書けない場合は固定名やrepository内fileで代用せず、未作成と理由を報告する。
+所定の出力先へ書けない場合は未作成と理由を報告する。
 
 ### 最終報告
 
-上記validation結果を再利用し、handoff path、suggested archive path、必須情報確認、repository statusを簡潔に報告する。同じstateを別の最終確認として再取得しない。作業全体でのGit operationsと、handoff生成自体によるarchive / stage / commit / pushの有無を分ける。通常handoffではhandoff fileを自動archive、stage、commit、pushしない。作業結果の最終報告にもhandoff pathを含める。
+上記validation結果を再利用し、handoff path、該当する場合はsuggested archive path、必須情報確認、保存前のrepository状態と今回の保存による増分を簡潔に報告する。同じstateを別の最終確認として再取得しない。作業全体でのGit operationsと、handoff生成自体によるarchive / stage / commit / pushの有無を分ける。作業結果の最終報告にもhandoff pathを含める。
