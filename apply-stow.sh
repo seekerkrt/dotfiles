@@ -18,6 +18,10 @@ CODEX_SKILLS_CLI_IGNORE="^${CODEX_SKILLS_IGNORE#^/}"
 GROK_CONFIG_IGNORE='^/\.grok/config\.toml$'
 GROK_CONFIG_CLI_IGNORE="^${GROK_CONFIG_IGNORE#^/}"
 
+# Claude Codeの実行時データは、旧fold配置でsourceに残っていても配布しない
+CLAUDE_RUNTIME_IGNORE='^(?:\.claude\.json(?:\..*)?|\.claude/(?!CLAUDE\.md$|settings\.json$|(?:agents|hooks|skills)(?:/|$)).*|\.claude/skills/(?:synced|\.trash)(?:/.*)?)$'
+CLAUDE_CACHE_IGNORE='(?:^|/)(?:__pycache__|\.cache)(?:/|$).*'
+
 # stow対象から外したいパッケージ名（必要なら増やす）
 # systemd-user: systemd unit・drop-in・enable状態はsetup-systemd-services.shが管理する。
 #   packageは削除済みで、この項目は誤ってStow管理へ戻さないためのguardとして残している。
@@ -52,6 +56,12 @@ stow_one() {
         --ignore="$GROK_CONFIG_CLI_IGNORE" \
         "$pkg"
       materialize_grok_config
+      ;;
+    claude)
+      stow -d "$STOW_DIR" -t "$TARGET_DIR" --no-folding \
+        --ignore="$CLAUDE_RUNTIME_IGNORE" \
+        --ignore="$CLAUDE_CACHE_IGNORE" \
+        "$pkg"
       ;;
     vscode|gemini|antigravity)
       # runtime/stateを同じtree配下に生成するため、package directoryをfoldしない

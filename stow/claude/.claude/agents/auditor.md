@@ -1,7 +1,7 @@
 ---
 name: auditor
 description: 実装の正しさ、回帰、設計上の不変条件、テスト不足を独立して確認するread-only監査役
-tools: Read, Glob, Grep
+tools: Read, Glob, Grep, LSP
 model: inherit
 skills:
   - audit

@@ -18,6 +18,10 @@ CODEX_SKILLS_CLI_IGNORE="^${CODEX_SKILLS_IGNORE#^/}"
 GROK_CONFIG_IGNORE='^/\.grok/config\.toml$'
 GROK_CONFIG_CLI_IGNORE="^${GROK_CONFIG_IGNORE#^/}"
 
+# applyと同じpathだけをStow管理対象とする
+CLAUDE_RUNTIME_IGNORE='^(?:\.claude\.json(?:\..*)?|\.claude/(?!CLAUDE\.md$|settings\.json$|(?:agents|hooks|skills)(?:/|$)).*|\.claude/skills/(?:synced|\.trash)(?:/.*)?)$'
+CLAUDE_CACHE_IGNORE='(?:^|/)(?:__pycache__|\.cache)(?:/|$).*'
+
 # remove対象から外したいパッケージ名（必要なら増やす）
 # systemd-user: systemd関連はsetup-systemd-services.shが管理する。
 #   packageは削除済みで、この項目は誤ってStow管理へ戻さないためのguardとして残している。
@@ -52,6 +56,12 @@ stow_remove_one() {
         --ignore="$GROK_CONFIG_CLI_IGNORE" \
         "$pkg"
       remove_grok_config_symlink
+      ;;
+    claude)
+      stow -D -d "$STOW_DIR" -t "$TARGET_DIR" --no-folding \
+        --ignore="$CLAUDE_RUNTIME_IGNORE" \
+        --ignore="$CLAUDE_CACHE_IGNORE" \
+        "$pkg"
       ;;
     vscode|gemini|antigravity)
       stow -D -d "$STOW_DIR" -t "$TARGET_DIR" --no-folding "$pkg"

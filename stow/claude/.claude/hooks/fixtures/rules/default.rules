@@ -4,4 +4,18 @@ prefix_rule(pattern=["make"], decision="allow")
 prefix_rule(pattern=["gh", "pr", "list"], decision="allow")
 prefix_rule(pattern=["git", "add", "--"], decision="allow")
 prefix_rule(pattern=["git", "commit", "-m"], decision="allow")
+prefix_rule(pattern=["git", "branch"], decision="allow")
+prefix_rule(pattern=["git", "diff", "--check"], decision="allow")
+prefix_rule(pattern=["git", "push"], decision="allow")
+prefix_rule(pattern=["rm"], decision="allow")
 prefix_rule(pattern=["env", "-u", "MAKEFLAGS", "-u", "MFLAGS", "make"], decision="allow")
+prefix_rule(pattern=["review-command"], decision="prompt")
+prefix_rule(pattern=["review-command", "--fast"], decision="allow")
+prefix_rule(pattern=["restricted-command"], decision="forbidden")
+prefix_rule(pattern=["restricted-command", "--fast"], decision="allow")
+prefix_rule(pattern=["legacy-restricted-command"], decision="deny")
+prefix_rule(
+    pattern=["literal-restricted-command", ["red blue", 'red"blue', "$label", r"\q"]],
+    decision="deny",
+)
+prefix_rule(pattern=["literal-review-command", "red blue"], decision="ask")

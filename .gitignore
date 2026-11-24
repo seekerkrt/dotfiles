@@ -128,6 +128,18 @@ vscode/.config/Code/User/History/
 # Keep the real config local; track config.toml.example instead.
 stow/codex/.codex/config.toml
 
+# Claude Code: only these user configuration paths belong in the Stow package.
+/stow/claude/.claude.json
+/stow/claude/.claude.json.*
+/stow/claude/.claude/*
+!/stow/claude/.claude/CLAUDE.md
+!/stow/claude/.claude/settings.json
+!/stow/claude/.claude/agents/
+!/stow/claude/.claude/hooks/
+!/stow/claude/.claude/skills/
+/stow/claude/.claude/skills/synced/
+/stow/claude/.claude/skills/.trash/
+
 # Antigravity CLI runtime/update cache
 stow/gemini/.gemini/antigravity-cli/last_check.timestamp
 stow/gemini/.gemini/antigravity-cli/updater/

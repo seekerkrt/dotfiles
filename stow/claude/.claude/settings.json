@@ -1,7 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
-    "DISABLE_TELEMETRY": "1"
+    "DISABLE_TELEMETRY": "1",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "5"
   },
   "attribution": {
     "commit": "",
@@ -11,10 +12,9 @@
     "allow": [
       "Bash(make:*)",
       "Bash(qemu-system-x86_64:*)",
-      "Bash(git status:*)",
-      "Bash(git log:*)",
-      "Bash(git diff:*)",
-      "Bash(git branch:*)",
+      "Bash(git branch)",
+      "Bash(git branch --list)",
+      "Bash(git branch --show-current)",
       "Bash(rg:*)",
       "Bash(fd:*)",
       "Bash(ls:*)",
@@ -33,24 +33,35 @@
     ],
     "ask": [
       "Bash(rm:*)",
+      "Bash(rmdir:*)",
+      "Bash(unlink:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
       "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git switch:*)",
+      "Bash(git reset:*)",
+      "Bash(git restore:*)",
+      "Bash(git clean:*)",
+      "Bash(git update-ref:*)",
       "Bash(git branch -d:*)",
       "Bash(git branch -D:*)",
       "Bash(git branch --delete:*)"
     ],
+    "disableBypassPermissionsMode": "disable",
     "additionalDirectories": [
       "~/handoffs"
     ]
   },
-  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|Monitor",
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/hooks/codex-rules-gate.py",
+            "command": "\"$HOME/.claude/hooks/codex-rules-gate.py\"",
+            "onFailure": "block",
             "timeout": 10
           }
         ]
@@ -67,8 +78,8 @@
     "pyright-lsp@claude-plugins-official": true
   },
   "language": "Japanese",
-  "effortLevel": "xhigh",
   "tui": "fullscreen",
   "theme": "dark",
-  "autoCompactEnabled": true
+  "autoCompactEnabled": true,
+  "autoMemoryEnabled": false
 }

@@ -1,7 +1,7 @@
 ---
 name: verifier
 description: 実装完了後の変更を独立した立場から検証する検証役
-tools: Read, Glob, Grep, Bash
+tools: Read, Glob, Grep, Bash, LSP
 model: inherit
 skills:
   - validate

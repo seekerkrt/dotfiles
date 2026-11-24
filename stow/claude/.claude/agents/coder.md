@@ -1,7 +1,7 @@
 ---
 name: coder
 description: 合意済みscopeに従ってproduction codeと必要なtestを実装する実装担当
-tools: Read, Glob, Grep, Bash, Edit, Write
+tools: Read, Glob, Grep, Bash, Edit, Write, LSP
 model: inherit
 ---
 
