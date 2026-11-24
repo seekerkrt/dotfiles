@@ -12,7 +12,6 @@
       "command(git status)",
       "command(git diff)",
       "command(git rev-parse)",
-      "unsandboxed(git status)"
     ]
   },
   "security": {
