@@ -1,12 +1,12 @@
 {
   "allowNonWorkspaceAccess": true,
-  "colorScheme": "solarized dark",
+  "colorScheme": "tokyo night",
   "enableTelemetry": false,
   "enableTerminalSandbox": true,
   "general": {
     "vimMode": true
   },
-  "model": "Gemini 3.1 Pro (High)",
+  "model": "Gemini 3.8 Flash (Medium)",
   "permissions": {
     "allow": [
       "command(git status)",
@@ -31,5 +31,6 @@
   },
   "ui": {
     "inlineThinkingMode": "full"
-  }
+  },
+  "queuedMessages": "send-immediately"
 }
