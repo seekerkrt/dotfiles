@@ -123,7 +123,7 @@ repository固有の正式なbuild・validation treeを優先する。独立し�
 
 ### 永続証跡の選択
 
-実行コマンド、終了結果、重要な確認事項を記録する。再現性・追跡可能性・認証に必要な証跡として、再現手順、raw log、diff、patch、artifact identity、checksum等を選び、repository外の次へ保存する。
+実行コマンド、終了結果、重要な確認事項を記録する。再現性・追跡可能性・認証に必要な証跡として、再現手順、raw log、diff、patch、artifact identity、checksum等を選び、次へ保存する。
 
 ```text
 ~/handoffs/<project>/<scope>/
@@ -134,6 +134,12 @@ repository固有の正式なbuild・validation treeを優先する。独立し�
 ```text
 <YYYYMMDD-HHMMSS>-codex-<short-purpose>.<log|txt|md|diff|patch>
 ```
+
+対象worktreeのGit rootと`~/handoffs`の解決済みの実体が一致する場合に限り、`<project>`を`handoffs`とし、`~/handoffs/handoffs/<scope>/`への保存を許容する。
+それ以外は解決済みの保存先が対象repository外にあることを必須とする。`<project>`、`<scope>`、filenameは空要素、`.`、`..`、path区切りを含まない単一のpath要素とする。
+解決済みの`~/handoffs`に`<project>/<scope>`を連結したpathを保存範囲とし、symlink解決後の保存先をpath要素単位で照合する。
+書込み直前に保存範囲と対象repositoryの内外を再確認し、保存領域自身が対象なら同じworktree内であることも確認する。
+既存file、directory、symlink（リンク切れを含む）との衝突時は停止する。対象worktree内ではHEAD / index / 保存前statusにある同一pathも衝突として扱い、fileは排他的に新規作成する。
 
 長い、または長くなる可能性が高いfull test、clean build、release-check、compiler full output、sanitizer、static analysis、large search、full diff、package build、runtime / VM等の出力は、取得したraw logやdiffを保存する。
 既定またはrepository・認証契約が要求する証跡は、容量や検証の成否を理由に省略・要約しない。保存内容は共通の機密情報の取り扱いに従う。
@@ -168,7 +174,10 @@ env -u MAKEFLAGS -u MFLAGS make -j8 --output-sync=target test
 - success時は結果分類、保存済みlog pathまたは未保存理由、期待条件の要点だけを報告する。
   raw logをterminal会話やfinal responseへ貼らない。
 - raw log保存を通常handoff生成と混同せず、`handoff` Skillを自動起動しない。
-- raw logをrepositoryへ追加、stage、commitしない。
+- 証跡の保存前後のGit状態を同じ粒度で比較する。通常の開発repositoryでは保存による増分はない。
+  保存領域自身が対象の場合は、今回作成したfileに完全一致するrepository相対pathの未追跡レコードの追加だけを許容する。
+  statusに表れない新規fileは当該pathのignoreを確認する。既存のtracked / staged / untracked状態を保ち、証跡をstage、commit、pushしない。
+  予期しない差分は検証失敗として、保存操作に帰属すると確認できた増分と区別して報告する。
 
 ### 終了時の確認
 
