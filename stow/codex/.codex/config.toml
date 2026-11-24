@@ -1,13 +1,13 @@
 model = "gpt-6.2-sol"
 model_context_window = 1000000
 model_auto_compact_token_limit = 900000
-model_reasoning_effort = "max"
+model_reasoning_effort = "xhigh"
 model_verbosity = "medium"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
 default_permissions = "workspace-dev"
 web_search = "cached"
-service_tier = "default"
+service_tier = "fast"
 personality = "pragmatic"
 
 [browser_use.default_origin_policy]
@@ -61,7 +61,7 @@ allow_local_binding = true
 "/var/run/docker.sock" = "allow"
 
 [permissions.workspace-dev]
-description = "Current workspace plus handoff and ramdisk directories"
+description = "Current workspace plus handoff, scratch and ramdisk directories"
 extends = ":workspace"
 
 [permissions.workspace-dev.workspace_roots]
@@ -69,6 +69,7 @@ extends = ":workspace"
 
 [permissions.workspace-dev.filesystem]
 "~/handoffs" = "write"
+"~/scratch" = "write"
 
 [permissions.workspace-dev.network]
 enabled = true
@@ -154,4 +155,5 @@ enabled = true
 [desktop]
 followUpQueueMode = "steer"
 preventSleepWhileRunning = true
+
 
