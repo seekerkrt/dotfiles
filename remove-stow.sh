@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-DOTFILES_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+DOTFILES_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
 STOW_DIR="$DOTFILES_DIR/stow"
 TARGET_DIR="$HOME"
 CODEX_RULES_IGNORE='^/\.codex/rules(/.*)?$'
