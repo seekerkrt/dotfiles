@@ -11,7 +11,7 @@
     "allow": [
       "command(git status)",
       "command(git diff)",
-      "command(git rev-parse)",
+      "command(git rev-parse)"
     ]
   },
   "security": {
