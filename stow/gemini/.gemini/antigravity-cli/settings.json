@@ -1,19 +1,20 @@
 {
   "allowNonWorkspaceAccess": true,
   "colorScheme": "tokyo night",
-  "enableTelemetry": false,
   "enableTerminalSandbox": true,
   "general": {
     "vimMode": true
   },
-  "model": "Gemini 3.8 Flash (Medium)",
+  "model": "Gemini 4 Hydrogen (XHigh)",
   "permissions": {
     "allow": [
       "command(git status)",
       "command(git diff)",
-      "command(git rev-parse)"
+      "command(git rev-parse)",
+      "command(git status)"
     ]
   },
+  "queuedMessages": "send-immediately",
   "security": {
     "auth": {
       "selectedType": "oauth-personal"
@@ -30,6 +31,5 @@
   },
   "ui": {
     "inlineThinkingMode": "full"
-  },
-  "queuedMessages": "send-immediately"
+  }
 }
