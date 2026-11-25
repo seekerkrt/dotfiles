@@ -61,8 +61,8 @@
           {
             "type": "command",
             "command": "\"$HOME/.claude/hooks/codex-rules-gate.py\"",
-            "onFailure": "block",
-            "timeout": 10
+            "timeout": 10,
+            "onFailure": "block"
           }
         ]
       }
@@ -78,8 +78,13 @@
     "pyright-lsp@claude-plugins-official": true
   },
   "language": "Japanese",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  },
   "tui": "fullscreen",
+  "autoMemoryEnabled": false,
   "theme": "dark",
-  "autoCompactEnabled": true,
-  "autoMemoryEnabled": false
+  "autoCompactEnabled": true
 }
