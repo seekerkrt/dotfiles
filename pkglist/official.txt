@@ -25,6 +25,7 @@ breeze-plymouth
 btop
 btrfs-progs
 ccache
+ccid
 chatgpt-bin
 chezmoi
 clamav
@@ -199,6 +200,7 @@ pacman-contrib
 pandoc-cli
 partitionmanager
 pavucontrol
+pcsc-tools
 piper
 plasma-activities
 plasma-activities-stats
