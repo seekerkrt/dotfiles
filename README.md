@@ -138,7 +138,6 @@ Stow 対象外で、リポジトリへ自動適用するスクリプトはあり
 | Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | Skill 9種 |
 | Claude Code | `stow/claude/.claude/agents/` | `~/.claude/agents/` | native role 4種 |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | 権限、hooks、プラグイン等 |
-| Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | Bash / MonitorのPreToolUseゲート |
 | Antigravity / Gemini CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Codex正本からの移植 |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | Skill 9種 |
 | Antigravity App / CLI / IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | 共通のSkill探索先（9種） |
@@ -216,8 +215,8 @@ Claude・Geminiの`--no-folding`配置では、新規reference追加後にStow�
 #### Claude Codeの設定と配置
 
 `claude`パッケージはapply・removeともに`--no-folding`を使います。
-新規配置では`~/.claude`、`agents/`、`hooks/`、`skills/`は実ディレクトリになり、
-設定、agent、hook、Skillの各fileをsymlinkで配布します。session、cache、Auto Memory、認証状態のほか、
+新規配置では`~/.claude`、`agents/`、`skills/`は実ディレクトリになり、
+設定、agent、Skillの各fileをsymlinkで配布します。session、cache、Auto Memory、認証状態のほか、
 `skills/synced/`と`skills/.trash/`の同期・退避データもGitとStowの配布対象から除外します。
 通常のapplyでは既存のディレクトリsymlinkが残ります。旧fold配置では同期データの書き込み先が
 管理元を指すため、同期を使う前に`~/.claude/skills`のリンクと管理元へのデータ混入を確認してください。
@@ -227,18 +226,25 @@ Claude・Geminiの`--no-folding`配置では、新規reference追加後にStow�
 適用されます。`Enter`や値の直接指定で既定値を保存すると`~/.claude/settings.json`に書き込まれるため、
 Stow配下の設定差分とsymlinkの状態を確認してください。[Claude Codeのモデル設定](https://code.claude.com/docs/en/model-config)
 
-通常のGit参照はClaude Code標準の読み取り判定を使います。Gitの変更と削除はClaude側で明示承認を求めます。
-hookは単純な非Gitコマンドに限りCodex rulesのallowを引き継ぎます。
-判定できるリダイレクト付きコマンドにもdeny・askを適用し、リダイレクト先はClaude本体が評価します。
-リダイレクトだけの区間を含む単純なコマンド列と、展開を伴わないリテラルのエスケープも照合できます。
-信頼済みbuildやscriptの内部で起きる副作用にも、共通契約の承認が必要です。
-`CODEX_RULES_DIR`が未設定または空なら`~/.codex/rules`を使います。既定ディレクトリの未配置、
-空ディレクトリ、正常なrulesの未一致ではCodex由来の判定を適用せず、Git操作等のhook固有の承認条件と
-本体の権限評価を使います。明示したディレクトリの不存在、既定rulesパスやその親のリンク切れ、
-既存rulesの読取・解析障害（非対応構文を含む）は、一部だけ読めた場合もコマンドを拒否します。
-固定入力による回帰テストは`bash stow/claude/.claude/hooks/test-rules-gate.sh`で実行できます。
-hookの`onFailure: "block"`はv2.1.295以降で有効です。SchemaStoreがこの項目を未収録の場合は
-エディターに警告が出ます。[Claude Codeのhooks仕様](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
+実行権限はClaude Code標準のAuto modeとnative sandboxで管理します。
+Codexのrulesとは独立した設定とし、独自の権限判定hookは使用しません。
+
+- 通常の開発操作はAuto modeによる自動審査を利用します。
+- 明示したファイルのgit add、git commit、make、ctestなどはallow ruleで許可します。
+- git push、PR作成、一括ステージング、sandbox外への再試行にはask ruleを設定します。
+- PR mergeとsudoにはdeny ruleを設定します。
+- MCP toolには原則として明示承認を要求します。
+- 追加作業領域は`~/handoffs`、`~/scratch`、`/ramdisk`です。
+- GitHub・GitLab通信と指定したDocker参照操作にはsandboxの個別除外を利用します。
+- KVM実機検証は必要に応じて承認付きのsandbox外実行を利用します。
+
+Linuxではsandboxのglobによるファイル保護に制約があります。
+機密情報のRead禁止ruleと具体的なdenyRead pathを併用します。
+sandbox除外コマンドにはOSレベルの隔離が適用されません。
+Bashの権限ruleは間接的な操作まで完全に制限するものではありません。
+
+[Claude Codeの権限設定](https://code.claude.com/docs/en/permissions) /
+[Claude Codeのsandbox仕様](https://code.claude.com/docs/en/sandboxing)
 
 > [!WARNING]
 > **`gemini` パッケージは `--no-folding` です。**
@@ -623,7 +629,6 @@ Each agent reads the following files, backed by this repository:
 | Claude Code | `stow/claude/.claude/skills/` | `~/.claude/skills/` | 9 skills |
 | Claude Code | `stow/claude/.claude/agents/` | `~/.claude/agents/` | Four native roles |
 | Claude Code | `stow/claude/.claude/settings.json` | `~/.claude/settings.json` | Permissions, hooks, plugins |
-| Claude Code | `stow/claude/.claude/hooks/` | `~/.claude/hooks/` | PreToolUse gate for Bash and Monitor |
 | Antigravity / Gemini CLI | `stow/gemini/.gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Port of the Codex source |
 | Antigravity CLI | `stow/gemini/.gemini/antigravity-cli/skills/` | `~/.gemini/antigravity-cli/skills/` | 9 skills |
 | Antigravity App / CLI / IDE | `stow/gemini/.gemini/config/skills/` | `~/.gemini/config/skills/` | Shared discovery path for nine skills |
@@ -703,8 +708,8 @@ Check reference resolution from the deployed paths as well as the sources.
 #### Claude Code settings and deployment
 
 The `claude` package uses `--no-folding` for both apply and remove. On a
-fresh deployment `~/.claude`, `agents/`, `hooks/`, and `skills/` are real
-directories. Stow links individual configuration, agent, hook, and skill files.
+fresh deployment `~/.claude`, `agents/`, and `skills/` are real
+directories. Stow links individual configuration, agent, and skill files.
 Git and Stow exclude sessions, cache, Auto Memory, authentication state, and
 downloaded or quarantined skills in `skills/synced/` and `skills/.trash/`.
 A normal apply leaves existing directory symlinks in place. Before enabling
@@ -717,23 +722,27 @@ in the picker for a session-only choice. Saving a default with `Enter`
 or by passing a value writes to `~/.claude/settings.json`. Check the
 Stow source diff and symlink afterward. [Claude Code model configuration](https://code.claude.com/docs/en/model-config)
 
-Claude Code's built-in permission checks handle ordinary Git inspection.
-Git mutations and deletions require explicit approval on the Claude side.
-The hook imports Codex allow rules only for simple non-Git commands.
-It applies deny and ask rules to commands with recognized redirections, and
-Claude Code checks the redirect targets. The hook handles simple command lists
-with redirection-only segments and literal escapes that require no expansion.
-Side effects inside trusted builds and scripts still require approval under
-the shared policy.
-An unset or empty `CODEX_RULES_DIR` uses `~/.codex/rules`. A missing default
-directory, an empty directory, or an unmatched rule yields no Codex decision.
-The hook's own approval checks and Claude Code's permissions still apply.
-A missing explicit directory, a broken link at the default rules path or its
-parent, or a rule read or parse error (including unsupported syntax) blocks
-the command even if some rules loaded.
-Run the fixture-based regression test with `bash stow/claude/.claude/hooks/test-rules-gate.sh`.
-The hook's `onFailure: "block"` setting takes effect in v2.1.295 and later.
-Editors can flag it while SchemaStore lacks the field. [Claude Code hooks reference](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
+Execution permissions use Claude Code's native Auto mode and sandbox.
+The configuration is independent of Codex rules and does not use a custom
+permission hook.
+
+- Ordinary development operations use Auto mode classification.
+- Explicit allow rules cover file-specific git add, git commit, make, ctest,
+  and other selected commands.
+- Ask rules cover git push, PR creation, bulk staging, and unsandboxed retries.
+- Deny rules cover PR merge and sudo.
+- MCP tool calls require explicit approval by default.
+- Additional working directories are `~/handoffs`, `~/scratch`, and `/ramdisk`.
+- Selected GitHub, GitLab, and Docker operations use sandbox command exclusions.
+- KVM validation may use an approved unsandboxed execution when necessary.
+
+Linux sandboxing has limitations on glob-based file protection.
+Sensitive files are protected using Read deny rules and explicit denyRead paths.
+Excluded commands do not receive OS-level sandbox isolation.
+Bash permission rules do not provide complete control over indirect operations.
+
+[Claude Code permissions](https://code.claude.com/docs/en/permissions) /
+[Claude Code sandboxing](https://code.claude.com/docs/en/sandboxing)
 
 > [!WARNING]
 > **The `gemini` package uses `--no-folding`.**

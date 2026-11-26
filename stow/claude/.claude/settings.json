@@ -8,66 +8,6 @@
     "commit": "",
     "pr": ""
   },
-  "permissions": {
-    "allow": [
-      "Bash(make:*)",
-      "Bash(qemu-system-x86_64:*)",
-      "Bash(git branch)",
-      "Bash(git branch --list)",
-      "Bash(git branch --show-current)",
-      "Bash(rg:*)",
-      "Bash(fd:*)",
-      "Bash(ls:*)",
-      "Bash(eza:*)",
-      "Bash(cat:*)",
-      "Bash(bat:*)",
-      "Bash(grep:*)"
-    ],
-    "deny": [
-      "Bash(sudo:*)",
-      "Read(**/.env)",
-      "Read(**/.env.*)",
-      "Read(~/.ssh/**)",
-      "Read(~/.gnupg/**)",
-      "Read(~/.config/gh/**)"
-    ],
-    "ask": [
-      "Bash(rm:*)",
-      "Bash(rmdir:*)",
-      "Bash(unlink:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(git checkout:*)",
-      "Bash(git switch:*)",
-      "Bash(git reset:*)",
-      "Bash(git restore:*)",
-      "Bash(git clean:*)",
-      "Bash(git update-ref:*)",
-      "Bash(git branch -d:*)",
-      "Bash(git branch -D:*)",
-      "Bash(git branch --delete:*)"
-    ],
-    "disableBypassPermissionsMode": "disable",
-    "additionalDirectories": [
-      "~/handoffs"
-    ]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash|Monitor",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$HOME/.claude/hooks/codex-rules-gate.py\"",
-            "timeout": 10,
-            "onFailure": "block"
-          }
-        ]
-      }
-    ]
-  },
   "statusLine": {
     "type": "command",
     "command": "$HOME/.local/npm-global/bin/ccstatusline",
@@ -86,5 +26,140 @@
   "tui": "fullscreen",
   "autoMemoryEnabled": false,
   "theme": "dark",
-  "autoCompactEnabled": true
+  "autoCompactEnabled": true,
+  "permissions": {
+    "defaultMode": "auto",
+    "disableBypassPermissionsMode": "disable",
+    "deny": [
+      "Bash(gh pr merge *)",
+      "Bash(sudo:*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(~/.config/gh/**)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.ssh/**)"
+    ],
+    "blockWritesOutsideWorkingDirectories": true,
+    "additionalDirectories": [
+      "/ramdisk",
+      "~/handoffs",
+      "~/scratch"
+    ],
+    "allow": [
+      "Bash(ctest *)",
+      "Bash(docker container ls -a)",
+      "Bash(docker container ls)",
+      "Bash(docker image ls)",
+      "Bash(docker images)",
+      "Bash(docker info)",
+      "Bash(docker network ls)",
+      "Bash(docker ps -a)",
+      "Bash(docker ps)",
+      "Bash(docker system df)",
+      "Bash(docker version)",
+      "Bash(docker volume ls)",
+      "Bash(env -u MAKEFLAGS -u MFLAGS TMPDIR=/ramdisk make *)",
+      "Bash(gh api --method GET *)",
+      "Bash(gh issue list *)",
+      "Bash(gh issue view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh release list *)",
+      "Bash(gh release view *)",
+      "Bash(gh repo list *)",
+      "Bash(gh repo view *)",
+      "Bash(gh run list *)",
+      "Bash(gh run view *)",
+      "Bash(gh workflow list *)",
+      "Bash(gh workflow view *)",
+      "Bash(git add -- *)",
+      "Bash(git commit -m *)",
+      "Bash(git diff --check *)",
+      "Bash(git ls-remote *)",
+      "Bash(git ls-remote --heads gitlab)",
+      "Bash(git ls-remote --heads origin)",
+      "Bash(git ls-remote gitlab refs/heads/develop)",
+      "Bash(git ls-remote origin refs/heads/develop)",
+      "Bash(make *)"
+    ],
+    "ask": [
+      "Bash(dangerouslyDisableSandbox:true)",
+      "Bash(gh pr create *)",
+      "Bash(git * push *)",
+      "Bash(git add -- .)",
+      "Bash(git add --all *)",
+      "Bash(git add -A *)",
+      "Bash(git add .)",
+      "Bash(git branch --delete *)",
+      "Bash(git branch -D *)",
+      "Bash(git branch -d *)",
+      "Bash(git clean *)",
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git update-ref *)",
+      "mcp__*"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "autoAllowBashIfSandboxed": false,
+    "allowUnsandboxedCommands": true,
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "api.github.com",
+        "gitlab.com"
+      ]
+    },
+    "filesystem": {
+      "allowWrite": [
+        "/ramdisk"
+      ],
+      "denyRead": [
+        "~/.config/gh",
+        "~/.gnupg",
+        "~/.ssh"
+      ]
+    },
+    "excludedCommands": [
+      "docker container ls",
+      "docker container ls -a",
+      "docker image ls",
+      "docker images",
+      "docker info",
+      "docker network ls",
+      "docker ps",
+      "docker ps -a",
+      "docker system df",
+      "docker version",
+      "docker volume ls",
+      "gh issue list *",
+      "gh issue view *",
+      "gh pr create *",
+      "gh pr list *",
+      "gh pr list --limit 3",
+      "gh pr view *",
+      "gh release list *",
+      "gh release view *",
+      "gh repo list *",
+      "gh repo view *",
+      "gh run list *",
+      "gh run view *",
+      "gh workflow list *",
+      "gh workflow view *",
+      "git fetch gitlab *",
+      "git fetch origin *",
+      "git ls-remote --heads gitlab",
+      "git ls-remote --heads origin",
+      "git ls-remote gitlab HEAD",
+      "git ls-remote gitlab refs/heads/develop",
+      "git ls-remote origin HEAD",
+      "git ls-remote origin refs/heads/develop",
+      "git pull --ff-only gitlab *",
+      "git pull --ff-only origin *",
+      "git push gitlab *",
+      "git push origin *"
+    ]
+  }
 }
