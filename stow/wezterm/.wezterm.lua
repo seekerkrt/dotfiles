@@ -179,6 +179,16 @@ config.keys = {
             window:set_config_overrides(overrides)
         end),
     },
+    {
+        key = "_",
+        mods = "CTRL",
+        action = wezterm.action.DisableDefaultAssignment,
+    },
+    {
+        key = "_",
+        mods = "CTRL|SHIFT",
+        action = wezterm.action.DisableDefaultAssignment,
+    },
 }
 
 for i = 1, 8 do
