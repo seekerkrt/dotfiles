@@ -3,4 +3,4 @@ pkill -TERM chrome 2>/dev/null || true
 pkill -TERM google-chrome 2>/dev/null || true
 pkill -TERM google-chrome-stable 2>/dev/null || true
 sleep 3
-systemctl poweroff
+systemctl --no-wall poweroff

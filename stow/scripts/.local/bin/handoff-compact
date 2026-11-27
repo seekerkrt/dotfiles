@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+set -euo pipefail
+umask 077
+
+project="${1:?Specify project}"
+n="${2:?Specify issue number}"
+
+[[ "$project" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*$ ]]
+[[ "$n" =~ ^[0-9]+$ ]]
+
+repo="$HOME/handoffs"
+archive="$HOME/handoffs-archive/$project"
+rel="$project/issue-$n"
+
+src="$repo/$rel"
+old="$archive/issue-$n"
+pkg="$old.tar.zst"
+
+echo "=== 1. Safety checks ==="
+
+test -d "$src"
+test ! -L "$src"
+
+mkdir -p "$archive"
+
+for path in "$old" "$pkg" "$pkg.partial" "$pkg.sha256"; do
+    test ! -e "$path"
+    test ! -L "$path"
+done
+
+status=$(git -C "$repo" status --porcelain -uno -- "$rel/")
+
+if [[ -n "$status" ]]; then
+    printf '%s\n' "$status"
+    echo "STOP: Git working tree is not clean."
+    exit 1
+fi
+
+echo "=== 2. Prepare tracked files ==="
+
+stage=$(mktemp -d "$archive/.issue-$n.stage.XXXXXX")
+list="$stage/tracked.nul"
+
+git -C "$repo" ls-files -z -- "$rel/" > "$list"
+test -s "$list"
+
+rsync -a --from0 --files-from="$list" \
+    "$repo/" "$stage/"
+
+echo "=== 3. Create archive ==="
+
+tar --acls --xattrs --sparse \
+    -C "$repo/$project" \
+    -I 'zstd -T2 -3' \
+    -cf "$pkg.partial" \
+    "issue-$n"
+
+echo "=== 4. Verify archive ==="
+
+zstd -t "$pkg.partial"
+
+tar -C "$repo/$project" \
+    --zstd -df "$pkg.partial"
+
+mv -nT -- "$pkg.partial" "$pkg"
+test ! -e "$pkg.partial"
+
+(
+    cd "$archive"
+    sha256sum "issue-$n.tar.zst" \
+        > "issue-$n.tar.zst.sha256"
+)
+
+echo "=== 5. Separate full evidence ==="
+
+mv -vnT --no-copy -- "$src" "$old"
+test ! -e "$src"
+
+if ! mv -vnT --no-copy -- "$stage/$rel" "$src" ||
+   [[ -e "$stage/$rel" ]]; then
+    echo "STOP: Restore failed."
+    echo "Original evidence: $old"
+    exit 1
+fi
+
+echo "=== 6. Verify Git status ==="
+
+status=$(git -C "$repo" status --porcelain -uno -- "$rel/")
+
+if [[ -n "$status" ]]; then
+    printf '%s\n' "$status"
+    echo "STOP: Git differences detected."
+    echo "Original evidence: $old"
+    exit 1
+fi
+
+rm -- "$list"
+rmdir -- "$stage/$project" "$stage"
+
+echo "Git status: CLEAN"
+
+echo "=== 7. Results ==="
+
+du -sh "$src"
+du --inodes -s "$src"
+ls -lh "$pkg"
+
+echo "SUCCESS: $rel"
+echo "Original evidence retained: $old"
